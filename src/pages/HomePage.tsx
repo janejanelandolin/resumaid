@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
@@ -8,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import PageContainer from '@/components/PageContainer';
 import RotatingText from '@/components/RotatingText';
-import { Search } from 'lucide-react';
+import { Search, Sparkle, Rocket, Star } from 'lucide-react';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -69,95 +70,129 @@ const HomePage = () => {
   ];
 
   return (
-    <PageContainer className="justify-start pt-8">
-      <div className="w-full space-y-8">
-        <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold tracking-tight">ResumAI</h1>
-          <p className="text-muted-foreground">
-            <RotatingText 
-              texts={["OPTIMIZE", "Optimize your RESUME", "Optimize your resume for your DREAM JOB"]}
-              className="text-base font-medium"
-              highlightedText="true"
-            />
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="jobTitle" className="text-sm font-medium">
-              Dream job title
-            </label>
-            <div className="relative">
-              <Input
-                id="jobTitle"
-                value={jobTitle}
-                onChange={handleJobTitleChange}
-                onFocus={() => setInputFocused(true)}
-                onBlur={() => setTimeout(() => setInputFocused(false), 100)}
-                placeholder="Enter your dream job title"
-                className="pr-8"
-              />
-              <Search className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              
-              {inputFocused && suggestions.length > 0 && (
-                <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto animate-fade-in">
-                  {suggestions.map((suggestion, index) => (
-                    <li 
-                      key={index}
-                      className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                      onClick={() => selectSuggestion(suggestion)}
-                    >
-                      {suggestion}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+    <div className="bg-gradient-to-b from-white to-purple-50 min-h-screen">
+      <PageContainer className="justify-start pt-8">
+        <div className="w-full space-y-8 relative">
+          {/* Decorative elements */}
+          <div className="absolute -top-4 -right-4 text-purple-300 animate-pulse">
+            <Sparkle size={24} />
+          </div>
+          <div className="absolute top-32 -left-8 text-blue-400 animate-spin-slow">
+            <Star size={16} />
+          </div>
+          <div className="absolute top-56 -right-6 text-yellow-400 animate-bounce">
+            <Star size={20} />
           </div>
           
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Loading..." : "Let's go"}
-          </Button>
-        </form>
+          <div className="space-y-2 text-center relative">
+            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-300 rounded-full filter blur-3xl opacity-20"></div>
+            <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600 relative">
+              ResumAI
+              <span className="absolute -top-4 -right-4 text-purple-600">
+                <Rocket size={20} className="animate-fade-in" />
+              </span>
+            </h1>
+            <p className="text-muted-foreground">
+              <RotatingText 
+                texts={["OPTIMIZE", "Optimize your RESUME", "Optimize your resume for your DREAM JOB"]}
+                className="text-base font-medium"
+                highlightedText="true"
+              />
+            </p>
+          </div>
 
-        <div className="mt-12 pt-8 border-t">
-          <div className="text-center space-y-6">
-            <div className="relative h-24 overflow-hidden">
-              <div className="absolute w-full animate-rotate-testimonials">
-                {testimonials.map((testimonial, index) => (
-                  <div key={index} className="py-2">
-                    <p className="text-sm italic">"{testimonial.text}"</p>
-                    <p className="text-xs font-medium mt-1 text-primary">
-                      {testimonial.name}, {testimonial.role}
-                    </p>
-                  </div>
-                ))}
+          <form onSubmit={handleSubmit} className="space-y-4 bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-100">
+            <div className="space-y-2">
+              <label htmlFor="jobTitle" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <Sparkle size={16} className="text-purple-500" />
+                Dream job title
+              </label>
+              <div className="relative">
+                <Input
+                  id="jobTitle"
+                  value={jobTitle}
+                  onChange={handleJobTitleChange}
+                  onFocus={() => setInputFocused(true)}
+                  onBlur={() => setTimeout(() => setInputFocused(false), 100)}
+                  placeholder="Enter your dream job title"
+                  className="pr-8 border-purple-200 focus:border-purple-400 focus:ring-purple-300"
+                />
+                <Search className="absolute right-2 top-2.5 h-4 w-4 text-purple-500" />
+                
+                {inputFocused && suggestions.length > 0 && (
+                  <ul className="absolute z-10 w-full mt-1 bg-white border border-purple-200 rounded-md shadow-lg max-h-60 overflow-auto animate-fade-in">
+                    {suggestions.map((suggestion, index) => (
+                      <li 
+                        key={index}
+                        className="px-4 py-2 text-sm hover:bg-purple-50 cursor-pointer"
+                        onClick={() => selectSuggestion(suggestion)}
+                      >
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
             
-            <div className="pt-4">
-              <p className="text-sm font-semibold text-gradient">
-                Join 10,000+ professionals who optimized their resumes with ResumAI
-              </p>
-              <div className="flex justify-center space-x-4 mt-2">
-                <div className="text-center">
-                  <p className="text-2xl font-bold">97%</p>
-                  <p className="text-xs text-muted-foreground">Improved Scores</p>
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 transition-all duration-300" 
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Processing...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  Let's go
+                  <Rocket size={16} />
+                </span>
+              )}
+            </Button>
+          </form>
+
+          <div className="mt-12 pt-8 border-t border-purple-100">
+            <div className="text-center space-y-6">
+              <div className="relative h-24 overflow-hidden bg-white/50 backdrop-blur-sm rounded-lg p-3 shadow-inner">
+                <div className="absolute w-full animate-rotate-testimonials">
+                  {testimonials.map((testimonial, index) => (
+                    <div key={index} className="py-2">
+                      <p className="text-sm italic text-gray-600">"{testimonial.text}"</p>
+                      <p className="text-xs font-medium mt-1 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+                        {testimonial.name}, {testimonial.role}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold">75%</p>
-                  <p className="text-xs text-muted-foreground">More Interviews</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold">14K+</p>
-                  <p className="text-xs text-muted-foreground">Resumes Optimized</p>
+              </div>
+              
+              <div className="pt-4">
+                <p className="text-sm font-semibold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-primary">
+                  Join 10,000+ professionals who optimized their resumes with ResumAI
+                </p>
+                <div className="flex justify-center space-x-4 mt-4">
+                  <div className="text-center p-3 bg-white/70 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all border border-purple-100">
+                    <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-purple-600 to-primary">97%</p>
+                    <p className="text-xs text-gray-600">Improved Scores</p>
+                  </div>
+                  <div className="text-center p-3 bg-white/70 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all border border-purple-100">
+                    <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-600 to-primary">75%</p>
+                    <p className="text-xs text-gray-600">More Interviews</p>
+                  </div>
+                  <div className="text-center p-3 bg-white/70 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all border border-purple-100">
+                    <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-indigo-600 to-primary">14K+</p>
+                    <p className="text-xs text-gray-600">Resumes Optimized</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </PageContainer>
+      </PageContainer>
+    </div>
   );
 };
 
