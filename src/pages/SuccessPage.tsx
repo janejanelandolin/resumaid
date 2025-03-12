@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
@@ -76,7 +75,7 @@ const SuccessPage = () => {
             <RotatingText 
               texts={["OPTIMIZED", "ENHANCED", "BOOSTED", "MAXIMIZED"]}
               className="inline"
-              highlightedText
+              highlightedText="true"
             />
           </p>
         </div>

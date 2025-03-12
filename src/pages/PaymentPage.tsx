@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
@@ -6,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useToast } from '@/components/ui/toast';
+import { useToast } from '@/hooks/use-toast';
 import PageContainer from '@/components/PageContainer';
-import { CheckCircle, CreditCard, AppleIcon, Paypal } from 'lucide-react';
+import { CheckCircle, CreditCard, Apple as AppleIcon } from 'lucide-react';
 
 const PaymentPage = () => {
   const navigate = useNavigate();
@@ -118,7 +117,7 @@ const PaymentPage = () => {
             
             <div className="space-y-2">
               <Label>Payment Method</Label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <Button
                   type="button"
                   variant={paymentMethod === 'card' ? 'default' : 'outline'}
@@ -127,15 +126,6 @@ const PaymentPage = () => {
                 >
                   <CreditCard className="h-5 w-5 mb-1" />
                   <span className="text-xs">Card</span>
-                </Button>
-                <Button
-                  type="button"
-                  variant={paymentMethod === 'paypal' ? 'default' : 'outline'}
-                  className="h-14 flex flex-col items-center justify-center"
-                  onClick={() => setPaymentMethod('paypal')}
-                >
-                  <Paypal className="h-5 w-5 mb-1" />
-                  <span className="text-xs">PayPal</span>
                 </Button>
                 <Button
                   type="button"

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
@@ -6,7 +5,7 @@ import { filterJobTitles } from '../services/jobTitles';
 import { apiService } from '../services/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/toast';
+import { useToast } from '@/hooks/use-toast';
 import PageContainer from '@/components/PageContainer';
 import RotatingText from '@/components/RotatingText';
 import { Search } from 'lucide-react';
@@ -78,7 +77,7 @@ const HomePage = () => {
             <RotatingText 
               texts={["OPTIMIZE", "Optimize your RESUME", "Optimize your resume for your DREAM JOB"]}
               className="text-base font-medium"
-              highlightedText
+              highlightedText="true"
             />
           </p>
         </div>
