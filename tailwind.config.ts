@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -84,11 +85,150 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'fade-out': {
+					'0%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					},
+					'100%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					}
+				},
+				'typewriter': {
+					to: { 
+						width: '100%' 
+					},
+				},
+				'blink': {
+					'0%': {
+						borderColor: 'transparent'
+					},
+					'50%': {
+						borderColor: 'currentColor'
+					},
+					'100%': {
+						borderColor: 'transparent'
+					}
+				},
+				'rotate-text': {
+					'0%': {
+						transform: 'translateY(0%)'
+					},
+					'15%': {
+						transform: 'translateY(0%)'
+					},
+					'20%': {
+						transform: 'translateY(-25%)'
+					},
+					'40%': {
+						transform: 'translateY(-25%)'
+					},
+					'45%': {
+						transform: 'translateY(-50%)'
+					},
+					'65%': {
+						transform: 'translateY(-50%)'
+					},
+					'70%': {
+						transform: 'translateY(-75%)'
+					},
+					'90%': {
+						transform: 'translateY(-75%)'
+					},
+					'95%, 100%': {
+						transform: 'translateY(-100%)'
+					}
+				},
+				'rotate-testimonials': {
+					'0%': {
+						transform: 'translateY(0%)',
+						opacity: '0'
+					},
+					'5%': {
+						transform: 'translateY(0%)',
+						opacity: '1'
+					},
+					'25%': {
+						transform: 'translateY(0%)',
+						opacity: '1'
+					},
+					'30%': {
+						transform: 'translateY(-100%)',
+						opacity: '0'
+					},
+					'33.33%': {
+						transform: 'translateY(100%)',
+						opacity: '0'
+					},
+					'38.33%': {
+						transform: 'translateY(0%)',
+						opacity: '1'
+					},
+					'58.33%': {
+						transform: 'translateY(0%)',
+						opacity: '1'
+					},
+					'63.33%': {
+						transform: 'translateY(-100%)',
+						opacity: '0'
+					},
+					'66.66%': {
+						transform: 'translateY(100%)',
+						opacity: '0'
+					},
+					'71.66%': {
+						transform: 'translateY(0%)',
+						opacity: '1'
+					},
+					'91.66%': {
+						transform: 'translateY(0%)',
+						opacity: '1'
+					},
+					'96.66%, 100%': {
+						transform: 'translateY(-100%)',
+						opacity: '0'
+					}
+				},
+				'dial-animation': {
+					from: {
+						'stroke-dashoffset': '400'
+					},
+					to: {
+						'stroke-dashoffset': '0'
+					}
+				},
+				'confetti': {
+					'0%': {
+						transform: 'translateY(0) rotateX(0) rotateY(0)'
+					},
+					'100%': {
+						transform: 'translateY(1000px) rotateX(720deg) rotateY(720deg)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out',
+				'fade-out': 'fade-out 0.5s ease-out',
+				'typewriter': 'typewriter 3s steps(40) forwards',
+				'cursor-blink': 'blink 0.7s infinite',
+				'rotate-text': 'rotate-text 12s infinite',
+				'rotate-testimonials': 'rotate-testimonials 24s infinite',
+				'dial-animation': 'dial-animation 1.5s ease forwards',
+				'confetti': 'confetti 5s ease-in-out forwards',
 			}
 		}
 	},
