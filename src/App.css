@@ -94,3 +94,50 @@ button:hover {
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
+
+/* Pulse animation for accents */
+@keyframes soft-pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+}
+
+.soft-pulse {
+  animation: soft-pulse 3s infinite ease-in-out;
+}
+
+/* Rainbow text animation */
+@keyframes rainbow-text {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.rainbow-text {
+  background: linear-gradient(45deg, 
+    #ff8a00, #e52e71, #a767e5, #5e72eb, #49cce9);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbow-text 10s ease infinite;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}

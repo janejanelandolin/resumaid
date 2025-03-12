@@ -12,6 +12,7 @@ import {
 import PageContainer from '@/components/PageContainer';
 import TypewriterText from '@/components/TypewriterText';
 import AnimatedDial from '@/components/AnimatedDial';
+import { Sparkle, ArrowRight, CheckCircle2, FileCheck } from 'lucide-react';
 
 const AnalysisPage = () => {
   const navigate = useNavigate();
@@ -31,73 +32,129 @@ const AnalysisPage = () => {
     navigate('/payment');
   };
 
+  // Calculate the improvement percentage
+  const improvement = feedback.similarity - atsFeedback.similarity;
+
   return (
-    <PageContainer className="py-6 justify-start">
-      <div className="w-full space-y-6">
-        <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-bold">Analysis Results</h1>
-          <p className="text-sm text-muted-foreground">
-            For: <span className="font-medium text-primary">{jobTitle}</span>
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pt-6">
+      <PageContainer className="py-6 justify-start">
+        <div className="w-full space-y-6 relative">
+          {/* Decorative elements */}
+          <div className="absolute -top-4 -right-4 text-purple-300 animate-pulse">
+            <Sparkle size={24} />
+          </div>
+          <div className="absolute top-32 -left-8 text-blue-400 animate-spin-slow">
+            <Sparkle size={16} />
+          </div>
+          <div className="absolute top-56 -right-6 text-yellow-400 animate-bounce">
+            <Sparkle size={20} />
+          </div>
+          
+          <div className="space-y-2 text-center relative">
+            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-indigo-300 rounded-full filter blur-3xl opacity-20"></div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              Analysis Results
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              For: <span className="font-medium text-primary">{jobTitle}</span>
+            </p>
+          </div>
 
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <TypewriterText
-            text={feedback.score_reason}
-            className="text-sm"
-          />
-        </div>
+          <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-bl-full"></div>
+            <TypewriterText
+              text={feedback.score_reason}
+              className="text-sm relative z-10"
+            />
+          </div>
 
-        <div className="flex justify-center items-center space-x-4 py-4">
-          <AnimatedDial 
-            score={atsFeedback.similarity} 
-            max={100} 
-            color="text-destructive" 
-            label="Without optimization" 
-          />
-          <div className="text-xl font-bold">→</div>
-          <AnimatedDial 
-            score={feedback.similarity} 
-            max={100} 
-            color="text-secondary" 
-            label="With optimization" 
-          />
-        </div>
+          <div className="flex flex-col items-center justify-center py-6 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-100/50 to-purple-100/50 rounded-lg -z-10"></div>
+            
+            <div className="text-center mb-4">
+              <h2 className="text-lg font-semibold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">
+                Compatibility Score
+              </h2>
+            </div>
+            
+            <div className="flex justify-center items-center space-x-4 py-4">
+              <AnimatedDial 
+                score={atsFeedback.similarity} 
+                max={100} 
+                color="text-orange-500" 
+                label="Without optimization" 
+              />
+              <div className="flex flex-col items-center justify-center">
+                <ArrowRight className="h-8 w-8 text-indigo-400 animate-pulse" />
+                <div className="mt-2 py-1 px-3 bg-green-100 rounded-full">
+                  <span className="text-xs font-bold text-green-700 flex items-center">
+                    <span>+{improvement}%</span>
+                    <CheckCircle2 className="h-3 w-3 ml-1" />
+                  </span>
+                </div>
+              </div>
+              <AnimatedDial 
+                score={feedback.similarity} 
+                max={100} 
+                color="text-indigo-600" 
+                label="With optimization" 
+              />
+            </div>
+            
+            <div className="text-center py-2 px-4 bg-indigo-100/50 rounded-full border border-indigo-200/50 shadow-inner mt-2">
+              <p className="font-bold text-lg bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Optimize your resume to stand out!
+              </p>
+            </div>
+          </div>
 
-        <div className="text-center py-2">
-          <p className="font-bold text-lg">
-            Optimizing your resume improves your compatibility score!
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
-            {feedback.similarity - atsFeedback.similarity}% improvement with our suggestions
-          </p>
-        </div>
+          <div className="pt-4 relative">
+            <div className="absolute -left-3 -top-3 w-12 h-12 bg-yellow-200 rounded-full opacity-30 animate-pulse"></div>
+            <div className="absolute -right-3 -bottom-3 w-8 h-8 bg-purple-300 rounded-full opacity-30 animate-pulse"></div>
+            
+            <h3 className="font-semibold mb-4 flex items-center">
+              <FileCheck className="h-5 w-5 text-indigo-500 mr-2" />
+              <span className="bg-gradient-to-r from-indigo-700 to-purple-600 bg-clip-text text-transparent">
+                Suggested Improvements:
+              </span>
+            </h3>
+            
+            <Accordion type="single" collapsible className="w-full">
+              {feedback.suggested_edits.map((edit, index) => (
+                <AccordionItem 
+                  key={index} 
+                  value={`item-${index}`}
+                  className="border border-indigo-100 mb-2 rounded-lg overflow-hidden bg-white/70 backdrop-blur-sm"
+                >
+                  <AccordionTrigger className="text-sm font-medium px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all">
+                    <div className="flex items-center">
+                      <Sparkle className="h-4 w-4 text-indigo-500 mr-2 shrink-0" />
+                      {edit.section}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm px-4 py-3 bg-white/80">
+                    <div className="border-l-2 border-indigo-300 pl-3">
+                      {edit.suggestion}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
 
-        <div className="pt-4">
-          <h3 className="font-semibold mb-2">Suggested Improvements:</h3>
-          <Accordion type="single" collapsible className="w-full">
-            {feedback.suggested_edits.map((edit, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="text-sm font-medium">
-                  {edit.section}
-                </AccordionTrigger>
-                <AccordionContent className="text-sm">
-                  {edit.suggestion}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+          <Button 
+            onClick={handleContinue} 
+            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
+          >
+            Download Optimized Resume!
+          </Button>
 
-        <Button onClick={handleContinue} className="w-full">
-          Download Optimized Resume!
-        </Button>
-
-        <div className="text-center text-xs text-muted-foreground pt-2">
-          <p>Your optimized resume will be ready after the next step</p>
+          <div className="text-center text-xs text-muted-foreground pt-2">
+            <p>Your optimized resume will be ready after the next step</p>
+          </div>
         </div>
-      </div>
-    </PageContainer>
+      </PageContainer>
+    </div>
   );
 };
 

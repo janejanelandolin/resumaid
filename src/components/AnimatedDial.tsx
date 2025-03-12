@@ -25,7 +25,10 @@ const AnimatedDial: React.FC<AnimatedDialProps> = ({ score, max, color, label })
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-36 h-36 flex items-center justify-center">
-        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
+        {/* Glowing effect behind the dial */}
+        <div className={`absolute inset-0 rounded-full ${color === 'text-indigo-600' ? 'bg-indigo-200' : 'bg-orange-200'} opacity-20 blur-md`}></div>
+        
+        <svg className="w-full h-full transform -rotate-90 relative z-10" viewBox="0 0 160 160">
           {/* Background circle */}
           <circle
             cx="80"
@@ -40,20 +43,20 @@ const AnimatedDial: React.FC<AnimatedDialProps> = ({ score, max, color, label })
             cx="80"
             cy="80"
             r={radius}
-            stroke={color}
+            stroke="currentColor"
             strokeWidth="12"
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             strokeLinecap="round"
             fill="none"
-            className="animate-dial-animation"
+            className={`animate-dial-animation ${color}`}
           />
         </svg>
         <div className="absolute flex flex-col items-center">
-          <span className={`text-4xl font-bold text-${color}`}>{value}%</span>
+          <span className={`text-4xl font-bold ${color}`}>{value}%</span>
         </div>
       </div>
-      <span className={`mt-2 font-semibold text-${color}`}>{label}</span>
+      <span className={`mt-2 font-semibold ${color}`}>{label}</span>
     </div>
   );
 };
