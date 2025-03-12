@@ -216,6 +216,14 @@ export default {
 					'100%': {
 						transform: 'translateY(1000px) rotateX(720deg) rotateY(720deg)'
 					}
+				},
+				'spin-slow': {
+					'0%': {
+						transform: 'rotate(0deg)'
+					},
+					'100%': {
+						transform: 'rotate(360deg)'
+					}
 				}
 			},
 			animation: {
@@ -229,6 +237,7 @@ export default {
 				'rotate-testimonials': 'rotate-testimonials 24s infinite',
 				'dial-animation': 'dial-animation 1.5s ease forwards',
 				'confetti': 'confetti 5s ease-in-out forwards',
+				'spin-slow': 'spin-slow 10s linear infinite',
 			}
 		}
 	},
