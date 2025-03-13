@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { paymentService, PaymentConfig, PaymentMethod } from '../services/paymentService';
+import { paymentService, type PaymentConfig as PaymentConfigType, PaymentMethod } from '../services/paymentService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,7 +13,7 @@ interface PaymentConfigProps {
 
 const PaymentConfig: React.FC<PaymentConfigProps> = ({ onClose }) => {
   const { toast } = useToast();
-  const [config, setConfig] = useState<PaymentConfig>(paymentService.getConfig());
+  const [config, setConfig] = useState<PaymentConfigType>(paymentService.getConfig());
   
   const handleMethodToggle = (method: PaymentMethod) => {
     const newMethods = config.supportedMethods.includes(method)
