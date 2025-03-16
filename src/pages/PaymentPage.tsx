@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
@@ -80,10 +79,17 @@ const PaymentPage = () => {
       
       toast({
         title: "Payment Successful",
-        description: "Your optimized resume is ready!",
+        description: `Transaction ID: ${paymentResult.transactionId.substring(0, 8)}...`,
       });
       
-      navigate('/success');
+      navigate('/success', { 
+        state: { 
+          transactionId: paymentResult.transactionId,
+          amount: paymentResult.amount,
+          date: paymentResult.date,
+          email: paymentResult.email
+        } 
+      });
     } catch (error) {
       toast({
         title: "Payment Failed",
@@ -95,20 +101,13 @@ const PaymentPage = () => {
     }
   };
 
-  const config = paymentService.getConfig();
-  const availablePlans = paymentService.getPlans();
-
   const calculateTotal = () => {
-    const plan = availablePlans.find(p => p.id === selectedPlan);
-    if (!plan) return '$0.00';
-    
-    const basePrice = plan.price;
-    const fee = config.processingFee;
-    const tax = basePrice * config.taxRate;
-    const total = basePrice + fee + tax;
-    
+    const total = paymentService.calculateTotal(selectedPlan);
     return `$${total.toFixed(2)}`;
   };
+
+  const config = paymentService.getConfig();
+  const availablePlans = paymentService.getPlans();
 
   return (
     <PageContainer>
