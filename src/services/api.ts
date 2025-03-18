@@ -1,4 +1,3 @@
-
 import { JobPosting, UploadData, ATSFeedback, Feedback } from '../contexts/ResumeContext';
 
 const API_BASE_URL = "https://api-758224663478.us-west2.run.app/";
@@ -140,17 +139,16 @@ export const apiService = {
     try {
       console.log(`Resume content preview: ${uploadData.content.substring(0, 100)}...`);
       
-      // UPDATED: Always use POST with body to avoid URL length limitations and encoding issues
-      const response = await fetch(`${API_BASE_URL}atsfeedback`, {
-        method: 'POST',
+      // Use proper encoding for URL parameters
+      const encodedResume = encodeURIComponent(uploadData.content);
+      const encodedJobPosting = encodeURIComponent(JSON.stringify(jobPosting));
+      
+      // Using GET with properly encoded URL parameters
+      const response = await fetch(`${API_BASE_URL}atsfeedback?resume=${encodedResume}&job_posting=${encodedJobPosting}`, {
+        method: 'GET',
         headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          resume: uploadData.content,
-          job_posting: jobPosting
-        })
+          'accept': 'application/json'
+        }
       });
       
       const responseText = await response.text();
