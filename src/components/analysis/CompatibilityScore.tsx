@@ -49,7 +49,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
               </span>
             </div>
           )}
-          <span className="text-center text-xs mt-1 text-[0.8rem] w-full">Without optimization</span>
+          <span className="text-center text-xs mt-1 text-[0.8rem] w-full text-orange-500">Without optimization</span>
         </div>
         
         <div className="flex flex-col items-center justify-center">
@@ -76,7 +76,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
               </span>
             </div>
           )}
-          <span className="text-center text-xs mt-1 text-[0.8rem] w-full">With optimization</span>
+          <span className="text-center text-xs mt-1 text-[0.8rem] w-full text-indigo-600">With optimization</span>
         </div>
       </div>
       

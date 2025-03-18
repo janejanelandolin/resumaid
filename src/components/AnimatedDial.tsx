@@ -5,10 +5,10 @@ interface AnimatedDialProps {
   score: number;
   max: number;
   color: string;
-  label: string;
+  label: string; // We'll keep this in the interface for backward compatibility, but won't use it
 }
 
-const AnimatedDial: React.FC<AnimatedDialProps> = ({ score, max, color, label }) => {
+const AnimatedDial: React.FC<AnimatedDialProps> = ({ score, max, color }) => {
   const [value, setValue] = useState(0);
   const radius = 60;
   const circumference = 2 * Math.PI * radius;
@@ -56,7 +56,6 @@ const AnimatedDial: React.FC<AnimatedDialProps> = ({ score, max, color, label })
           <span className={`text-4xl font-bold ${color}`}>{value}%</span>
         </div>
       </div>
-      <span className={`mt-2 font-semibold ${color}`}>{label}</span>
     </div>
   );
 };
