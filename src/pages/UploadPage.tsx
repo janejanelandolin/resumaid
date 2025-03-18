@@ -58,6 +58,7 @@ const UploadPage = () => {
   const handleJobPostingInput = (text: string) => {
     if (text.trim() && jobPosting) {
       // Create a new jobPosting object with the updated description
+      // This handles the case where the user provides their own job posting text
       const updatedJobPosting = {
         ...jobPosting,
         description: text
@@ -85,7 +86,7 @@ const UploadPage = () => {
       });
       return;
     }
-
+    
     if (!jobPosting) {
       navigate('/');
       return;

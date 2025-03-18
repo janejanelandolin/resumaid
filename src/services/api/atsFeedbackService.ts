@@ -1,4 +1,3 @@
-
 import { JobPosting, UploadData, ATSFeedback } from '../../contexts/ResumeContext';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
@@ -25,15 +24,12 @@ export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadD
     const params = new URLSearchParams();
     params.append('resume', uploadData.content);
     
-    // Ensure job_posting is sent as a string - if it's already a string, use it; otherwise stringify it
-    const jobPostingString = typeof jobPosting === 'string' ? 
-      jobPosting : 
-      JSON.stringify(jobPosting);
+    // For job posting, we want to prioritize the description field from jobPosting object
+    // This handles both API-generated job postings and user-entered text
+    const jobPostingContent = jobPosting.description || '';
+    console.log('Job posting being sent:', jobPostingContent.substring(0, 100) + '...');
     
-    // Log the job posting being sent
-    console.log('Job posting being sent:', jobPostingString.substring(0, 100) + '...');
-    
-    params.append('job_posting', jobPostingString);
+    params.append('job_posting', jobPostingContent);
     
     // Send as POST with query parameters in the URL
     const response = await fetch(`${API_BASE_URL}atsfeedback?${params.toString()}`, {

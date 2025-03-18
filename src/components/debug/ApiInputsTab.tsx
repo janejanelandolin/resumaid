@@ -1,3 +1,4 @@
+
 import React from 'react';
 import DebugCard from './DebugCard';
 import { JobPosting, UploadData } from '../../contexts/ResumeContext';
@@ -26,11 +27,17 @@ const ApiInputsTab: React.FC<ApiInputsTabProps> = ({
         renderContent={() => {
           if (!jobPosting) return '';
           
-          // Display the job posting title as simple text if it's available
-          // Otherwise fall back to the full JSON
-          return jobPosting.title ? 
-            `Job Title: ${jobPosting.title}` : 
-            JSON.stringify(jobPosting, null, 2);
+          // If jobPosting.description is a string, display it directly
+          // This handles both API-generated job postings and user-entered text
+          return (
+            <div>
+              <p><strong>Job Title:</strong> {jobPosting.title}</p>
+              <div className="mt-2">
+                <p><strong>Description:</strong></p>
+                <p className="whitespace-pre-wrap text-sm mt-1">{jobPosting.description}</p>
+              </div>
+            </div>
+          );
         }}
       />
 

@@ -36,8 +36,14 @@ export const getJobPosting = async (jobTitle: string): Promise<JobPosting> => {
         try {
           result = JSON.parse(result);
         } catch (e) {
-          // If it's just a string, it's fine
+          // If it's just a string, it's fine - create a job posting object with it
           console.log("Response was a string, using as is");
+          result = {
+            title: jobTitle,
+            description: result,
+            requirements: [],
+            skills: []
+          };
         }
       }
     } catch (parseError) {
@@ -45,7 +51,9 @@ export const getJobPosting = async (jobTitle: string): Promise<JobPosting> => {
       // If parsing fails, use the raw text
       result = { 
         title: jobTitle,
-        description: responseText.substring(0, 200) // Truncate for safety
+        description: responseText,
+        requirements: [],
+        skills: []
       };
     }
     
