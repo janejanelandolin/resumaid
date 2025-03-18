@@ -1,6 +1,6 @@
 
 import AnimatedDial from '@/components/AnimatedDial';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Sparkle } from 'lucide-react';
 
 interface CompatibilityScoreProps {
   atsSimilarity: number;
@@ -49,7 +49,6 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
               </span>
             </div>
           )}
-          <span className="text-center text-xs mt-1">Without optimization</span>
         </div>
         
         <div className="flex flex-col items-center justify-center">
@@ -76,14 +75,17 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
               </span>
             </div>
           )}
-          <span className="text-center text-xs mt-1">With optimization</span>
         </div>
       </div>
       
-      <div className="text-center py-2 px-4 bg-indigo-100/50 rounded-full border border-indigo-200/50 shadow-inner mt-2">
-        <p className="font-bold text-lg bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-          Optimize your resume to stand out!
-        </p>
+      <div className="text-center py-3 px-5 mt-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-200/50 shadow-sm">
+        <div className="flex items-center justify-center gap-2">
+          <Sparkle className="h-5 w-5 text-indigo-400" />
+          <p className="font-bold text-md bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Optimize your resume to stand out!
+          </p>
+          <Sparkle className="h-5 w-5 text-purple-400" />
+        </div>
       </div>
     </div>
   );

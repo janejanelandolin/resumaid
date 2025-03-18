@@ -79,11 +79,11 @@ export const apiService = {
     console.log('Getting ATS feedback');
     
     try {
-      // Updated to match the curl format using query parameters instead of JSON body
-      const resumeParam = encodeURIComponent(uploadData.content);
-      const jobPostingParam = encodeURIComponent(JSON.stringify(jobPosting));
+      // Properly passing resume content and job posting as JSON string
+      const resumeContent = encodeURIComponent(uploadData.content);
+      const jobPostingJSON = encodeURIComponent(JSON.stringify(jobPosting));
       
-      const response = await fetch(`${API_BASE_URL}atsfeedback?resume=${resumeParam}&job_posting=${jobPostingParam}`, {
+      const response = await fetch(`${API_BASE_URL}atsfeedback?resume=${resumeContent}&job_posting=${jobPostingJSON}`, {
         method: 'POST',
         headers: {
           'accept': 'application/json'
@@ -150,11 +150,11 @@ export const apiService = {
     console.log('Getting optimization feedback');
     
     try {
-      // Updated to match the curl format using query parameters instead of JSON body
-      const resumeParam = encodeURIComponent(uploadData.content);
-      const jobPostingParam = encodeURIComponent(JSON.stringify(jobPosting));
+      // Properly passing resume content and job posting as JSON string
+      const resumeContent = encodeURIComponent(uploadData.content);
+      const jobPostingJSON = encodeURIComponent(JSON.stringify(jobPosting));
       
-      const response = await fetch(`${API_BASE_URL}feedback?resume=${resumeParam}&job_posting=${jobPostingParam}`, {
+      const response = await fetch(`${API_BASE_URL}feedback?resume=${resumeContent}&job_posting=${jobPostingJSON}`, {
         method: 'POST',
         headers: {
           'accept': 'application/json'
