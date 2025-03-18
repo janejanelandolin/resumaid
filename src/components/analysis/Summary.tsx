@@ -1,8 +1,11 @@
 
 import TypewriterText from '@/components/TypewriterText';
 import { Sparkle } from 'lucide-react';
+import { useResumeContext } from '../../contexts/ResumeContext';
 
 const Summary: React.FC = () => {
+  const { jobTitle } = useResumeContext();
+  
   return (
     <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden">
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-bl-full"></div>
@@ -16,7 +19,7 @@ const Summary: React.FC = () => {
         <Sparkle size={20} />
       </div>
       <TypewriterText
-        text="Your resume could be better aligned with the Senior Alliance Manager position. We've identified several opportunities to highlight your relevant experience and add keywords that will help you pass ATS screening."
+        text={`Your resume could be better aligned with the ${jobTitle} position. We've identified several opportunities to highlight your relevant experience and add keywords that will help you pass ATS screening.`}
         className="text-sm relative z-10"
       />
     </div>
