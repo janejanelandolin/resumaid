@@ -43,6 +43,13 @@ export interface Feedback {
   }[];
 }
 
+export interface ResumeTemplate {
+  id: string;
+  name: string;
+  thumbnail: string;
+  description: string;
+}
+
 interface ResumeContextProps {
   jobTitle: string;
   setJobTitle: (title: string) => void;
@@ -54,6 +61,9 @@ interface ResumeContextProps {
   setAtsFeedback: (feedback: ATSFeedback | null) => void;
   feedback: Feedback | null;
   setFeedback: (feedback: Feedback | null) => void;
+  selectedTemplates: ResumeTemplate[];
+  addTemplate: (template: ResumeTemplate) => void;
+  removeTemplate: (templateId: string) => void;
   resetData: () => void;
 }
 
@@ -73,6 +83,27 @@ export const ResumeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [uploadData, setUploadData] = useState<UploadData | null>(null);
   const [atsFeedback, setAtsFeedback] = useState<ATSFeedback | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [selectedTemplates, setSelectedTemplates] = useState<ResumeTemplate[]>([]);
+
+  const addTemplate = (template: ResumeTemplate) => {
+    setSelectedTemplates(current => {
+      // Check if we already have 5 templates
+      if (current.length >= 5) {
+        return current;
+      }
+      // Check if this template is already selected
+      if (current.some(t => t.id === template.id)) {
+        return current;
+      }
+      return [...current, template];
+    });
+  };
+
+  const removeTemplate = (templateId: string) => {
+    setSelectedTemplates(current => 
+      current.filter(template => template.id !== templateId)
+    );
+  };
 
   const resetData = () => {
     setJobTitle('');
@@ -80,6 +111,7 @@ export const ResumeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setUploadData(null);
     setAtsFeedback(null);
     setFeedback(null);
+    setSelectedTemplates([]);
   };
 
   return (
@@ -95,6 +127,9 @@ export const ResumeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         setAtsFeedback,
         feedback,
         setFeedback,
+        selectedTemplates,
+        addTemplate,
+        removeTemplate,
         resetData,
       }}
     >
