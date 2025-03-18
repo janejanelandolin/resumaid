@@ -9,7 +9,15 @@ export const apiService = {
     console.log(`Making API call to get job posting for: ${jobTitle}`);
     
     try {
-      const response = await fetch(`${API_BASE_URL}job-posting?title=${encodeURIComponent(jobTitle)}`);
+      // Updated to use POST method and correct endpoint with job_title parameter
+      const response = await fetch(`${API_BASE_URL}job_posting?job_title=${encodeURIComponent(jobTitle)}`, {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: '' // Empty body as per the curl example
+      });
       
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
