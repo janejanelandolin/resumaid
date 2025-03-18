@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DebugCard from './DebugCard';
 import { JobPosting, UploadData } from '../../contexts/ResumeContext';
@@ -27,8 +26,11 @@ const ApiInputsTab: React.FC<ApiInputsTabProps> = ({
         renderContent={() => {
           if (!jobPosting) return '';
           
-          // Simple display of job posting data
-          return JSON.stringify(jobPosting, null, 2);
+          // Display the job posting title as simple text if it's available
+          // Otherwise fall back to the full JSON
+          return jobPosting.title ? 
+            `Job Title: ${jobPosting.title}` : 
+            JSON.stringify(jobPosting, null, 2);
         }}
       />
 

@@ -24,7 +24,16 @@ export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadD
     // Build query parameters - using exactly 'resume' and 'job_posting' as parameter names
     const params = new URLSearchParams();
     params.append('resume', uploadData.content);
-    params.append('job_posting', JSON.stringify(jobPosting));
+    
+    // Ensure job_posting is sent as a string - if it's already a string, use it; otherwise stringify it
+    const jobPostingString = typeof jobPosting === 'string' ? 
+      jobPosting : 
+      JSON.stringify(jobPosting);
+    
+    // Log the job posting being sent
+    console.log('Job posting being sent:', jobPostingString.substring(0, 100) + '...');
+    
+    params.append('job_posting', jobPostingString);
     
     // Send as POST with query parameters in the URL
     const response = await fetch(`${API_BASE_URL}atsfeedback?${params.toString()}`, {
