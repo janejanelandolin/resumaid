@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
@@ -25,7 +24,8 @@ const UploadPage = () => {
     jobPosting, 
     setUploadData, 
     setAtsFeedback, 
-    setFeedback 
+    setFeedback,
+    setJobPosting
   } = useResumeContext();
   
   const [isUploading, setIsUploading] = useState(false);
@@ -53,6 +53,22 @@ const UploadPage = () => {
     setResumeText(text);
     setUploadedFile(null);
     setApiErrors([]);
+  };
+
+  const handleJobPostingInput = (text: string) => {
+    if (text.trim() && jobPosting) {
+      // Create a new jobPosting object with the updated description
+      const updatedJobPosting = {
+        ...jobPosting,
+        description: text
+      };
+      setJobPosting(updatedJobPosting);
+      
+      toast({
+        title: "Job Posting Updated",
+        description: "The job posting has been updated with your text input.",
+      });
+    }
   };
 
   const createTextFile = (text: string): File => {
@@ -229,6 +245,8 @@ const UploadPage = () => {
               <FileUploader 
                 onFileUpload={handleFileUpload} 
                 onTextInput={handleTextInput}
+                onJobPostingInput={handleJobPostingInput}
+                jobPosting={jobPosting?.description}
               />
             </div>
             
