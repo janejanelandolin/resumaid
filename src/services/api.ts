@@ -41,10 +41,14 @@ export const apiService = {
     
     try {
       const formData = new FormData();
-      formData.append('resume', file);
+      formData.append('file', file); // Change 'resume' to 'file' to match API expectation
       
       const response = await fetch(`${API_BASE_URL}upload`, {
         method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          // No need to set Content-Type as FormData sets it automatically with boundary
+        },
         body: formData
       });
       
