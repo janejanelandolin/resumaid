@@ -32,8 +32,8 @@ const AnalysisPage = () => {
     navigate('/payment');
   };
 
-  // Get the similarity score from either the new or old data structure
-  const atsSimilarity = atsFeedback.similarity || atsFeedback.JobPostingFulltext_ResumeFulltext_similarity || 0;
+  // Get the similarity score specifically from JobPostingFulltext_ResumeFulltext_similarity
+  const atsSimilarity = atsFeedback.JobPostingFulltext_ResumeFulltext_similarity || 0;
   
   // Calculate the improvement percentage
   const improvement = feedback.similarity - atsSimilarity;
@@ -61,10 +61,10 @@ const AnalysisPage = () => {
             <p className="text-sm text-muted-foreground">
               For: <span className="font-medium text-primary">{jobTitle}</span>
             </p>
-            {feedback.qualification && (
+            {atsFeedback.qualification && (
               <div className="mt-2 inline-flex items-center bg-green-100 px-3 py-1 rounded-full">
                 <span className="text-xs font-semibold text-green-800">
-                  Status: {feedback.qualification}
+                  Status: {atsFeedback.qualification}
                 </span>
               </div>
             )}
