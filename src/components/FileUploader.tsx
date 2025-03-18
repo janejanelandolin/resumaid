@@ -74,7 +74,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           <h3 className="text-md font-medium text-center mb-3 text-gray-700">Upload Resume File</h3>
           <div
             {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center h-full min-h-[209px] ${
+            className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center h-full min-h-[180px] ${
               isDragging ? 'border-primary bg-primary/10' : 'border-gray-300 hover:border-primary/50 hover:bg-gray-50'
             }`}
           >
