@@ -11,7 +11,7 @@ export const getJobPosting = async (jobTitle: string): Promise<JobPosting> => {
     params.append('job_title', jobTitle);
     
     const response = await fetch(`${API_BASE_URL}job_posting?${params.toString()}`, {
-      method: 'POST',
+      method: 'GET',  // Changed to GET since we're using query parameters
       headers: {
         'accept': 'application/json',
       }

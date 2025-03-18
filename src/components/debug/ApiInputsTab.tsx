@@ -24,6 +24,12 @@ const ApiInputsTab: React.FC<ApiInputsTabProps> = ({
         data={jobPosting}
         isAvailable={!!jobPosting}
         notAvailableText="No job posting data available. Submit a job title on the home page."
+        renderContent={() => {
+          if (!jobPosting) return '';
+          
+          // Ensure we're displaying the job posting title as a simple string
+          return JSON.stringify(jobPosting, null, 2);
+        }}
       />
 
       <DebugCard

@@ -29,21 +29,25 @@ const DebugPage = () => {
   const getATSApiInput = () => {
     if (!jobPosting || !uploadData?.content) return "Job posting or resume not available";
     
-    // Create a preview of what's sent to the API - proper JSON structure
-    return formatJSON({
+    // Create a preview of what's sent to the API with query parameters
+    const apiInput = {
       resume: uploadData.content.substring(0, 200) + '...',
-      job_posting: jobPosting
-    });
+      job_posting: jobPosting.title // Just send the title as a string
+    };
+    
+    return formatJSON(apiInput);
   };
 
   const getFeedbackApiInput = () => {
     if (!jobPosting || !uploadData?.content) return "Job posting or resume not available";
     
-    // Create a preview of what's sent to the API - proper JSON structure
-    return formatJSON({
+    // Create a preview of what's sent to the API with query parameters
+    const apiInput = {
       resume: uploadData.content.substring(0, 200) + '...',
-      job_posting: jobPosting
-    });
+      job_posting: jobPosting.title // Just send the title as a string
+    };
+    
+    return formatJSON(apiInput);
   };
 
   return (
