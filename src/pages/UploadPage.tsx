@@ -9,8 +9,9 @@ import { useToast } from '@/hooks/use-toast';
 import PageContainer from '@/components/PageContainer';
 import FileUploader from '@/components/FileUploader';
 import TypewriterText from '@/components/TypewriterText';
-import { FileUp, Sparkle, CheckCircle2, UploadCloud, AlertTriangle } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { FileUp, Sparkle, CheckCircle2, UploadCloud, AlertTriangle, AlertCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const UploadPage = () => {
   const navigate = useNavigate();
@@ -29,6 +30,8 @@ const UploadPage = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [resumeText, setResumeText] = useState<string>('');
   const [showContentWarning, setShowContentWarning] = useState(false);
+  const [apiErrors, setApiErrors] = useState<string[]>([]);
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
 
   useEffect(() => {
     if (!jobTitle || !jobPosting) {
@@ -39,11 +42,13 @@ const UploadPage = () => {
   const handleFileUpload = async (file: File) => {
     setUploadedFile(file);
     setResumeText('');
+    setApiErrors([]);
   };
 
   const handleTextInput = (text: string) => {
     setResumeText(text);
     setUploadedFile(null);
+    setApiErrors([]);
   };
 
   const createTextFile = (text: string): File => {
@@ -66,9 +71,11 @@ const UploadPage = () => {
       return;
     }
 
+    // Reset state
     setIsUploading(true);
     setProgress(0);
     setProgressText('Uploading resume...');
+    setApiErrors([]);
 
     try {
       // Step 1: Upload resume
@@ -85,10 +92,20 @@ const UploadPage = () => {
       
       const uploadResponse = await apiService.uploadResume(fileToUpload);
       console.log("Upload response:", uploadResponse);
-      setUploadData(uploadResponse);
+      
+      if (uploadResponse.error) {
+        setApiErrors(prev => [...prev, `Upload Error: ${uploadResponse.error}`]);
+        setShowErrorDialog(true);
+      }
+      
+      if (!uploadResponse.data) {
+        throw new Error("Failed to upload resume: No data returned");
+      }
+      
+      setUploadData(uploadResponse.data);
       
       // Check if content is properly set
-      if (!uploadResponse.content || uploadResponse.content.trim() === '') {
+      if (!uploadResponse.data.content || uploadResponse.data.content.trim() === '') {
         setIsUploading(false);
         setShowContentWarning(true);
         return;
@@ -97,18 +114,49 @@ const UploadPage = () => {
       // Step 2: Get ATS feedback
       setProgress(50);
       setProgressText('Analyzing with ATS systems...');
-      const atsFeedbackResponse = await apiService.getATSFeedback(jobPosting, uploadResponse);
-      setAtsFeedback(atsFeedbackResponse);
+      const atsFeedbackResponse = await apiService.getATSFeedback(jobPosting, uploadResponse.data);
+      
+      if (atsFeedbackResponse.error) {
+        setApiErrors(prev => [...prev, `ATS Feedback Error: ${atsFeedbackResponse.error}`]);
+        if (atsFeedbackResponse.data) {
+          setAtsFeedback(atsFeedbackResponse.data);
+        } else {
+          setShowErrorDialog(true);
+          throw new Error("Failed to get ATS feedback");
+        }
+      } else if (atsFeedbackResponse.data) {
+        setAtsFeedback(atsFeedbackResponse.data);
+      }
       
       // Step 3: Get optimization feedback
       setProgress(80);
       setProgressText('Generating optimization suggestions...');
-      const feedbackResponse = await apiService.getFeedback(jobPosting, uploadResponse);
-      setFeedback(feedbackResponse);
+      const feedbackResponse = await apiService.getFeedback(jobPosting, uploadResponse.data);
+      
+      if (feedbackResponse.error) {
+        setApiErrors(prev => [...prev, `Feedback Error: ${feedbackResponse.error}`]);
+        if (feedbackResponse.data) {
+          setFeedback(feedbackResponse.data);
+        } else {
+          setShowErrorDialog(true);
+          throw new Error("Failed to get optimization suggestions");
+        }
+      } else if (feedbackResponse.data) {
+        setFeedback(feedbackResponse.data);
+      }
       
       // Complete and navigate
       setProgress(100);
       setProgressText('Analysis complete!');
+      
+      // If we have errors but also data, toast the user
+      if (apiErrors.length > 0) {
+        toast({
+          title: "Warning",
+          description: "Some API errors occurred but we've generated results with available data",
+          variant: "destructive",
+        });
+      }
       
       setTimeout(() => {
         navigate('/analysis');
@@ -116,11 +164,18 @@ const UploadPage = () => {
       
     } catch (error) {
       console.error('Error processing resume:', error);
+      setProgress(0);
       toast({
         title: "Error",
         description: "Failed to process your resume",
         variant: "destructive",
       });
+      
+      if (error instanceof Error) {
+        setApiErrors(prev => [...prev, `Process Error: ${error.message}`]);
+      }
+      
+      setShowErrorDialog(true);
       setIsUploading(false);
     }
   };
@@ -147,6 +202,24 @@ const UploadPage = () => {
               <div className="absolute -bottom-6 -left-6 text-purple-300 animate-pulse">
                 <Sparkle size={16} />
               </div>
+              
+              {apiErrors.length > 0 && !showErrorDialog && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Warning</AlertTitle>
+                  <AlertDescription>
+                    Some errors occurred. Click "Details" for more information.
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="mt-2"
+                      onClick={() => setShowErrorDialog(true)}
+                    >
+                      Details
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
               
               <FileUploader 
                 onFileUpload={handleFileUpload} 
@@ -247,6 +320,59 @@ const UploadPage = () => {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* API Errors Dialog */}
+      <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-red-500" />
+              API Error Details
+            </DialogTitle>
+            <DialogDescription>
+              The following errors were encountered during processing:
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="my-4 space-y-4">
+            {apiErrors.map((error, index) => (
+              <Alert key={index} variant="destructive" className="text-xs">
+                <AlertCircle className="h-3 w-3" />
+                <AlertDescription className="break-words whitespace-pre-wrap">
+                  {error}
+                </AlertDescription>
+              </Alert>
+            ))}
+            
+            <div className="border-t pt-4">
+              <h4 className="font-medium text-sm mb-2">Suggestions to fix:</h4>
+              <ul className="list-disc list-inside text-xs space-y-2">
+                <li>Try uploading a smaller or simpler resume file</li>
+                <li>Convert your PDF resume to plain text and paste it directly</li>
+                <li>Try a different file format (TXT is recommended)</li>
+                <li>Ensure your internet connection is stable</li>
+              </ul>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowErrorDialog(false)}
+            >
+              Close
+            </Button>
+            <Button 
+              onClick={() => {
+                setShowErrorDialog(false);
+                setApiErrors([]);
+              }}
+            >
+              Try Again
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
