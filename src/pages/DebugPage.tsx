@@ -88,7 +88,7 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                     <pre className="text-xs font-mono whitespace-pre">
                       {jobPosting 
                         ? formatJSON(jobPosting) 
@@ -111,7 +111,7 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                     <pre className="text-xs font-mono whitespace-pre">
                       {uploadData?.content 
                         ? uploadData.content.substring(0, 5000) + (uploadData.content.length > 5000 ? '...' : '')
@@ -134,7 +134,7 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                     <pre className="text-xs font-mono whitespace-pre">
                       {uploadData?.content && jobPosting 
                         ? getATSApiInput()
@@ -157,7 +157,7 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                     <pre className="text-xs font-mono whitespace-pre">
                       {uploadData?.content && jobPosting 
                         ? getFeedbackApiInput()
@@ -182,7 +182,7 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                     <pre className="text-xs font-mono whitespace-pre">
                       {hasData(jobPosting) 
                         ? formatJSON(jobPosting) 
@@ -205,7 +205,7 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                     <pre className="text-xs font-mono whitespace-pre">
                       {hasData(uploadData) 
                         ? formatJSON({
@@ -232,7 +232,7 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                     <pre className="text-xs font-mono whitespace-pre">
                       {hasData(atsFeedback) 
                         ? formatJSON(atsFeedback) 
@@ -255,7 +255,7 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
                     <pre className="text-xs font-mono whitespace-pre">
                       {hasData(feedback) 
                         ? formatJSON(feedback) 
