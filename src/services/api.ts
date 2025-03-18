@@ -79,15 +79,16 @@ export const apiService = {
     console.log('Getting ATS feedback');
     
     try {
-      const response = await fetch(`${API_BASE_URL}ats-feedback`, {
+      // Updated to match the curl format using query parameters instead of JSON body
+      const resumeParam = encodeURIComponent(uploadData.content);
+      const jobPostingParam = encodeURIComponent(JSON.stringify(jobPosting));
+      
+      const response = await fetch(`${API_BASE_URL}atsfeedback?resume=${resumeParam}&job_posting=${jobPostingParam}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'accept': 'application/json'
         },
-        body: JSON.stringify({
-          jobPosting,
-          resumeData: uploadData
-        })
+        body: '' // Empty body as per the curl example
       });
       
       if (!response.ok) {
