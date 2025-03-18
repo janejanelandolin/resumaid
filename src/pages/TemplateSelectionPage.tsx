@@ -24,9 +24,9 @@ const TemplateSelectionPage = () => {
       <div className="w-full max-w-4xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Button variant="ghost" onClick={() => navigate('/success')} className="mr-2">
+            <Button variant="ghost" onClick={() => navigate('/edit-resume')} className="mr-2">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Success
+              Back to Edit Resume
             </Button>
             <div>
               <h1 className="text-2xl font-bold">Select Resume Templates</h1>

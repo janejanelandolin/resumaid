@@ -9,7 +9,7 @@ import { CheckCircle, ArrowRight } from 'lucide-react';
 const SuccessPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { jobTitle } = useResumeContext();
+  const { jobTitle, feedback } = useResumeContext();
   
   // Get transaction details from location state
   const transactionDetails = location.state || {};
@@ -81,9 +81,12 @@ const SuccessPage = () => {
         </div>
         
         <div className="space-y-4">
-          <Button onClick={() => navigate('/templates')} className="w-full">
+          <Button 
+            onClick={() => navigate('/edit-resume')} 
+            className="w-full"
+          >
             <ArrowRight className="mr-2 h-4 w-4" />
-            Select Resume Templates
+            Review and Edit Your Resume
           </Button>
           
           <Button variant="outline" onClick={() => navigate('/')} className="w-full">

@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import PageContainer from '@/components/PageContainer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Check, X, Save } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Check, X, Save } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { Textarea } from '@/components/ui/textarea';
 import EditSuggestion from '@/components/resume/EditSuggestion';
 
 const EditResumePage = () => {
@@ -19,6 +20,8 @@ const EditResumePage = () => {
   } = useResumeContext();
   
   const [currentEditIndex, setCurrentEditIndex] = useState(0);
+  const [editableText, setEditableText] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   
   // Parse resume content when page loads if not already parsed
   useEffect(() => {
@@ -32,6 +35,16 @@ const EditResumePage = () => {
 
   // Get suggested edits from feedback
   const suggestedEdits = feedback?.suggested_edits || [];
+  
+  // Set editable text when current edit changes
+  useEffect(() => {
+    if (suggestedEdits[currentEditIndex]?.resume_line_new) {
+      setEditableText(suggestedEdits[currentEditIndex].resume_line_new || '');
+    } else if (suggestedEdits[currentEditIndex]?.suggestion) {
+      setEditableText(suggestedEdits[currentEditIndex].suggestion || '');
+    }
+    setIsEditing(false);
+  }, [currentEditIndex, suggestedEdits]);
   
   // Check if there are any suggested edits
   if (suggestedEdits.length === 0) {
@@ -114,6 +127,20 @@ const EditResumePage = () => {
     }
   };
   
+  // Toggle editing mode
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+  
+  // Save edited text
+  const handleSaveEdit = () => {
+    // Update the suggested edit with the new text
+    if (suggestedEdits[currentEditIndex]) {
+      suggestedEdits[currentEditIndex].resume_line_new = editableText;
+    }
+    setIsEditing(false);
+  };
+  
   // Complete editing and proceed to templates
   const handleComplete = () => {
     toast({
@@ -133,9 +160,9 @@ const EditResumePage = () => {
         <div className="w-full max-w-3xl mx-auto space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
             <div className="flex items-center mb-4 sm:mb-0">
-              <Button variant="ghost" onClick={() => navigate('/templates')} className="mr-2">
+              <Button variant="ghost" onClick={() => navigate('/success')} className="mr-2">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Templates
+                Back to Success
               </Button>
               <h1 className="text-2xl font-bold">Edit Resume</h1>
             </div>
@@ -148,75 +175,124 @@ const EditResumePage = () => {
           </div>
           
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
+            <div className="p-4 border-b border-gray-100">
               <h2 className="text-lg font-semibold">
                 Suggested Edit: {suggestedEdits[currentEditIndex].section || `Edit ${currentEditIndex + 1}`}
               </h2>
             </div>
             
-            <div className="p-6">
-              <EditSuggestion 
-                edit={suggestedEdits[currentEditIndex]} 
-                decision={currentDecision}
-              />
+            <div className="p-4">
+              {!isEditing ? (
+                <div className="space-y-4">
+                  <EditSuggestion 
+                    edit={suggestedEdits[currentEditIndex]} 
+                    decision={currentDecision}
+                  />
+                  
+                  {/* Button to enable editing */}
+                  {!currentDecision && (
+                    <Button 
+                      onClick={handleEditClick}
+                      size="sm"
+                      variant="outline"
+                      className="mt-2"
+                    >
+                      Edit This Suggestion
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Edit Text:</label>
+                    <Textarea
+                      value={editableText}
+                      onChange={(e) => setEditableText(e.target.value)}
+                      className="min-h-[100px]"
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button 
+                      onClick={handleSaveEdit}
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      Save Changes
+                    </Button>
+                    <Button 
+                      onClick={() => setIsEditing(false)}
+                      size="sm"
+                      variant="outline"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
             
-            <div className="p-6 bg-gray-50 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+            <div className="p-4 bg-gray-50 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
               <div className="flex space-x-2">
                 <Button 
                   variant="outline" 
                   onClick={handlePrevious}
                   disabled={currentEditIndex === 0}
+                  size="sm"
+                  className="h-8 w-8 p-0"
                 >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Previous
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <Button 
                   variant="outline" 
                   onClick={handleNext}
                   disabled={currentEditIndex === suggestedEdits.length - 1}
+                  size="sm"
+                  className="h-8 w-8 p-0"
                 >
-                  Next
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
               
               <div className="flex space-x-2">
-                {currentDecision?.accepted === undefined && (
+                {currentDecision?.accepted === undefined && !isEditing && (
                   <>
                     <Button 
                       variant="outline" 
-                      className="border-red-300 text-red-600 hover:bg-red-50"
+                      className="border-red-300 text-red-600 hover:bg-red-50 text-xs h-8 px-2"
                       onClick={handleReject}
+                      size="sm"
                     >
-                      <X className="h-4 w-4 mr-2" />
+                      <X className="h-3 w-3 mr-1" />
                       Reject
                     </Button>
                     <Button 
-                      className="bg-green-600 hover:bg-green-700"
+                      className="bg-green-600 hover:bg-green-700 text-xs h-8 px-2"
                       onClick={handleAccept}
+                      size="sm"
                     >
-                      <Check className="h-4 w-4 mr-2" />
+                      <Check className="h-3 w-3 mr-1" />
                       Accept
                     </Button>
                   </>
                 )}
-                {currentDecision?.accepted === true && (
+                {currentDecision?.accepted === true && !isEditing && (
                   <Button 
                     variant="outline" 
-                    className="border-red-300 text-red-600 hover:bg-red-50"
+                    className="border-red-300 text-red-600 hover:bg-red-50 text-xs h-8 px-2"
                     onClick={handleReject}
+                    size="sm"
                   >
-                    <X className="h-4 w-4 mr-2" />
+                    <X className="h-3 w-3 mr-1" />
                     Undo Accept
                   </Button>
                 )}
-                {currentDecision?.accepted === false && (
+                {currentDecision?.accepted === false && !isEditing && (
                   <Button 
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-green-600 hover:bg-green-700 text-xs h-8 px-2"
                     onClick={handleAccept}
+                    size="sm"
                   >
-                    <Check className="h-4 w-4 mr-2" />
+                    <Check className="h-3 w-3 mr-1" />
                     Undo Reject
                   </Button>
                 )}
@@ -224,17 +300,18 @@ const EditResumePage = () => {
             </div>
           </div>
           
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-6">
             <Button 
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-sm"
               onClick={handleComplete}
+              size="sm"
             >
               <Save className="h-4 w-4 mr-2" />
-              Save and Continue
+              Save and Continue to Templates
             </Button>
           </div>
           
-          <div className="text-center text-sm text-gray-500">
+          <div className="text-center text-xs text-gray-500">
             All decisions will be saved automatically. You can always come back to make changes.
           </div>
         </div>
