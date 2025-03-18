@@ -5,6 +5,7 @@ import { useResumeContext } from '../contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
 import PageContainer from '@/components/PageContainer';
 import PageHeader from '@/components/analysis/PageHeader';
+import MissingKeywords from '@/components/analysis/MissingKeywords';
 import Summary from '@/components/analysis/Summary';
 import CompatibilityScore from '@/components/analysis/CompatibilityScore';
 import ImprovementSuggestions from '@/components/analysis/ImprovementSuggestions';
@@ -40,6 +41,7 @@ const AnalysisPage = () => {
       <PageContainer className="py-6 justify-start">
         <div className="w-full space-y-6 relative">
           <PageHeader jobTitle={jobTitle} />
+          <MissingKeywords atsFeedback={atsFeedback} />
           <Summary />
           <CompatibilityScore 
             atsSimilarity={atsSimilarity}
