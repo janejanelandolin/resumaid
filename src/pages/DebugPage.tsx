@@ -172,6 +172,56 @@ const DebugPage = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
+                    Job Posting API Response
+                    <Badge variant={hasData(jobPosting) ? "default" : "outline"}>
+                      {hasData(jobPosting) ? "Available" : "Not Available"}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Response from the job posting API endpoint
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+                    <pre className="text-xs font-mono">
+                      {hasData(jobPosting) 
+                        ? formatJSON(jobPosting) 
+                        : "No job posting API response available."}
+                    </pre>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    Resume Upload API Response
+                    <Badge variant={hasData(uploadData) ? "default" : "outline"}>
+                      {hasData(uploadData) ? "Available" : "Not Available"}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Response from the resume upload API endpoint
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+                    <pre className="text-xs font-mono">
+                      {hasData(uploadData) 
+                        ? formatJSON({
+                            id: uploadData.id,
+                            filename: uploadData.filename,
+                            content_excerpt: uploadData.content ? uploadData.content.substring(0, 200) + '...' : ''
+                          }) 
+                        : "No resume upload API response available."}
+                    </pre>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
                     ATS Feedback Response
                     <Badge variant={hasData(atsFeedback) ? "default" : "outline"}>
                       {hasData(atsFeedback) ? "Available" : "Not Available"}
