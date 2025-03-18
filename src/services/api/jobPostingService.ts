@@ -6,14 +6,14 @@ export const getJobPosting = async (jobTitle: string): Promise<JobPosting> => {
   console.log(`Making API call to get job posting for: ${jobTitle}`);
   
   try {
-    // Updated to use POST method and correct endpoint with job_title parameter
-    const response = await fetch(`${API_BASE_URL}job_posting?job_title=${encodeURIComponent(jobTitle)}`, {
+    // Use POST method with JSON body
+    const response = await fetch(`${API_BASE_URL}job_posting`, {
       method: 'POST',
       headers: {
         'accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: '' // Empty body as per the curl example
+      body: JSON.stringify({ job_title: jobTitle })
     });
     
     if (!response.ok) {

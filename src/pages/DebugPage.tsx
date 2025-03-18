@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useResumeContext } from '../contexts/ResumeContext';
 import PageContainer from '@/components/PageContainer';
@@ -30,7 +29,7 @@ const DebugPage = () => {
   const getATSApiInput = () => {
     if (!jobPosting || !uploadData?.content) return "Job posting or resume not available";
     
-    // Create a preview of what's sent to the API
+    // Create a preview of what's sent to the API - proper JSON structure
     return formatJSON({
       resume: uploadData.content.substring(0, 200) + '...',
       job_posting: jobPosting
@@ -40,7 +39,7 @@ const DebugPage = () => {
   const getFeedbackApiInput = () => {
     if (!jobPosting || !uploadData?.content) return "Job posting or resume not available";
     
-    // Create a preview of what's sent to the API
+    // Create a preview of what's sent to the API - proper JSON structure
     return formatJSON({
       resume: uploadData.content.substring(0, 200) + '...',
       job_posting: jobPosting

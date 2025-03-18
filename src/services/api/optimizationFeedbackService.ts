@@ -19,19 +19,20 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
       resumeLength: uploadData.content.length,
       resumePreview: uploadData.content.substring(0, 50) + '...',
       jobPostingTitle: jobPosting.title
-    }, 'Sending POST request with query parameters');
+    }, 'Sending POST request with JSON body');
     
-    // Build query parameters
-    const params = new URLSearchParams();
-    params.append('resume', uploadData.content);
-    params.append('job_posting', JSON.stringify(jobPosting));
-    
-    // Send as POST with query parameters in the URL
-    const response = await fetch(`${API_BASE_URL}feedback?${params.toString()}`, {
+    // Send as POST with JSON body
+    const response = await fetch(`${API_BASE_URL}feedback`, {
       method: 'POST',
       headers: {
         'accept': 'application/json',
-      }
+        'Content-Type': 'application/json'
+      },
+      // Send as JSON body instead of query params
+      body: JSON.stringify({
+        resume: uploadData.content,
+        job_posting: jobPosting
+      })
     });
     
     const responseText = await response.text();

@@ -46,7 +46,7 @@ const ApiInputsTab: React.FC<ApiInputsTabProps> = ({
       />
 
       <DebugCard
-        title="ATS Feedback API Input (POST with Query Parameters)"
+        title="ATS Feedback API Input (POST with JSON Body)"
         description="Data sent to the ATS feedback API endpoint"
         data={null}
         isAvailable={!!uploadData?.content && !!jobPosting}
@@ -55,7 +55,7 @@ const ApiInputsTab: React.FC<ApiInputsTabProps> = ({
       />
 
       <DebugCard
-        title="Optimization Feedback API Input (POST with Query Parameters)"
+        title="Optimization Feedback API Input (POST with JSON Body)"
         description="Data sent to the optimization feedback API endpoint"
         data={null}
         isAvailable={!!uploadData?.content && !!jobPosting}

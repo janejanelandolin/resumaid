@@ -21,17 +21,24 @@ export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadD
       jobPostingTitle: jobPosting.title
     }, 'Sending POST request with query parameters');
     
-    // Build query parameters
+    // Build query parameters - properly stringify the job posting
     const params = new URLSearchParams();
     params.append('resume', uploadData.content);
+    // Properly stringify the job posting as JSON
     params.append('job_posting', JSON.stringify(jobPosting));
     
     // Send as POST with query parameters in the URL
-    const response = await fetch(`${API_BASE_URL}atsfeedback?${params.toString()}`, {
+    const response = await fetch(`${API_BASE_URL}atsfeedback`, {
       method: 'POST',
       headers: {
         'accept': 'application/json',
-      }
+        'Content-Type': 'application/json'
+      },
+      // Send as JSON body instead of query params
+      body: JSON.stringify({
+        resume: uploadData.content,
+        job_posting: jobPosting
+      })
     });
     
     const responseText = await response.text();
