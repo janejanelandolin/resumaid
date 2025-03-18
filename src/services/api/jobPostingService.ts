@@ -6,14 +6,15 @@ export const getJobPosting = async (jobTitle: string): Promise<JobPosting> => {
   console.log(`Making API call to get job posting for: ${jobTitle}`);
   
   try {
-    // Use POST method with JSON body
-    const response = await fetch(`${API_BASE_URL}job_posting`, {
+    // Use GET method with query parameter
+    const params = new URLSearchParams();
+    params.append('job_title', jobTitle);
+    
+    const response = await fetch(`${API_BASE_URL}job_posting?${params.toString()}`, {
       method: 'POST',
       headers: {
         'accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ job_title: jobTitle })
+      }
     });
     
     if (!response.ok) {

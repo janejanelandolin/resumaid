@@ -5,34 +5,30 @@ import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData): Promise<ApiResponse<Feedback>> => {
   console.log('Getting optimization feedback');
   
-  // Check if content is available
   if (!uploadData.content || uploadData.content.trim() === '') {
     console.error("Resume content is empty or undefined when calling getFeedback");
     return { error: "Resume content is missing" };
   }
   
   try {
-    console.log(`Resume content length: ${uploadData.content.length} characters`);
-    
-    // Log the API input
+    // Log the API call request
     logApiCall('getFeedback (request)', { 
       resumeLength: uploadData.content.length,
       resumePreview: uploadData.content.substring(0, 50) + '...',
       jobPostingTitle: jobPosting.title
-    }, 'Sending POST request with JSON body');
+    }, 'Sending POST request with query parameters');
     
-    // Send as POST with JSON body
-    const response = await fetch(`${API_BASE_URL}feedback`, {
+    // Build query parameters
+    const params = new URLSearchParams();
+    params.append('resume', uploadData.content);
+    params.append('job_posting', JSON.stringify(jobPosting));
+    
+    // Send as POST with query parameters in the URL
+    const response = await fetch(`${API_BASE_URL}feedback?${params.toString()}`, {
       method: 'POST',
       headers: {
         'accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      // Send as JSON body instead of query params
-      body: JSON.stringify({
-        resume: uploadData.content,
-        job_posting: jobPosting
-      })
+      }
     });
     
     const responseText = await response.text();
@@ -52,6 +48,7 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
       logApiCall('getFeedback (response)', { 
         jobPostingTitle: jobPosting.title 
       }, data);
+      
       return { data };
     } catch (parseError) {
       const errorMessage = `Failed to parse server response: ${responseText.substring(0, 100)}...`;
@@ -63,28 +60,27 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
       };
     }
   } catch (error) {
-    console.error("Failed to get optimization feedback:", error);
+    console.error("Failed to get feedback:", error);
     
     // Fallback to mock data if API call fails
     const fallbackData = {
-      similarity: Math.floor(Math.random() * 30) + 65,
-      score_reason: `Your resume could be better aligned with the ${jobPosting.title} position. We've identified several opportunities to highlight your relevant experience and add keywords that will help you pass ATS screening.`,
+      similarity: 0.45,
+      score_reason: "Your resume shows some relevant experience but is missing key skills and experiences that the job requires.",
+      qualification: "Somewhat qualified",
       suggested_edits: [
         {
-          section: 'Summary',
-          suggestion: 'Add a concise professional summary that highlights your experience as a ' + jobPosting.title
+          section: "Skills",
+          suggestion: "Highlight partner management experience and communication skills",
+          edit_reason: "The job posting emphasizes partner relationships and communication",
+          resume_line_old: "Computing Linux (bash), Amazon Web Services",
+          resume_line_new: "Partner Management, Strategic Communications, Computing Linux (bash), Amazon Web Services"
         },
         {
-          section: 'Skills',
-          suggestion: 'Include these keywords: ' + (jobPosting.skills || ['relevant skills']).join(', ')
-        },
-        {
-          section: 'Experience',
-          suggestion: 'Quantify your achievements with metrics and results'
-        },
-        {
-          section: 'Education',
-          suggestion: 'List relevant certifications and courses'
+          section: "Experience",
+          suggestion: "Emphasize team leadership and stakeholder management",
+          edit_reason: "The job requires managing relationships with multiple stakeholders",
+          resume_line_old: "Directed team of 14 engineers and scientists with 3 direct reports/team leads.",
+          resume_line_new: "Directed cross-functional team of 14 engineers and scientists, managing key stakeholder relationships and strategic partnerships."
         }
       ]
     };
