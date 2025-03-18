@@ -24,9 +24,15 @@ export interface ATSFeedback {
 export interface Feedback {
   similarity: number;
   score_reason: string;
+  created_at?: string;
+  qualification?: string;
+  genai_prompt_version?: string;
   suggested_edits: {
-    section: string;
-    suggestion: string;
+    section?: string;
+    suggestion?: string;
+    edit_reason?: string;
+    resume_line_old?: string;
+    resume_line_new?: string;
   }[];
 }
 

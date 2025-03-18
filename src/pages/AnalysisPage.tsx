@@ -12,7 +12,7 @@ import {
 import PageContainer from '@/components/PageContainer';
 import TypewriterText from '@/components/TypewriterText';
 import AnimatedDial from '@/components/AnimatedDial';
-import { Sparkle, ArrowRight, CheckCircle2, FileCheck } from 'lucide-react';
+import { Sparkle, ArrowRight, CheckCircle2, FileCheck, RefreshCcw } from 'lucide-react';
 
 const AnalysisPage = () => {
   const navigate = useNavigate();
@@ -58,6 +58,13 @@ const AnalysisPage = () => {
             <p className="text-sm text-muted-foreground">
               For: <span className="font-medium text-primary">{jobTitle}</span>
             </p>
+            {feedback.qualification && (
+              <div className="mt-2 inline-flex items-center bg-green-100 px-3 py-1 rounded-full">
+                <span className="text-xs font-semibold text-green-800">
+                  Status: {feedback.qualification}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden">
@@ -129,13 +136,38 @@ const AnalysisPage = () => {
                   <AccordionTrigger className="text-sm font-medium px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all">
                     <div className="flex items-center">
                       <Sparkle className="h-4 w-4 text-indigo-500 mr-2 shrink-0" />
-                      {edit.section}
+                      {edit.section || edit.edit_reason || `Improvement #${index + 1}`}
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm px-4 py-3 bg-white/80">
-                    <div className="border-l-2 border-indigo-300 pl-3">
-                      {edit.suggestion}
-                    </div>
+                    {edit.resume_line_old && edit.resume_line_new ? (
+                      <div className="space-y-3">
+                        {edit.edit_reason && (
+                          <p className="text-indigo-700 font-medium">{edit.edit_reason}</p>
+                        )}
+                        <div className="space-y-2">
+                          <div className="bg-red-50 p-3 rounded border border-red-100 relative">
+                            <span className="absolute -top-2 left-2 bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-sm">
+                              Original
+                            </span>
+                            <p className="mt-1 text-gray-700">{edit.resume_line_old}</p>
+                          </div>
+                          <div className="flex justify-center">
+                            <RefreshCcw className="h-4 w-4 text-indigo-400" />
+                          </div>
+                          <div className="bg-green-50 p-3 rounded border border-green-100 relative">
+                            <span className="absolute -top-2 left-2 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-sm">
+                              Optimized
+                            </span>
+                            <p className="mt-1 text-gray-700">{edit.resume_line_new}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-l-2 border-indigo-300 pl-3">
+                        {edit.suggestion || "Optimize this section of your resume."}
+                      </div>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               ))}
