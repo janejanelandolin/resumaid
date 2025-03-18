@@ -32,8 +32,11 @@ const AnalysisPage = () => {
     navigate('/payment');
   };
 
+  // Get the similarity score from either the new or old data structure
+  const atsSimilarity = atsFeedback.similarity || atsFeedback.JobPostingFulltext_ResumeFulltext_similarity || 0;
+  
   // Calculate the improvement percentage
-  const improvement = feedback.similarity - atsFeedback.similarity;
+  const improvement = feedback.similarity - atsSimilarity;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pt-6">
@@ -86,7 +89,7 @@ const AnalysisPage = () => {
             
             <div className="flex justify-center items-center space-x-4 py-4">
               <AnimatedDial 
-                score={atsFeedback.similarity} 
+                score={atsSimilarity * 100} 
                 max={100} 
                 color="text-orange-500" 
                 label="Without optimization" 
@@ -95,13 +98,13 @@ const AnalysisPage = () => {
                 <ArrowRight className="h-8 w-8 text-indigo-400 animate-pulse" />
                 <div className="mt-2 py-1 px-3 bg-green-100 rounded-full">
                   <span className="text-xs font-bold text-green-700 flex items-center">
-                    <span>+{improvement}%</span>
+                    <span>+{(improvement * 100).toFixed(0)}%</span>
                     <CheckCircle2 className="h-3 w-3 ml-1" />
                   </span>
                 </div>
               </div>
               <AnimatedDial 
-                score={feedback.similarity} 
+                score={feedback.similarity * 100} 
                 max={100} 
                 color="text-indigo-600" 
                 label="With optimization" 

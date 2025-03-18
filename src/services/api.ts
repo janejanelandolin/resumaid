@@ -95,23 +95,52 @@ export const apiService = {
         throw new Error(`API error: ${response.status}`);
       }
       
-      return await response.json();
+      const data = await response.json();
+      
+      // Add backwards compatibility for existing code that expects similarity property
+      if (data.JobPostingFulltext_ResumeFulltext_similarity !== undefined && data.similarity === undefined) {
+        data.similarity = data.JobPostingFulltext_ResumeFulltext_similarity;
+      }
+      
+      // Add backwards compatibility for existing code that expects keywords_missing property
+      if (data.missing_keywords !== undefined && data.keywords_missing === undefined) {
+        data.keywords_missing = data.missing_keywords;
+      }
+      
+      return data;
     } catch (error) {
       console.error("Failed to get ATS feedback:", error);
       
       // Fallback to mock data if API call fails
       return {
-        similarity: Math.floor(Math.random() * 40) + 20,
+        qualification: "Unqualified",
+        JobPostingFulltext_ResumeFulltext_similarity: 0.39,
+        JobPostingKeyword_ResumeKeyword_similarity: 0.03,
+        JobPostingKeyword_ResumeFulltext_similarity: 0.02,
+        missing_keywords: [
+          "revenue growth",
+          "key alliances",
+          "ccm strategic",
+          "nicetohaves experience",
+          "cpq",
+          "partner communication",
+          "alignment",
+          "recruit",
+          "partner conflicts",
+          "this role",
+          "strong relationships"
+        ],
+        // For backward compatibility
+        similarity: 0.39,
         keywords_missing: [
-          'strategic planning',
-          'team management',
-          'budget oversight',
-          'stakeholder communication'
+          "revenue growth",
+          "key alliances",
+          "ccm strategic",
+          "partner communication"
         ],
         format_issues: [
           'Resume lacks proper section headers',
-          'Content is not well organized',
-          'Too much text in paragraphs rather than bullet points'
+          'Content is not well organized'
         ]
       };
     }

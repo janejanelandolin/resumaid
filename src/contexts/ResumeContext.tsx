@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Types for our API responses
@@ -16,9 +15,15 @@ export interface UploadData {
 }
 
 export interface ATSFeedback {
-  similarity: number;
-  keywords_missing: string[];
-  format_issues: string[];
+  qualification?: string;
+  JobPostingFulltext_ResumeFulltext_similarity?: number;
+  JobPostingKeyword_ResumeKeyword_similarity?: number;
+  JobPostingKeyword_ResumeFulltext_similarity?: number;
+  missing_keywords?: string[];
+  // Keep backward compatibility for existing code
+  similarity?: number;
+  keywords_missing?: string[];
+  format_issues?: string[];
 }
 
 export interface Feedback {
