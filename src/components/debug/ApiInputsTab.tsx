@@ -16,6 +16,27 @@ const ApiInputsTab: React.FC<ApiInputsTabProps> = ({
   getATSApiInput,
   getFeedbackApiInput
 }) => {
+  // Helper function to extract the simplified job posting string
+  const getJobPostingString = (jobPosting: JobPosting | null): string => {
+    if (!jobPosting) return '';
+    
+    if (jobPosting.description) {
+      return jobPosting.description;
+    }
+    
+    let jobPostingStr = jobPosting.title || '';
+    
+    if (jobPosting.requirements && jobPosting.requirements.length > 0) {
+      jobPostingStr += `\n\nRequirements:\n${jobPosting.requirements.join('\n')}`;
+    }
+    
+    if (jobPosting.skills && jobPosting.skills.length > 0) {
+      jobPostingStr += `\n\nSkills:\n${jobPosting.skills.join('\n')}`;
+    }
+    
+    return jobPostingStr;
+  };
+
   return (
     <div className="mt-4 space-y-4">
       <DebugCard
@@ -27,14 +48,14 @@ const ApiInputsTab: React.FC<ApiInputsTabProps> = ({
         renderContent={() => {
           if (!jobPosting) return '';
           
-          // If jobPosting.description is a string, display it directly
-          // This handles both API-generated job postings and user-entered text
+          const jobPostingStr = getJobPostingString(jobPosting);
+          
           return (
             <div>
               <p><strong>Job Title:</strong> {jobPosting.title}</p>
               <div className="mt-2">
-                <p><strong>Description:</strong></p>
-                <p className="whitespace-pre-wrap text-sm mt-1">{jobPosting.description}</p>
+                <p><strong>Description (actual content sent to API):</strong></p>
+                <p className="whitespace-pre-wrap text-sm mt-1">{jobPostingStr}</p>
               </div>
             </div>
           );

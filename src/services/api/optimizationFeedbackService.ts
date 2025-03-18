@@ -1,3 +1,4 @@
+
 import { JobPosting, UploadData, Feedback } from '../../contexts/ResumeContext';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
@@ -10,22 +11,43 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
   }
   
   try {
+    // Format job posting as a simple string
+    // For user-entered text or API-generated content, we'll create a simplified string format
+    let jobPostingContent = '';
+    
+    if (jobPosting) {
+      // If it's a full job posting object, concatenate title and description
+      if (jobPosting.description) {
+        jobPostingContent = jobPosting.description;
+      } else if (jobPosting.title) {
+        // Fallback if only title is available
+        jobPostingContent = `${jobPosting.title}`;
+        
+        // Add requirements if available
+        if (jobPosting.requirements && jobPosting.requirements.length > 0) {
+          jobPostingContent += `\n\nRequirements:\n${jobPosting.requirements.join('\n')}`;
+        }
+        
+        // Add skills if available
+        if (jobPosting.skills && jobPosting.skills.length > 0) {
+          jobPostingContent += `\n\nSkills:\n${jobPosting.skills.join('\n')}`;
+        }
+      }
+    }
+    
+    console.log('Job posting being sent:', jobPostingContent.substring(0, 100) + '...');
+    
     // Log the API call request
     logApiCall('getFeedback (request)', { 
       resumeLength: uploadData.content.length,
       resumePreview: uploadData.content.substring(0, 50) + '...',
-      jobPostingTitle: jobPosting.title
+      jobPostingTitle: jobPosting.title,
+      jobPostingContentPreview: jobPostingContent.substring(0, 50) + '...'
     }, 'Sending POST request with query parameters');
     
     // Build query parameters - using exactly 'resume' and 'job_posting' as parameter names
     const params = new URLSearchParams();
     params.append('resume', uploadData.content);
-    
-    // For job posting, we want to prioritize the description field from jobPosting object
-    // This handles both API-generated job postings and user-entered text
-    const jobPostingContent = jobPosting.description || '';
-    console.log('Job posting being sent:', jobPostingContent.substring(0, 100) + '...');
-    
     params.append('job_posting', jobPostingContent);
     
     // Send as POST with query parameters in the URL

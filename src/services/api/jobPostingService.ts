@@ -46,6 +46,45 @@ export const getJobPosting = async (jobTitle: string): Promise<JobPosting> => {
           };
         }
       }
+      
+      // Ensure the result has all required fields
+      if (!result.title) {
+        result.title = jobTitle;
+      }
+      
+      if (!result.description && typeof result === 'object') {
+        // Create a description string from the object
+        let descriptionParts = [];
+        
+        if (result.title) {
+          descriptionParts.push(`Title: ${result.title}`);
+        }
+        
+        if (result.requirements && Array.isArray(result.requirements)) {
+          descriptionParts.push(`Requirements: ${result.requirements.join(', ')}`);
+        }
+        
+        if (result.skills && Array.isArray(result.skills)) {
+          descriptionParts.push(`Skills: ${result.skills.join(', ')}`);
+        }
+        
+        // If we have parts, join them to create the description
+        if (descriptionParts.length > 0) {
+          result.description = descriptionParts.join('\n\n');
+        } else {
+          // Fallback description if no content is available
+          result.description = `Position for ${jobTitle}`;
+        }
+      }
+      
+      // Ensure requirements and skills are arrays
+      if (!result.requirements || !Array.isArray(result.requirements)) {
+        result.requirements = [];
+      }
+      
+      if (!result.skills || !Array.isArray(result.skills)) {
+        result.skills = [];
+      }
     } catch (parseError) {
       console.error("Error parsing response:", parseError);
       // If parsing fails, use the raw text
