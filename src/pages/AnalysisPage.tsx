@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import ImprovementSuggestions from '@/components/analysis/ImprovementSuggestions
 const AnalysisPage = () => {
   const navigate = useNavigate();
   const { jobTitle, atsFeedback, feedback } = useResumeContext();
+  const [showDebug, setShowDebug] = useState(false);
 
   useEffect(() => {
     if (!atsFeedback || !feedback) {
@@ -58,6 +59,27 @@ const AnalysisPage = () => {
 
           <div className="text-center text-xs text-muted-foreground pt-2">
             <p>Your optimized resume will be ready after the next step</p>
+          </div>
+          
+          {/* Debug section */}
+          <div className="mt-8">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowDebug(!showDebug)}
+              className="w-full"
+            >
+              {showDebug ? "Hide" : "Show"} API Response Details
+            </Button>
+            
+            {showDebug && (
+              <div className="mt-4 p-4 bg-slate-800 text-slate-100 rounded-md overflow-auto max-h-[400px]">
+                <h3 className="font-mono text-sm mb-2">ATS Feedback Response:</h3>
+                <pre className="text-xs whitespace-pre-wrap">
+                  {JSON.stringify(atsFeedback, null, 2)}
+                </pre>
+              </div>
+            )}
           </div>
         </div>
       </PageContainer>
