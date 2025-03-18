@@ -88,8 +88,8 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                    <pre className="text-xs font-mono">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                    <pre className="text-xs font-mono whitespace-pre">
                       {jobPosting 
                         ? formatJSON(jobPosting) 
                         : "No job posting data available. Submit a job title on the home page."}
@@ -111,8 +111,8 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                    <pre className="text-xs font-mono">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                    <pre className="text-xs font-mono whitespace-pre">
                       {uploadData?.content 
                         ? uploadData.content.substring(0, 5000) + (uploadData.content.length > 5000 ? '...' : '')
                         : "No resume content available. Upload a resume on the upload page."}
@@ -134,8 +134,8 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                    <pre className="text-xs font-mono">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                    <pre className="text-xs font-mono whitespace-pre">
                       {uploadData?.content && jobPosting 
                         ? getATSApiInput()
                         : "No data available. Both job posting and resume are required."}
@@ -157,8 +157,8 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                    <pre className="text-xs font-mono">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                    <pre className="text-xs font-mono whitespace-pre">
                       {uploadData?.content && jobPosting 
                         ? getFeedbackApiInput()
                         : "No data available. Both job posting and resume are required."}
@@ -182,8 +182,8 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                    <pre className="text-xs font-mono">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                    <pre className="text-xs font-mono whitespace-pre">
                       {hasData(jobPosting) 
                         ? formatJSON(jobPosting) 
                         : "No job posting API response available."}
@@ -205,8 +205,8 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                    <pre className="text-xs font-mono">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                    <pre className="text-xs font-mono whitespace-pre">
                       {hasData(uploadData) 
                         ? formatJSON({
                             id: uploadData.id,
@@ -232,8 +232,8 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                    <pre className="text-xs font-mono">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                    <pre className="text-xs font-mono whitespace-pre">
                       {hasData(atsFeedback) 
                         ? formatJSON(atsFeedback) 
                         : "No ATS feedback available. Process a resume to get feedback."}
@@ -255,8 +255,8 @@ const DebugPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                    <pre className="text-xs font-mono">
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4" orientation="both">
+                    <pre className="text-xs font-mono whitespace-pre">
                       {hasData(feedback) 
                         ? formatJSON(feedback) 
                         : "No optimization feedback available. Process a resume to get feedback."}
