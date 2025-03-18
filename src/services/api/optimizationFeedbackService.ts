@@ -19,15 +19,16 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
       resumeLength: uploadData.content.length,
       resumePreview: uploadData.content.substring(0, 50) + '...',
       jobPostingTitle: jobPosting.title
-    }, 'Sending request with query parameters');
+    }, 'Sending POST request with query parameters');
     
-    // Instead of FormData, send as query parameters or JSON based on the API expectation
+    // Build query parameters
     const params = new URLSearchParams();
     params.append('resume', uploadData.content);
     params.append('job_posting', JSON.stringify(jobPosting));
     
+    // Send as POST with query parameters in the URL
     const response = await fetch(`${API_BASE_URL}feedback?${params.toString()}`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'accept': 'application/json',
       }
