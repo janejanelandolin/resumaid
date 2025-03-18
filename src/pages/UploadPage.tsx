@@ -94,12 +94,12 @@ const UploadPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
       <PageContainer>
         <div className="w-full space-y-6">
           <div className="space-y-2 text-center relative">
-            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-blue-300 rounded-full filter blur-3xl opacity-20"></div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-indigo-300 rounded-full filter blur-3xl opacity-20"></div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Upload Your Resume
             </h1>
             <p className="text-muted-foreground text-sm">
@@ -112,7 +112,7 @@ const UploadPage = () => {
               <div className="absolute -top-6 -right-6 text-indigo-300 animate-spin-slow">
                 <Sparkle size={20} />
               </div>
-              <div className="absolute -bottom-6 -left-6 text-blue-300 animate-pulse">
+              <div className="absolute -bottom-6 -left-6 text-purple-300 animate-pulse">
                 <Sparkle size={16} />
               </div>
               
@@ -132,14 +132,14 @@ const UploadPage = () => {
                   value={progress} 
                   className="h-2 bg-indigo-100" 
                 />
-                <div className="h-1 w-full bg-gradient-to-r from-blue-300 to-indigo-300 rounded-full opacity-30 animate-pulse"></div>
+                <div className="h-1 w-full bg-gradient-to-r from-indigo-300 to-purple-300 rounded-full opacity-30 animate-pulse"></div>
               </div>
             )}
             
             <Button 
               onClick={handleSubmit} 
               disabled={!uploadedFile || isUploading}
-              className="w-full relative bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 group"
+              className="w-full relative bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 group"
             >
               <span className="flex items-center gap-2">
                 {isUploading ? (
@@ -158,10 +158,10 @@ const UploadPage = () => {
             </Button>
           </div>
 
-          <div className="text-center space-y-2 py-4 px-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100/50">
+          <div className="text-center space-y-2 py-4 px-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100/50">
             <div className="inline-flex items-center gap-1 mb-2">
               <Sparkle className="h-4 w-4 text-indigo-400" />
-              <p className="text-sm font-medium bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <p className="text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 Optimizing for: <span className="font-bold">{jobTitle}</span>
               </p>
               <Sparkle className="h-4 w-4 text-indigo-400" />

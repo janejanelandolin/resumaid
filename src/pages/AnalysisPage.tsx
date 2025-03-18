@@ -12,6 +12,7 @@ import {
 import PageContainer from '@/components/PageContainer';
 import TypewriterText from '@/components/TypewriterText';
 import AnimatedDial from '@/components/AnimatedDial';
+import { Badge } from '@/components/ui/badge';
 import { Sparkle, ArrowRight, CheckCircle2, FileCheck, RefreshCcw } from 'lucide-react';
 
 const AnalysisPage = () => {
@@ -38,9 +39,16 @@ const AnalysisPage = () => {
   // Calculate the improvement percentage
   const improvement = feedback.similarity - atsSimilarity;
 
+  // Helper function to determine qualification badge color
+  const getQualificationColor = (qualification: string) => {
+    if (qualification === 'Qualified') return 'bg-green-100 text-green-800';
+    if (qualification === 'Unqualified') return 'bg-red-100 text-red-800';
+    return 'bg-yellow-100 text-yellow-800';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pt-6">
-      <PageContainer className="py-6 justify-start">
+      <PageContainer className="py-6 justify-start max-w-[110%]">
         <div className="w-full space-y-6 relative">
           {/* Decorative elements */}
           <div className="absolute -top-4 -right-4 text-purple-300 animate-pulse">
@@ -81,12 +89,23 @@ const AnalysisPage = () => {
             </div>
             
             <div className="flex justify-center items-center space-x-4 py-4">
-              <AnimatedDial 
-                score={Math.round(atsSimilarity * 100)} 
-                max={100} 
-                color="text-orange-500" 
-                label="Without optimization" 
-              />
+              <div className="flex flex-col items-center">
+                <AnimatedDial 
+                  score={Math.round(atsSimilarity * 100)} 
+                  max={100} 
+                  color="text-orange-500" 
+                  label="Without optimization" 
+                />
+                {atsFeedback.qualification && (
+                  <div className={`mt-2 px-3 py-1 rounded-full ${getQualificationColor(atsFeedback.qualification)}`}>
+                    <span className="text-xs font-semibold">
+                      {atsFeedback.qualification}
+                    </span>
+                  </div>
+                )}
+                <span className="text-center text-xs mt-1">Without optimization</span>
+              </div>
+              
               <div className="flex flex-col items-center justify-center">
                 <ArrowRight className="h-8 w-8 text-indigo-400 animate-pulse" />
                 <div className="mt-2 py-1 px-3 bg-green-100 rounded-full">
@@ -96,12 +115,23 @@ const AnalysisPage = () => {
                   </span>
                 </div>
               </div>
-              <AnimatedDial 
-                score={Math.round(feedback.similarity * 100)} 
-                max={100} 
-                color="text-indigo-600" 
-                label="With optimization" 
-              />
+              
+              <div className="flex flex-col items-center">
+                <AnimatedDial 
+                  score={Math.round(feedback.similarity * 100)} 
+                  max={100} 
+                  color="text-indigo-600" 
+                  label="With optimization" 
+                />
+                {feedback.qualification && (
+                  <div className={`mt-2 px-3 py-1 rounded-full ${getQualificationColor(feedback.qualification)}`}>
+                    <span className="text-xs font-semibold">
+                      {feedback.qualification}
+                    </span>
+                  </div>
+                )}
+                <span className="text-center text-xs mt-1">With optimization</span>
+              </div>
             </div>
             
             <div className="text-center py-2 px-4 bg-indigo-100/50 rounded-full border border-indigo-200/50 shadow-inner mt-2">
@@ -137,14 +167,6 @@ const AnalysisPage = () => {
                   <div className="space-y-3">
                     {feedback.score_reason && (
                       <p className="text-indigo-700">{feedback.score_reason}</p>
-                    )}
-                    
-                    {atsFeedback.qualification && (
-                      <div className="mt-3 inline-flex items-center bg-green-100 px-3 py-1 rounded-full">
-                        <span className="text-xs font-semibold text-green-800">
-                          Status: {atsFeedback.qualification}
-                        </span>
-                      </div>
                     )}
                   </div>
                 </AccordionContent>
