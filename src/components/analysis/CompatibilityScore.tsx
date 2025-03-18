@@ -49,6 +49,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
               </span>
             </div>
           )}
+          <span className="text-center text-xs mt-1 text-[0.8rem] w-full">Without optimization</span>
         </div>
         
         <div className="flex flex-col items-center justify-center">
@@ -75,10 +76,11 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
               </span>
             </div>
           )}
+          <span className="text-center text-xs mt-1 text-[0.8rem] w-full">With optimization</span>
         </div>
       </div>
       
-      <div className="text-center py-3 px-5 mt-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-200/50 shadow-sm">
+      <div className="text-center py-3 px-5 mt-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl shadow-sm">
         <div className="flex items-center justify-center gap-2">
           <Sparkle className="h-5 w-5 text-indigo-400" />
           <p className="font-bold text-md bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">

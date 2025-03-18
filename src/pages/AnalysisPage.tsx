@@ -35,7 +35,7 @@ const AnalysisPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pt-6">
-      <PageContainer className="py-6 justify-start max-w-[110%]">
+      <PageContainer className="py-6 justify-start">
         <div className="w-full space-y-6 relative">
           <PageHeader jobTitle={jobTitle} />
           <Summary />
