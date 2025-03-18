@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { FileJson, Webhook } from 'lucide-react';
+import { API_BASE_URL } from '../services/api/utils';
 
 const DebugPage = () => {
   const { jobPosting, uploadData, atsFeedback, feedback } = useResumeContext();
@@ -25,6 +26,27 @@ const DebugPage = () => {
 
   // Helper to check if an object has data
   const hasData = (obj: any) => obj && Object.keys(obj).length > 0;
+
+  // Prepare API input previews for ATS and Feedback calls
+  const getATSApiInput = () => {
+    if (!jobPosting || !uploadData?.content) return "Job posting or resume not available";
+    
+    // Create a preview of what's sent to the API
+    return formatJSON({
+      resume: uploadData.content.substring(0, 200) + '...',
+      job_posting: jobPosting
+    });
+  };
+
+  const getFeedbackApiInput = () => {
+    if (!jobPosting || !uploadData?.content) return "Job posting or resume not available";
+    
+    // Create a preview of what's sent to the API
+    return formatJSON({
+      resume: uploadData.content.substring(0, 200) + '...',
+      job_posting: jobPosting
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
@@ -98,6 +120,52 @@ const DebugPage = () => {
                   </ScrollArea>
                 </CardContent>
               </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    ATS Feedback API Input
+                    <Badge variant={uploadData?.content && jobPosting ? "default" : "outline"}>
+                      {uploadData?.content && jobPosting ? "Available" : "Not Available"}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Data sent to the ATS feedback API endpoint
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+                    <pre className="text-xs font-mono">
+                      {uploadData?.content && jobPosting 
+                        ? getATSApiInput()
+                        : "No data available. Both job posting and resume are required."}
+                    </pre>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    Optimization Feedback API Input
+                    <Badge variant={uploadData?.content && jobPosting ? "default" : "outline"}>
+                      {uploadData?.content && jobPosting ? "Available" : "Not Available"}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Data sent to the optimization feedback API endpoint
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+                    <pre className="text-xs font-mono">
+                      {uploadData?.content && jobPosting 
+                        ? getFeedbackApiInput()
+                        : "No data available. Both job posting and resume are required."}
+                    </pre>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="outputs" className="mt-4 space-y-4">
@@ -153,7 +221,7 @@ const DebugPage = () => {
 
           <div className="bg-amber-50 border border-amber-200 p-4 rounded-md">
             <h3 className="font-semibold text-amber-800">API URLs</h3>
-            <p className="text-sm text-amber-700 mt-1">Base URL: {import.meta.env.VITE_API_BASE_URL || "https://api-758224663478.us-west2.run.app/"}</p>
+            <p className="text-sm text-amber-700 mt-1">Base URL: {API_BASE_URL}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
               <div className="text-xs text-amber-700">
                 <p>• POST /job_posting</p>
