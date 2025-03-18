@@ -1,7 +1,6 @@
-
 import { JobPosting, UploadData, ATSFeedback, Feedback } from '../contexts/ResumeContext';
 
-const API_BASE_URL = "https://app-286835625207.us-central1.run.app/";
+const API_BASE_URL = "https://api-758224663478.us-west2.run.app/";
 
 // API service
 export const apiService = {
