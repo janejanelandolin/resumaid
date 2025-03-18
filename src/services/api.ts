@@ -1,3 +1,4 @@
+
 import { JobPosting, UploadData, ATSFeedback, Feedback } from '../contexts/ResumeContext';
 
 const API_BASE_URL = "https://api-758224663478.us-west2.run.app/";
@@ -55,7 +56,33 @@ export const apiService = {
         throw new Error(`API error: ${response.status}`);
       }
       
-      return await response.json();
+      const result = await response.json();
+      
+      // Log the result for debugging
+      console.log("Upload result:", result);
+      
+      // Check if content is empty or undefined
+      if (!result.content || result.content.trim() === '') {
+        console.warn("Resume content is empty or undefined in API response");
+        
+        // Read the file locally to extract content
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const content = e.target?.result as string || '';
+            console.log("Extracted content locally, length:", content.length);
+            
+            resolve({
+              id: result.id || Math.random().toString(36).substr(2, 9),
+              filename: file.name,
+              content: content
+            });
+          };
+          reader.readAsText(file);
+        });
+      }
+      
+      return result;
     } catch (error) {
       console.error("Failed to upload resume:", error);
       
@@ -63,10 +90,13 @@ export const apiService = {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => {
+          const content = e.target?.result as string || '';
+          console.log("Using fallback content extraction, length:", content.length);
+          
           resolve({
             id: Math.random().toString(36).substr(2, 9),
             filename: file.name,
-            content: e.target?.result as string || 'Sample resume content'
+            content: content
           });
         };
         reader.readAsText(file);
@@ -77,12 +107,24 @@ export const apiService = {
   getATSFeedback: async (jobPosting: JobPosting, uploadData: UploadData): Promise<ATSFeedback> => {
     console.log('Getting ATS feedback');
     
+    // Check if content is available
+    if (!uploadData.content || uploadData.content.trim() === '') {
+      console.error("Resume content is empty or undefined when calling getATSFeedback");
+      throw new Error("Resume content is missing");
+    }
+    
     try {
+      // Log the first 100 chars of resume content for debugging
+      console.log(`Resume content preview: ${uploadData.content.substring(0, 100)}...`);
+      
       // Properly passing resume content and job posting as JSON string
       const resumeContent = encodeURIComponent(uploadData.content);
       const jobPostingJSON = encodeURIComponent(JSON.stringify(jobPosting));
       
-      const response = await fetch(`${API_BASE_URL}atsfeedback?resume=${resumeContent}&job_posting=${jobPostingJSON}`, {
+      const url = `${API_BASE_URL}atsfeedback?resume=${resumeContent}&job_posting=${jobPostingJSON}`;
+      console.log("ATS Feedback URL length:", url.length);
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'accept': 'application/json'
@@ -95,6 +137,7 @@ export const apiService = {
       }
       
       const data = await response.json();
+      console.log("ATS Feedback response:", data);
       
       // Add backwards compatibility for existing code that expects similarity property
       if (data.JobPostingFulltext_ResumeFulltext_similarity !== undefined && data.similarity === undefined) {
@@ -148,12 +191,24 @@ export const apiService = {
   getFeedback: async (jobPosting: JobPosting, uploadData: UploadData): Promise<Feedback> => {
     console.log('Getting optimization feedback');
     
+    // Check if content is available
+    if (!uploadData.content || uploadData.content.trim() === '') {
+      console.error("Resume content is empty or undefined when calling getFeedback");
+      throw new Error("Resume content is missing");
+    }
+    
     try {
+      // Log the first 100 chars of resume content for debugging
+      console.log(`Resume content preview for feedback: ${uploadData.content.substring(0, 100)}...`);
+      
       // Properly passing resume content and job posting as JSON string
       const resumeContent = encodeURIComponent(uploadData.content);
       const jobPostingJSON = encodeURIComponent(JSON.stringify(jobPosting));
       
-      const response = await fetch(`${API_BASE_URL}feedback?resume=${resumeContent}&job_posting=${jobPostingJSON}`, {
+      const url = `${API_BASE_URL}feedback?resume=${resumeContent}&job_posting=${jobPostingJSON}`;
+      console.log("Feedback URL length:", url.length);
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'accept': 'application/json'
@@ -165,7 +220,9 @@ export const apiService = {
         throw new Error(`API error: ${response.status}`);
       }
       
-      return await response.json();
+      const result = await response.json();
+      console.log("Feedback response:", result);
+      return result;
     } catch (error) {
       console.error("Failed to get optimization feedback:", error);
       

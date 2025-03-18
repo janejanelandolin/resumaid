@@ -9,7 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import PageContainer from '@/components/PageContainer';
 import FileUploader from '@/components/FileUploader';
 import TypewriterText from '@/components/TypewriterText';
-import { FileUp, Sparkle, CheckCircle2, UploadCloud } from 'lucide-react';
+import { FileUp, Sparkle, CheckCircle2, UploadCloud, AlertTriangle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const UploadPage = () => {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ const UploadPage = () => {
   const [progress, setProgress] = useState(0);
   const [progressText, setProgressText] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [resumeText, setResumeText] = useState<string>('');
+  const [showContentWarning, setShowContentWarning] = useState(false);
 
   useEffect(() => {
     if (!jobTitle || !jobPosting) {
@@ -35,13 +38,24 @@ const UploadPage = () => {
 
   const handleFileUpload = async (file: File) => {
     setUploadedFile(file);
+    setResumeText('');
+  };
+
+  const handleTextInput = (text: string) => {
+    setResumeText(text);
+    setUploadedFile(null);
+  };
+
+  const createTextFile = (text: string): File => {
+    const blob = new Blob([text], { type: 'text/plain' });
+    return new File([blob], 'resume.txt', { type: 'text/plain' });
   };
 
   const handleSubmit = async () => {
-    if (!uploadedFile) {
+    if (!uploadedFile && !resumeText) {
       toast({
         title: "Error",
-        description: "Please upload your resume first",
+        description: "Please upload your resume or paste your resume text",
         variant: "destructive",
       });
       return;
@@ -59,8 +73,25 @@ const UploadPage = () => {
     try {
       // Step 1: Upload resume
       setProgress(20);
-      const uploadResponse = await apiService.uploadResume(uploadedFile);
+      let fileToUpload = uploadedFile;
+      
+      if (!fileToUpload && resumeText) {
+        fileToUpload = createTextFile(resumeText);
+      }
+      
+      if (!fileToUpload) {
+        throw new Error("No file or text to upload");
+      }
+      
+      const uploadResponse = await apiService.uploadResume(fileToUpload);
       setUploadData(uploadResponse);
+      
+      // Check if content is properly set
+      if (!uploadResponse.content || uploadResponse.content.trim() === '') {
+        setIsUploading(false);
+        setShowContentWarning(true);
+        return;
+      }
       
       // Step 2: Get ATS feedback
       setProgress(50);
@@ -102,9 +133,9 @@ const UploadPage = () => {
             <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Upload Your Resume
             </h1>
-            <p className="text-muted-foreground text-sm">
+            <div className="text-muted-foreground text-sm">
               <TypewriterText text="Upload your resume to get started..." />
-            </p>
+            </div>
           </div>
 
           <div className="space-y-6 py-4">
@@ -116,7 +147,10 @@ const UploadPage = () => {
                 <Sparkle size={16} />
               </div>
               
-              <FileUploader onFileUpload={handleFileUpload} />
+              <FileUploader 
+                onFileUpload={handleFileUpload} 
+                onTextInput={handleTextInput}
+              />
             </div>
             
             {isUploading && (
@@ -138,7 +172,7 @@ const UploadPage = () => {
             
             <Button 
               onClick={handleSubmit} 
-              disabled={!uploadedFile || isUploading}
+              disabled={(!uploadedFile && !resumeText) || isUploading}
               className="w-full relative bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 group"
             >
               <span className="flex items-center gap-2">
@@ -172,6 +206,44 @@ const UploadPage = () => {
           </div>
         </div>
       </PageContainer>
+
+      {/* Content warning dialog */}
+      <Dialog open={showContentWarning} onOpenChange={setShowContentWarning}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Resume Content Issue
+            </DialogTitle>
+            <DialogDescription>
+              We couldn't extract the content from your resume properly. This may affect the analysis.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm">Please try one of these options:</p>
+            <ul className="list-disc list-inside text-sm space-y-2">
+              <li>Convert your resume to plain text (.txt) format and upload again</li>
+              <li>Copy the text from your resume and paste it directly</li>
+            </ul>
+            <div className="flex justify-end space-x-2 pt-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowContentWarning(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  setShowContentWarning(false);
+                  document.querySelector('button[variant="link"]')?.click();
+                }}
+              >
+                Paste Text Instead
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
