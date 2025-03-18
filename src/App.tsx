@@ -14,6 +14,7 @@ import PaymentPage from "./pages/PaymentPage";
 import SuccessPage from "./pages/SuccessPage";
 import EditResumePage from "./pages/EditResumePage";
 import TemplateSelectionPage from "./pages/TemplateSelectionPage";
+import ResumePreviewPage from "./pages/ResumePreviewPage";
 import DownloadOptimizedResumePage from "./pages/DownloadOptimizedResumePage";
 import DebugPage from "./pages/DebugPage";
 import NotFound from "./pages/NotFound";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/success" element={<SuccessPage />} />
             <Route path="/edit-resume" element={<EditResumePage />} />
             <Route path="/templates" element={<TemplateSelectionPage />} />
+            <Route path="/preview" element={<ResumePreviewPage />} />
             <Route path="/download" element={<DownloadOptimizedResumePage />} />
             <Route path="/debug" element={<DebugPage />} />
             <Route path="*" element={<NotFound />} />

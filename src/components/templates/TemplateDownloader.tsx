@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { useNavigate } from 'react-router-dom';
-import { FileDown, Loader2 } from 'lucide-react';
+import { FileDown, Loader2, Eye } from 'lucide-react';
 
 const TemplateDownloader: React.FC = () => {
   const [isDownloading, setIsDownloading] = useState(false);
@@ -31,8 +31,8 @@ const TemplateDownloader: React.FC = () => {
       return;
     }
 
-    // Navigate to the download page
-    navigate('/download');
+    // Navigate to the preview page first
+    navigate('/preview');
   };
 
   return (
@@ -48,8 +48,8 @@ const TemplateDownloader: React.FC = () => {
         </>
       ) : (
         <>
-          <FileDown className="mr-2 h-4 w-4" />
-          Continue with {selectedTemplates.length > 0 ? `${selectedTemplates.length} ` : ''}
+          <Eye className="mr-2 h-4 w-4" />
+          Preview {selectedTemplates.length > 0 ? `${selectedTemplates.length} ` : ''}
           {selectedTemplates.length === 1 ? 'Template' : 'Templates'}
         </>
       )}

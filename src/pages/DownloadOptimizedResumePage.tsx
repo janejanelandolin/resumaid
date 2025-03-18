@@ -5,7 +5,7 @@ import PageContainer from '@/components/PageContainer';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileDown, ArrowLeft, FileText, FileJson, FileImage } from 'lucide-react';
+import { FileDown, ArrowLeft, FileText, FileJson, FileImage, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const DownloadOptimizedResumePage = () => {
@@ -72,9 +72,9 @@ const DownloadOptimizedResumePage = () => {
     <PageContainer>
       <div className="w-full max-w-4xl mx-auto space-y-8">
         <div className="flex items-center mb-8">
-          <Button variant="ghost" onClick={() => navigate('/templates')} className="mr-2">
+          <Button variant="ghost" onClick={() => navigate('/preview')} className="mr-2">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Templates
+            Back to Preview
           </Button>
           <div>
             <h1 className="text-2xl font-bold">Download Your Optimized Resume</h1>
