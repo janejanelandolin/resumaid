@@ -3,15 +3,19 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
 import { apiService } from '../services/api';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import PageContainer from '@/components/PageContainer';
 import FileUploader from '@/components/FileUploader';
 import TypewriterText from '@/components/TypewriterText';
-import { FileUp, Sparkle, CheckCircle2, UploadCloud, AlertTriangle, AlertCircle } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Sparkle } from 'lucide-react';
+
+// Import our new components
+import UploadProgress from '@/components/upload/UploadProgress';
+import ErrorDialog from '@/components/upload/ErrorDialog';
+import ContentWarningDialog from '@/components/upload/ContentWarningDialog';
+import UploadSummary from '@/components/upload/UploadSummary';
+import SubmitButton from '@/components/upload/SubmitButton';
+import ErrorAlert from '@/components/upload/ErrorAlert';
 
 const UploadPage = () => {
   const navigate = useNavigate();
@@ -180,6 +184,20 @@ const UploadPage = () => {
     }
   };
 
+  const handleTryAgain = () => {
+    setShowErrorDialog(false);
+    setApiErrors([]);
+  };
+
+  const handlePasteTextInstead = () => {
+    setShowContentWarning(false);
+    // Find the paste option button by checking for a button with variant="link"
+    const pasteOption = document.querySelector('button[variant="link"]');
+    if (pasteOption instanceof HTMLButtonElement) {
+      pasteOption.click();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
       <PageContainer>
@@ -203,23 +221,10 @@ const UploadPage = () => {
                 <Sparkle size={16} />
               </div>
               
-              {apiErrors.length > 0 && !showErrorDialog && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Warning</AlertTitle>
-                  <AlertDescription>
-                    Some errors occurred. Click "Details" for more information.
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="mt-2"
-                      onClick={() => setShowErrorDialog(true)}
-                    >
-                      Details
-                    </Button>
-                  </AlertDescription>
-                </Alert>
-              )}
+              <ErrorAlert 
+                errors={apiErrors} 
+                onShowDetails={() => setShowErrorDialog(true)}
+              />
               
               <FileUploader 
                 onFileUpload={handleFileUpload} 
@@ -227,154 +232,35 @@ const UploadPage = () => {
               />
             </div>
             
-            {isUploading && (
-              <div className="space-y-2 animate-fade-in">
-                <div className="flex justify-between text-sm">
-                  <span className="flex items-center">
-                    {progressText}
-                    {progress === 100 && <CheckCircle2 className="ml-2 h-4 w-4 text-green-500" />}
-                  </span>
-                  <span className="font-medium text-indigo-600">{progress}%</span>
-                </div>
-                <Progress 
-                  value={progress} 
-                  className="h-2 bg-indigo-100" 
-                />
-                <div className="h-1 w-full bg-gradient-to-r from-indigo-300 to-purple-300 rounded-full opacity-30 animate-pulse"></div>
-              </div>
-            )}
+            <UploadProgress
+              isUploading={isUploading}
+              progress={progress}
+              progressText={progressText}
+            />
             
-            <Button 
-              onClick={handleSubmit} 
+            <SubmitButton
+              onClick={handleSubmit}
               disabled={(!uploadedFile && !resumeText) || isUploading}
-              className="w-full relative bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 group"
-            >
-              <span className="flex items-center gap-2">
-                {isUploading ? (
-                  <>
-                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    Check compatibility score
-                    <UploadCloud className="h-4 w-4 transition-transform group-hover:scale-110" />
-                  </>
-                )}
-              </span>
-              <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-4/5 h-[2px] bg-white/30 rounded-full blur-sm"></div>
-            </Button>
+              isUploading={isUploading}
+            />
           </div>
 
-          <div className="text-center space-y-2 py-4 px-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100/50">
-            <div className="inline-flex items-center gap-1 mb-2">
-              <Sparkle className="h-4 w-4 text-indigo-400" />
-              <p className="text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Optimizing for: <span className="font-bold">{jobTitle}</span>
-              </p>
-              <Sparkle className="h-4 w-4 text-indigo-400" />
-            </div>
-            <p className="text-xs text-indigo-500/80">
-              We'll analyze your resume against ATS systems and job requirements.
-            </p>
-          </div>
+          <UploadSummary jobTitle={jobTitle} />
         </div>
       </PageContainer>
 
-      {/* Content warning dialog */}
-      <Dialog open={showContentWarning} onOpenChange={setShowContentWarning}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
-              Resume Content Issue
-            </DialogTitle>
-            <DialogDescription>
-              We couldn't extract the content from your resume properly. This may affect the analysis.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-sm">Please try one of these options:</p>
-            <ul className="list-disc list-inside text-sm space-y-2">
-              <li>Convert your resume to plain text (.txt) format and upload again</li>
-              <li>Copy the text from your resume and paste it directly</li>
-            </ul>
-            <div className="flex justify-end space-x-2 pt-2">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowContentWarning(false)}
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  setShowContentWarning(false);
-                  // Safely find the button by its text content rather than trying to access click
-                  const pasteOption = document.querySelector('button[variant="link"]');
-                  if (pasteOption instanceof HTMLButtonElement) {
-                    pasteOption.click();
-                  }
-                }}
-              >
-                Paste Text Instead
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ContentWarningDialog
+        open={showContentWarning}
+        onOpenChange={setShowContentWarning}
+        onPasteTextInstead={handlePasteTextInstead}
+      />
 
-      {/* API Errors Dialog */}
-      <Dialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
-        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-red-500" />
-              API Error Details
-            </DialogTitle>
-            <DialogDescription>
-              The following errors were encountered during processing:
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="my-4 space-y-4">
-            {apiErrors.map((error, index) => (
-              <Alert key={index} variant="destructive" className="text-xs">
-                <AlertCircle className="h-3 w-3" />
-                <AlertDescription className="break-words whitespace-pre-wrap">
-                  {error}
-                </AlertDescription>
-              </Alert>
-            ))}
-            
-            <div className="border-t pt-4">
-              <h4 className="font-medium text-sm mb-2">Suggestions to fix:</h4>
-              <ul className="list-disc list-inside text-xs space-y-2">
-                <li>Try uploading a smaller or simpler resume file</li>
-                <li>Convert your PDF resume to plain text and paste it directly</li>
-                <li>Try a different file format (TXT is recommended)</li>
-                <li>Ensure your internet connection is stable</li>
-              </ul>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowErrorDialog(false)}
-            >
-              Close
-            </Button>
-            <Button 
-              onClick={() => {
-                setShowErrorDialog(false);
-                setApiErrors([]);
-              }}
-            >
-              Try Again
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ErrorDialog
+        open={showErrorDialog}
+        onOpenChange={setShowErrorDialog}
+        errors={apiErrors}
+        onTryAgain={handleTryAgain}
+      />
     </div>
   );
 };
