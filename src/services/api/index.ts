@@ -1,7 +1,8 @@
 
 import { getJobPosting } from './jobPostingService';
 import { uploadResume } from './resumeUploadService';
-import { getATSFeedback, getFeedback } from './feedbackService';
+import { getATSFeedback } from './atsFeedbackService';
+import { getFeedback } from './optimizationFeedbackService';
 
 export const apiService = {
   getJobPosting,
