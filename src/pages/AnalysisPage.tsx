@@ -40,7 +40,7 @@ const AnalysisPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pt-6">
       <PageContainer className="py-6 justify-start">
         <div className="w-full space-y-6 relative">
-          <PageHeader jobTitle={jobTitle} />
+          <PageHeader />
           <MissingKeywords atsFeedback={atsFeedback} />
           <Summary />
           <CompatibilityScore 
