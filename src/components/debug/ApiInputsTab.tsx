@@ -27,7 +27,7 @@ const ApiInputsTab: React.FC<ApiInputsTabProps> = ({
         renderContent={() => {
           if (!jobPosting) return '';
           
-          // Ensure we're displaying the job posting title as a simple string
+          // Simple display of job posting data
           return JSON.stringify(jobPosting, null, 2);
         }}
       />

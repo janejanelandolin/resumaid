@@ -6,12 +6,12 @@ export const getJobPosting = async (jobTitle: string): Promise<JobPosting> => {
   console.log(`Making API call to get job posting for: ${jobTitle}`);
   
   try {
-    // Use GET method with query parameter
+    // Use POST method with query parameter
     const params = new URLSearchParams();
     params.append('job_title', jobTitle);
     
     const response = await fetch(`${API_BASE_URL}job_posting?${params.toString()}`, {
-      method: 'GET',  // Changed to GET since we're using query parameters
+      method: 'POST',  // Changed back to POST while keeping query parameters
       headers: {
         'accept': 'application/json',
       }

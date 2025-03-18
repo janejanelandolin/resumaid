@@ -30,9 +30,13 @@ const DebugPage = () => {
     if (!jobPosting || !uploadData?.content) return "Job posting or resume not available";
     
     // Create a preview of what's sent to the API with query parameters
+    // Important: Using exactly 'resume' and 'job_posting' as parameter names
     const apiInput = {
-      resume: uploadData.content.substring(0, 200) + '...',
-      job_posting: jobPosting.title // Just send the title as a string
+      parameters: {
+        resume: uploadData.content.substring(0, 200) + '...',
+        job_posting: jobPosting // Send the full job posting object
+      },
+      method: 'POST'
     };
     
     return formatJSON(apiInput);
@@ -42,9 +46,13 @@ const DebugPage = () => {
     if (!jobPosting || !uploadData?.content) return "Job posting or resume not available";
     
     // Create a preview of what's sent to the API with query parameters
+    // Important: Using exactly 'resume' and 'job_posting' as parameter names
     const apiInput = {
-      resume: uploadData.content.substring(0, 200) + '...',
-      job_posting: jobPosting.title // Just send the title as a string
+      parameters: {
+        resume: uploadData.content.substring(0, 200) + '...',
+        job_posting: jobPosting // Send the full job posting object
+      },
+      method: 'POST'
     };
     
     return formatJSON(apiInput);

@@ -18,7 +18,7 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
       jobPostingTitle: jobPosting.title
     }, 'Sending POST request with query parameters');
     
-    // Build query parameters
+    // Build query parameters - using exactly 'resume' and 'job_posting' as parameter names
     const params = new URLSearchParams();
     params.append('resume', uploadData.content);
     params.append('job_posting', JSON.stringify(jobPosting));
