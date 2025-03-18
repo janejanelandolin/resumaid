@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DebugCard from './DebugCard';
 import { JobPosting, UploadData } from '../../contexts/ResumeContext';
@@ -16,10 +15,16 @@ const ApiInputsTab: React.FC<ApiInputsTabProps> = ({
   getATSApiInput,
   getFeedbackApiInput
 }) => {
-  // Helper function to extract the simplified job posting string
+  // Helper function to extract the simplified job posting string for API calls
   const getJobPostingString = (jobPosting: JobPosting | null): string => {
     if (!jobPosting) return '';
     
+    // If user directly provided the job description, use that
+    if (jobPosting.userProvided && jobPosting.description) {
+      return jobPosting.description;
+    }
+    
+    // Otherwise, format the job posting object into a string
     if (jobPosting.description) {
       return jobPosting.description;
     }
@@ -48,14 +53,21 @@ const ApiInputsTab: React.FC<ApiInputsTabProps> = ({
         renderContent={() => {
           if (!jobPosting) return '';
           
-          const jobPostingStr = getJobPostingString(jobPosting);
-          
           return (
             <div>
               <p><strong>Job Title:</strong> {jobPosting.title}</p>
+              {jobPosting.userProvided ? (
+                <div className="mt-2 p-2 bg-yellow-50 rounded border border-yellow-200">
+                  <p><strong>Source:</strong> User-provided job posting text</p>
+                </div>
+              ) : (
+                <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
+                  <p><strong>Source:</strong> API-generated from job title</p>
+                </div>
+              )}
               <div className="mt-2">
                 <p><strong>Description (actual content sent to API):</strong></p>
-                <p className="whitespace-pre-wrap text-sm mt-1">{jobPostingStr}</p>
+                <p className="whitespace-pre-wrap text-sm mt-1">{getJobPostingString(jobPosting)}</p>
               </div>
             </div>
           );

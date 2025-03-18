@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Types for our API responses
@@ -6,6 +7,7 @@ export interface JobPosting {
   description: string;
   requirements: string[];
   skills: string[];
+  userProvided?: boolean; // Flag to indicate if this was directly provided by the user
 }
 
 export interface UploadData {

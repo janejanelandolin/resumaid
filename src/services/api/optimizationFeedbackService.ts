@@ -1,4 +1,3 @@
-
 import { JobPosting, UploadData, Feedback } from '../../contexts/ResumeContext';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
@@ -11,17 +10,22 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
   }
   
   try {
-    // Format job posting as a simple string
-    // For user-entered text or API-generated content, we'll create a simplified string format
+    // Format job posting as a simple string - prioritizing user input if available
     let jobPostingContent = '';
     
     if (jobPosting) {
-      // If it's a full job posting object, concatenate title and description
-      if (jobPosting.description) {
+      // If it's user-provided, use it directly
+      if (jobPosting.userProvided && jobPosting.description) {
         jobPostingContent = jobPosting.description;
-      } else if (jobPosting.title) {
-        // Fallback if only title is available
-        jobPostingContent = `${jobPosting.title}`;
+        console.log('Using user-provided job posting text');
+      }
+      // Otherwise, if it's a full job posting object from API, use description or format as string
+      else if (jobPosting.description) {
+        jobPostingContent = jobPosting.description;
+        console.log('Using job posting description from API');
+      } else {
+        // Fallback to constructing a string from parts
+        jobPostingContent = jobPosting.title || '';
         
         // Add requirements if available
         if (jobPosting.requirements && jobPosting.requirements.length > 0) {
@@ -32,17 +36,20 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
         if (jobPosting.skills && jobPosting.skills.length > 0) {
           jobPostingContent += `\n\nSkills:\n${jobPosting.skills.join('\n')}`;
         }
+        console.log('Using constructed job posting string from title and details');
       }
     }
     
-    console.log('Job posting being sent:', jobPostingContent.substring(0, 100) + '...');
+    console.log(`Job posting content type: ${jobPosting.userProvided ? 'user-provided' : 'API-generated'}`);
+    console.log('Job posting preview:', jobPostingContent.substring(0, 100) + '...');
     
     // Log the API call request
     logApiCall('getFeedback (request)', { 
       resumeLength: uploadData.content.length,
       resumePreview: uploadData.content.substring(0, 50) + '...',
       jobPostingTitle: jobPosting.title,
-      jobPostingContentPreview: jobPostingContent.substring(0, 50) + '...'
+      jobPostingContentPreview: jobPostingContent.substring(0, 50) + '...',
+      jobPostingSource: jobPosting.userProvided ? 'user-provided' : 'API-generated'
     }, 'Sending POST request with query parameters');
     
     // Build query parameters - using exactly 'resume' and 'job_posting' as parameter names

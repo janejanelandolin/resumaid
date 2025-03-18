@@ -61,7 +61,8 @@ const UploadPage = () => {
       // This handles the case where the user provides their own job posting text
       const updatedJobPosting = {
         ...jobPosting,
-        description: text
+        description: text,
+        userProvided: true // Mark this as user-provided
       };
       setJobPosting(updatedJobPosting);
       
