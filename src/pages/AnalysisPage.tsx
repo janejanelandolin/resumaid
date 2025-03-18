@@ -61,19 +61,12 @@ const AnalysisPage = () => {
             <p className="text-sm text-muted-foreground">
               For: <span className="font-medium text-primary">{jobTitle}</span>
             </p>
-            {atsFeedback.qualification && (
-              <div className="mt-2 inline-flex items-center bg-green-100 px-3 py-1 rounded-full">
-                <span className="text-xs font-semibold text-green-800">
-                  Status: {atsFeedback.qualification}
-                </span>
-              </div>
-            )}
           </div>
 
           <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-bl-full"></div>
             <TypewriterText
-              text={feedback.score_reason}
+              text="Your resume could be better aligned with the Senior Alliance Manager position. We've identified several opportunities to highlight your relevant experience and add keywords that will help you pass ATS screening."
               className="text-sm relative z-10"
             />
           </div>
@@ -89,7 +82,7 @@ const AnalysisPage = () => {
             
             <div className="flex justify-center items-center space-x-4 py-4">
               <AnimatedDial 
-                score={atsSimilarity * 100} 
+                score={Math.round(atsSimilarity * 100)} 
                 max={100} 
                 color="text-orange-500" 
                 label="Without optimization" 
@@ -98,13 +91,13 @@ const AnalysisPage = () => {
                 <ArrowRight className="h-8 w-8 text-indigo-400 animate-pulse" />
                 <div className="mt-2 py-1 px-3 bg-green-100 rounded-full">
                   <span className="text-xs font-bold text-green-700 flex items-center">
-                    <span>+{(improvement * 100).toFixed(0)}%</span>
+                    <span>+{Math.round(improvement * 100)}%</span>
                     <CheckCircle2 className="h-3 w-3 ml-1" />
                   </span>
                 </div>
               </div>
               <AnimatedDial 
-                score={feedback.similarity * 100} 
+                score={Math.round(feedback.similarity * 100)} 
                 max={100} 
                 color="text-indigo-600" 
                 label="With optimization" 
@@ -130,6 +123,33 @@ const AnalysisPage = () => {
             </h3>
             
             <Accordion type="single" collapsible className="w-full">
+              <AccordionItem 
+                value="compatibility"
+                className="border border-indigo-100 mb-2 rounded-lg overflow-hidden bg-white/70 backdrop-blur-sm"
+              >
+                <AccordionTrigger className="text-sm font-medium px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all">
+                  <div className="flex items-center">
+                    <Sparkle className="h-4 w-4 text-indigo-500 mr-2 shrink-0" />
+                    Compatibility
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="text-sm px-4 py-3 bg-white/80">
+                  <div className="space-y-3">
+                    {feedback.score_reason && (
+                      <p className="text-indigo-700">{feedback.score_reason}</p>
+                    )}
+                    
+                    {atsFeedback.qualification && (
+                      <div className="mt-3 inline-flex items-center bg-green-100 px-3 py-1 rounded-full">
+                        <span className="text-xs font-semibold text-green-800">
+                          Status: {atsFeedback.qualification}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              
               {feedback.suggested_edits.map((edit, index) => (
                 <AccordionItem 
                   key={index} 
@@ -139,7 +159,7 @@ const AnalysisPage = () => {
                   <AccordionTrigger className="text-sm font-medium px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all">
                     <div className="flex items-center">
                       <Sparkle className="h-4 w-4 text-indigo-500 mr-2 shrink-0" />
-                      {edit.section || edit.edit_reason || `Improvement #${index + 1}`}
+                      Suggested Edit {index + 1}: {edit.section || edit.edit_reason || `Improvement #${index + 1}`}
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-sm px-4 py-3 bg-white/80">
