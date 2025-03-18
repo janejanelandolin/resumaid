@@ -27,12 +27,12 @@ const AnalysisPage = () => {
     navigate('/payment');
   };
 
-  // Get the similarity score specifically from JobPostingFulltext_ResumeFulltext_similarity
-  // Ensure it's multiplied by 100
-  const atsSimilarity = (atsFeedback.JobPostingFulltext_ResumeFulltext_similarity || 0) * 100;
+  // Get the similarity score from JobPostingFulltext_ResumeFulltext_similarity
+  // Removed the *100 multiplication
+  const atsSimilarity = atsFeedback.JobPostingFulltext_ResumeFulltext_similarity || 0;
   
   // Calculate the improvement percentage
-  const improvement = feedback.similarity - (atsSimilarity / 100);
+  const improvement = feedback.similarity - atsSimilarity;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pt-6">
