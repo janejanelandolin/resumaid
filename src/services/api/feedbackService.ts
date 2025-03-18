@@ -14,23 +14,24 @@ export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadD
   try {
     console.log(`Resume content preview: ${uploadData.content.substring(0, 100)}...`);
     
-    // Use POST method with JSON body
+    // Log the API call request
     logApiCall('getATSFeedback (request)', { 
       resumeLength: uploadData.content.length,
       resumePreview: uploadData.content.substring(0, 50) + '...',
       jobPostingTitle: jobPosting.title
     }, 'Sending POST request with JSON body');
     
-    const response = await fetch(`${API_BASE_URL}atsfeedback`, {
+    // Fix: Pass parameters as query params instead of in the body
+    const url = new URL(`${API_BASE_URL}atsfeedback`);
+    url.searchParams.append('resume', uploadData.content);
+    url.searchParams.append('job_posting', JSON.stringify(jobPosting));
+    
+    const response = await fetch(url.toString(), {
       method: 'POST',
       headers: {
         'accept': 'application/json',
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        resume: uploadData.content,
-        job_posting: jobPosting
-      })
+      }
     });
     
     const responseText = await response.text();
@@ -135,19 +136,19 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
       resumeLength: uploadData.content.length,
       resumePreview: uploadData.content.substring(0, 50) + '...',
       jobPostingTitle: jobPosting.title
-    }, 'Sending POST request with JSON body');
+    }, 'Sending POST request with URL params');
     
-    // Always use POST with body to avoid URL length limitations and encoding issues
-    const response = await fetch(`${API_BASE_URL}feedback`, {
+    // Fix: Pass parameters as query params instead of in the body
+    const url = new URL(`${API_BASE_URL}feedback`);
+    url.searchParams.append('resume', uploadData.content);
+    url.searchParams.append('job_posting', JSON.stringify(jobPosting));
+    
+    const response = await fetch(url.toString(), {
       method: 'POST',
       headers: {
         'accept': 'application/json',
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        resume: uploadData.content,
-        job_posting: jobPosting
-      })
+      }
     });
     
     const responseText = await response.text();
