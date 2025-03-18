@@ -12,6 +12,7 @@ import UploadPage from "./pages/UploadPage";
 import AnalysisPage from "./pages/AnalysisPage";
 import PaymentPage from "./pages/PaymentPage";
 import SuccessPage from "./pages/SuccessPage";
+import DebugPage from "./pages/DebugPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/analysis" element={<AnalysisPage />} />
             <Route path="/payment" element={<PaymentPage />} />
             <Route path="/success" element={<SuccessPage />} />
+            <Route path="/debug" element={<DebugPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

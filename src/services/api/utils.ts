@@ -1,7 +1,7 @@
 
 import { JobPosting, UploadData, ATSFeedback, Feedback } from '../../contexts/ResumeContext';
 
-export const API_BASE_URL = "https://api-758224663478.us-west2.run.app/";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://api-758224663478.us-west2.run.app/";
 
 // Helper function to log API inputs and outputs
 export const logApiCall = (endpoint: string, input: any, output: any, error?: any) => {
