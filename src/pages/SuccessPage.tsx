@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { useResumeContext } from '../contexts/ResumeContext';
 import PageContainer from '@/components/PageContainer';
 import { CheckCircle, ArrowRight } from 'lucide-react';
-import TemplateGallery from '@/components/templates/TemplateGallery';
-import TemplateDownloader from '@/components/templates/TemplateDownloader';
 
 const SuccessPage = () => {
   const location = useLocation();
@@ -82,15 +80,13 @@ const SuccessPage = () => {
           )}
         </div>
         
-        <div className="bg-gray-50 rounded-lg p-6">
-          <TemplateGallery />
-        </div>
-        
         <div className="space-y-4">
-          <TemplateDownloader />
+          <Button onClick={() => navigate('/templates')} className="w-full">
+            <ArrowRight className="mr-2 h-4 w-4" />
+            Select Resume Templates
+          </Button>
           
           <Button variant="outline" onClick={() => navigate('/')} className="w-full">
-            <ArrowRight className="mr-2 h-4 w-4" />
             Return to Homepage
           </Button>
         </div>
