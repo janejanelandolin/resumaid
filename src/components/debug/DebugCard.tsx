@@ -47,14 +47,16 @@ const DebugCard: React.FC<DebugCardProps> = ({
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-          <pre className="text-xs font-mono whitespace-pre">
-            {renderContent 
-              ? renderContent(data)
-              : (isAvailable 
-                  ? formatJSON(data) 
-                  : notAvailableText)
-            }
-          </pre>
+          <div className="min-w-[800px]">
+            <pre className="text-xs font-mono whitespace-pre">
+              {renderContent 
+                ? renderContent(data)
+                : (isAvailable 
+                    ? formatJSON(data) 
+                    : notAvailableText)
+              }
+            </pre>
+          </div>
         </ScrollArea>
       </CardContent>
     </Card>

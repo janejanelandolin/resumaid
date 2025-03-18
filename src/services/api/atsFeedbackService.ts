@@ -12,26 +12,35 @@ export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadD
   }
   
   try {
-    console.log(`Resume content preview: ${uploadData.content.substring(0, 100)}...`);
+    console.log(`Resume content length: ${uploadData.content.length} characters`);
     
     // Log the API call request
     logApiCall('getATSFeedback (request)', { 
       resumeLength: uploadData.content.length,
       resumePreview: uploadData.content.substring(0, 50) + '...',
       jobPostingTitle: jobPosting.title
-    }, 'Sending POST request with query params');
+    }, 'Sending POST request with FormData');
     
-    // Pass parameters as query params
-    const url = new URL(`${API_BASE_URL}atsfeedback`);
-    url.searchParams.append('resume', uploadData.content);
-    url.searchParams.append('job_posting', JSON.stringify(jobPosting));
+    // Create FormData and append the job posting and resume file
+    const formData = new FormData();
     
-    const response = await fetch(url.toString(), {
+    // Convert resume content to a file-like object
+    const resumeBlob = new Blob([uploadData.content], { type: 'text/plain' });
+    const resumeFile = new File([resumeBlob], uploadData.filename || 'resume.txt', { type: 'text/plain' });
+    
+    // Add file to FormData
+    formData.append('file', resumeFile);
+    
+    // Add job posting as JSON string
+    formData.append('job_posting', JSON.stringify(jobPosting));
+    
+    const response = await fetch(`${API_BASE_URL}atsfeedback`, {
       method: 'POST',
       headers: {
         'accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
+        // No need to set Content-Type as FormData sets it automatically
+      },
+      body: formData
     });
     
     const responseText = await response.text();
