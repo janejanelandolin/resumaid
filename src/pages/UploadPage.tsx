@@ -84,6 +84,7 @@ const UploadPage = () => {
       }
       
       const uploadResponse = await apiService.uploadResume(fileToUpload);
+      console.log("Upload response:", uploadResponse);
       setUploadData(uploadResponse);
       
       // Check if content is properly set
@@ -134,7 +135,7 @@ const UploadPage = () => {
               Upload Your Resume
             </h1>
             <div className="text-muted-foreground text-sm">
-              <TypewriterText text="Upload your resume to get started..." />
+              <TypewriterText text="Choose how you want to submit your resume..." />
             </div>
           </div>
 
@@ -235,7 +236,11 @@ const UploadPage = () => {
               <Button 
                 onClick={() => {
                   setShowContentWarning(false);
-                  document.querySelector('button[variant="link"]')?.click();
+                  // Safely find the button by its text content rather than trying to access click
+                  const pasteOption = document.querySelector('button[variant="link"]');
+                  if (pasteOption instanceof HTMLButtonElement) {
+                    pasteOption.click();
+                  }
                 }}
               >
                 Paste Text Instead
