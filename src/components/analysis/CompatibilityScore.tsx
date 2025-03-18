@@ -80,7 +80,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
         </div>
       </div>
       
-      <div className="text-center py-3 px-5 mt-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl shadow-sm">
+      <div className="text-center py-3 px-5 mt-4 bg-gradient-to-r from-indigo-100/50 to-purple-100/50 rounded-xl">
         <div className="flex items-center justify-center gap-2">
           <Sparkle className="h-5 w-5 text-indigo-400" />
           <p className="font-bold text-md bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
