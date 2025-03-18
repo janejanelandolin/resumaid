@@ -26,7 +26,8 @@ const ApiErrorDisplay: React.FC<ApiErrorDisplayProps> = ({ errors }) => {
         <AlertTriangle className="h-4 w-4" />
         <AlertTitle>API Errors Detected</AlertTitle>
         <AlertDescription>
-          Some errors occurred while processing your resume. Results shown may be incomplete.
+          Some errors occurred while processing your resume. This could be due to encoding issues, large file size, or server limitations.
+          We're still showing results, but they may be incomplete.
         </AlertDescription>
       </Alert>
       
@@ -45,6 +46,15 @@ const ApiErrorDisplay: React.FC<ApiErrorDisplayProps> = ({ errors }) => {
                   <p className="font-mono break-words whitespace-pre-wrap">{error}</p>
                 </div>
               ))}
+            </div>
+            <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200 text-sm">
+              <h4 className="font-medium text-blue-800 mb-1">Troubleshooting Tips:</h4>
+              <ul className="list-disc list-inside space-y-1 text-blue-700">
+                <li>Ensure your resume is in text format rather than image-based PDF</li>
+                <li>Try uploading a smaller file (less than 500KB)</li>
+                <li>Check for any special characters or formatting in your resume</li>
+                <li>If using PDF, try converting to .docx or .txt format</li>
+              </ul>
             </div>
           </AccordionContent>
         </AccordionItem>

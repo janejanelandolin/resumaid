@@ -138,71 +138,19 @@ export const apiService = {
     }
     
     try {
-      // Log the first 100 chars of resume content for debugging
       console.log(`Resume content preview: ${uploadData.content.substring(0, 100)}...`);
       
-      // Calculate the full URL length to debug potential URL length issues
-      const resumeContent = encodeURIComponent(uploadData.content);
-      const jobPostingJSON = encodeURIComponent(JSON.stringify(jobPosting));
-      
-      // Check if URL might be too long
-      const urlLength = `${API_BASE_URL}atsfeedback?resume=${resumeContent}&job_posting=${jobPostingJSON}`.length;
-      console.log("ATS Feedback URL length:", urlLength);
-      
-      // If URL is extremely long, consider using a different approach like POST with request body
-      if (urlLength > 2000) {
-        console.warn("URL may be too long for GET request, attempting to use POST with body");
-        
-        const response = await fetch(`${API_BASE_URL}atsfeedback`, {
-          method: 'POST',
-          headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            resume: uploadData.content,
-            job_posting: jobPosting
-          })
-        });
-        
-        const responseText = await response.text();
-        
-        if (!response.ok) {
-          return { 
-            error: `API error: ${response.status} - ${responseText || 'No error details'}`
-          };
-        }
-        
-        try {
-          const data = JSON.parse(responseText);
-          console.log("ATS Feedback response:", data);
-          
-          // Add backwards compatibility for existing code that expects similarity property
-          if (data.JobPostingFulltext_ResumeFulltext_similarity !== undefined && data.similarity === undefined) {
-            data.similarity = data.JobPostingFulltext_ResumeFulltext_similarity;
-          }
-          
-          // Add backwards compatibility for existing code that expects keywords_missing property
-          if (data.missing_keywords !== undefined && data.keywords_missing === undefined) {
-            data.keywords_missing = data.missing_keywords;
-          }
-          
-          return { data };
-        } catch (parseError) {
-          return { 
-            error: `Failed to parse server response: ${responseText.substring(0, 100)}...`
-          };
-        }
-      }
-      
-      // Original implementation using URL parameters
-      const url = `${API_BASE_URL}atsfeedback?resume=${resumeContent}&job_posting=${jobPostingJSON}`;
-      const response = await fetch(url, {
+      // UPDATED: Always use POST with body to avoid URL length limitations and encoding issues
+      const response = await fetch(`${API_BASE_URL}atsfeedback`, {
         method: 'POST',
         headers: {
-          'accept': 'application/json'
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: '' // Empty body as per the curl example
+        body: JSON.stringify({
+          resume: uploadData.content,
+          job_posting: jobPosting
+        })
       });
       
       const responseText = await response.text();
@@ -284,60 +232,19 @@ export const apiService = {
     }
     
     try {
-      // Log the first 100 chars of resume content for debugging
       console.log(`Resume content preview for feedback: ${uploadData.content.substring(0, 100)}...`);
       
-      // Calculate the full URL length to debug potential URL length issues
-      const resumeContent = encodeURIComponent(uploadData.content);
-      const jobPostingJSON = encodeURIComponent(JSON.stringify(jobPosting));
-      
-      // Check if URL might be too long
-      const urlLength = `${API_BASE_URL}feedback?resume=${resumeContent}&job_posting=${jobPostingJSON}`.length;
-      console.log("Feedback URL length:", urlLength);
-      
-      // If URL is extremely long, consider using a different approach like POST with request body
-      if (urlLength > 2000) {
-        console.warn("URL may be too long for GET request, attempting to use POST with body");
-        
-        const response = await fetch(`${API_BASE_URL}feedback`, {
-          method: 'POST',
-          headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            resume: uploadData.content,
-            job_posting: jobPosting
-          })
-        });
-        
-        const responseText = await response.text();
-        
-        if (!response.ok) {
-          return { 
-            error: `API error: ${response.status} - ${responseText || 'No error details'}`
-          };
-        }
-        
-        try {
-          const data = JSON.parse(responseText);
-          console.log("Feedback response:", data);
-          return { data };
-        } catch (parseError) {
-          return { 
-            error: `Failed to parse server response: ${responseText.substring(0, 100)}...`
-          };
-        }
-      }
-      
-      // Original implementation using URL parameters
-      const url = `${API_BASE_URL}feedback?resume=${resumeContent}&job_posting=${jobPostingJSON}`;
-      const response = await fetch(url, {
+      // UPDATED: Always use POST with body to avoid URL length limitations and encoding issues
+      const response = await fetch(`${API_BASE_URL}feedback`, {
         method: 'POST',
         headers: {
-          'accept': 'application/json'
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: '' // Empty body as per the curl example
+        body: JSON.stringify({
+          resume: uploadData.content,
+          job_posting: jobPosting
+        })
       });
       
       const responseText = await response.text();
