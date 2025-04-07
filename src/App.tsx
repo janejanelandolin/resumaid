@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ResumeProvider } from "./contexts/ResumeContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -23,27 +24,29 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ResumeProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/upload" element={<UploadPage />} />
-            <Route path="/analysis" element={<AnalysisPage />} />
-            <Route path="/payment" element={<PaymentPage />} />
-            <Route path="/success" element={<SuccessPage />} />
-            <Route path="/edit-resume" element={<EditResumePage />} />
-            <Route path="/templates" element={<TemplateSelectionPage />} />
-            <Route path="/preview" element={<ResumePreviewPage />} />
-            <Route path="/download" element={<DownloadOptimizedResumePage />} />
-            <Route path="/debug" element={<DebugPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ResumeProvider>
+    <AuthProvider>
+      <ResumeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/upload" element={<UploadPage />} />
+              <Route path="/analysis" element={<AnalysisPage />} />
+              <Route path="/payment" element={<PaymentPage />} />
+              <Route path="/success" element={<SuccessPage />} />
+              <Route path="/edit-resume" element={<EditResumePage />} />
+              <Route path="/templates" element={<TemplateSelectionPage />} />
+              <Route path="/preview" element={<ResumePreviewPage />} />
+              <Route path="/download" element={<DownloadOptimizedResumePage />} />
+              <Route path="/debug" element={<DebugPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ResumeProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
