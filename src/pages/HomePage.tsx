@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
@@ -87,7 +86,7 @@ const HomePage = () => {
           <div className="space-y-2 text-center relative">
             <div className="absolute top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-300 rounded-full filter blur-3xl opacity-20"></div>
             <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600 relative">
-              ResumAI
+              ResumAID
               <span className="absolute -top-4 -right-4 text-purple-600">
                 <Rocket size={20} className="animate-fade-in" />
               </span>

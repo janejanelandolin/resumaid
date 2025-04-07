@@ -1,10 +1,12 @@
-# Welcome to your Lovable project
+# ResumAID
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/4a22af3d-ed02-4fc1-9b1a-d70b6e43c90c
 
 ## How can I edit this code?
+
+ResumAID is an AI-powered resume optimization tool.
 
 There are several ways of editing your application.
 
