@@ -5,18 +5,22 @@ import { filterJobTitles } from '../services/jobTitles';
 import { apiService } from '../services/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import PageContainer from '@/components/PageContainer';
 import RotatingText from '@/components/RotatingText';
-import { Search, Sparkle, Rocket, Star } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Search, Sparkle, Rocket, Star, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { jobTitle, setJobTitle, setJobPosting } = useResumeContext();
+  const { jobTitle, setJobTitle, setJobPosting, jobPosting } = useResumeContext();
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [inputFocused, setInputFocused] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const [customJobPosting, setCustomJobPosting] = useState('');
 
   useEffect(() => {
     setSuggestions(filterJobTitles(jobTitle));
@@ -41,6 +45,20 @@ const HomePage = () => {
     setLoading(true);
     
     try {
+      // If custom job posting is provided, use it instead of fetching
+      if (customJobPosting.trim()) {
+        setJobPosting({
+          title: jobTitle,
+          description: customJobPosting,
+          requirements: [],
+          skills: [],
+          userProvided: true
+        });
+        navigate('/upload');
+        return;
+      }
+      
+      // Otherwise fetch job posting as usual
       const jobPostingData = await apiService.getJobPosting(jobTitle);
       setJobPosting(jobPostingData);
       navigate('/upload');
@@ -133,6 +151,38 @@ const HomePage = () => {
                 )}
               </div>
             </div>
+            
+            {/* Advanced: Custom Job Posting Collapsible */}
+            <Collapsible 
+              open={isAdvancedOpen} 
+              onOpenChange={setIsAdvancedOpen}
+              className="border border-purple-100 rounded-lg"
+            >
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 font-medium text-left text-gray-700 hover:bg-purple-50 rounded-lg transition-colors">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-purple-500" />
+                  <span className="text-sm">Advanced: Paste Job Posting</span>
+                </div>
+                {isAdvancedOpen ? (
+                  <ChevronUp className="h-4 w-4 text-gray-500" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                )}
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-3">
+                <div className="space-y-3">
+                  <p className="text-xs text-gray-600">
+                    Paste the job description for more accurate resume optimization
+                  </p>
+                  <Textarea
+                    placeholder="Paste the job posting description here..."
+                    className="min-h-[120px] text-sm border-purple-200"
+                    value={customJobPosting}
+                    onChange={(e) => setCustomJobPosting(e.target.value)}
+                  />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
             
             <Button 
               type="submit" 
