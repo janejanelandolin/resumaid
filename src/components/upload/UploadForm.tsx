@@ -1,0 +1,257 @@
+
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useResumeContext } from '@/contexts/ResumeContext';
+import { apiService } from '@/services/api';
+import { useToast } from '@/hooks/use-toast';
+import FileUploader from '@/components/FileUploader';
+import { Sparkle } from 'lucide-react';
+
+// Import our components
+import UploadProgress from '@/components/upload/UploadProgress';
+import ErrorAlert from '@/components/upload/ErrorAlert';
+import SubmitButton from '@/components/upload/SubmitButton';
+
+interface UploadFormProps {
+  showErrorDialog: () => void;
+  showContentWarning: () => void;
+  setApiErrors: (errors: string[]) => void;
+  setProgress: (progress: number) => void;
+  setProgressText: (text: string) => void;
+}
+
+const UploadForm = ({
+  showErrorDialog,
+  showContentWarning,
+  setApiErrors,
+  setProgress,
+  setProgressText,
+}: UploadFormProps) => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { 
+    jobPosting, 
+    setUploadData, 
+    setAtsFeedback, 
+    setFeedback,
+    setJobPosting
+  } = useResumeContext();
+  
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [resumeText, setResumeText] = useState<string>('');
+  const [apiErrors, setApiErrorsLocal] = useState<string[]>([]);
+
+  const handleFileUpload = async (file: File) => {
+    setUploadedFile(file);
+    setResumeText('');
+    setApiErrorsLocal([]);
+    setApiErrors([]);
+  };
+
+  const handleTextInput = (text: string) => {
+    setResumeText(text);
+    setUploadedFile(null);
+    setApiErrorsLocal([]);
+    setApiErrors([]);
+  };
+
+  const handleJobPostingInput = (text: string) => {
+    if (text.trim() && jobPosting) {
+      const updatedJobPosting = {
+        ...jobPosting,
+        description: text,
+        userProvided: true
+      };
+      setJobPosting(updatedJobPosting);
+      
+      toast({
+        title: "Job Posting Updated",
+        description: "The job posting has been updated with your text input.",
+      });
+    }
+  };
+
+  const createTextFile = (text: string): File => {
+    const blob = new Blob([text], { type: 'text/plain' });
+    return new File([blob], 'resume.txt', { type: 'text/plain' });
+  };
+
+  const handleSubmit = async () => {
+    if (!uploadedFile && !resumeText) {
+      toast({
+        title: "Error",
+        description: "Please upload your resume or paste your resume text",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!jobPosting) {
+      navigate('/');
+      return;
+    }
+
+    // Reset state
+    setIsUploading(true);
+    setProgress(0);
+    setProgressText('Uploading resume...');
+    setApiErrorsLocal([]);
+    setApiErrors([]);
+
+    try {
+      // Step 1: Upload resume
+      setProgress(20);
+      let fileToUpload = uploadedFile;
+      
+      if (!fileToUpload && resumeText) {
+        fileToUpload = createTextFile(resumeText);
+      }
+      
+      if (!fileToUpload) {
+        throw new Error("No file or text to upload");
+      }
+      
+      const uploadResponse = await apiService.uploadResume(fileToUpload);
+      console.log("Upload response:", uploadResponse);
+      
+      if (uploadResponse.error) {
+        setApiErrorsLocal(prev => [...prev, `Upload Error: ${uploadResponse.error}`]);
+        setApiErrors(prev => [...prev, `Upload Error: ${uploadResponse.error}`]);
+        showErrorDialog();
+      }
+      
+      if (!uploadResponse.data) {
+        throw new Error("Failed to upload resume: No data returned");
+      }
+      
+      setUploadData(uploadResponse.data);
+      
+      // Check if content is properly set
+      if (!uploadResponse.data.content || uploadResponse.data.content.trim() === '') {
+        setIsUploading(false);
+        showContentWarning();
+        return;
+      }
+      
+      // Step 2: Get ATS feedback
+      setProgress(50);
+      setProgressText('Analyzing with ATS systems...');
+      const atsFeedbackResponse = await apiService.getATSFeedback(jobPosting, uploadResponse.data);
+      
+      if (atsFeedbackResponse.error) {
+        setApiErrorsLocal(prev => [...prev, `ATS Feedback Error: ${atsFeedbackResponse.error}`]);
+        setApiErrors(prev => [...prev, `ATS Feedback Error: ${atsFeedbackResponse.error}`]);
+        if (atsFeedbackResponse.data) {
+          setAtsFeedback(atsFeedbackResponse.data);
+        } else {
+          showErrorDialog();
+          throw new Error("Failed to get ATS feedback");
+        }
+      } else if (atsFeedbackResponse.data) {
+        setAtsFeedback(atsFeedbackResponse.data);
+      }
+      
+      // Step 3: Get optimization feedback
+      setProgress(80);
+      setProgressText('Generating optimization suggestions...');
+      const feedbackResponse = await apiService.getFeedback(jobPosting, uploadResponse.data);
+      
+      if (feedbackResponse.error) {
+        setApiErrorsLocal(prev => [...prev, `Feedback Error: ${feedbackResponse.error}`]);
+        setApiErrors(prev => [...prev, `Feedback Error: ${feedbackResponse.error}`]);
+        if (feedbackResponse.data) {
+          setFeedback(feedbackResponse.data);
+        } else {
+          showErrorDialog();
+          throw new Error("Failed to get optimization suggestions");
+        }
+      } else if (feedbackResponse.data) {
+        setFeedback(feedbackResponse.data);
+      }
+      
+      // Complete and navigate
+      setProgress(100);
+      setProgressText('Analysis complete!');
+      
+      // If we have errors but also data, toast the user
+      if (apiErrors.length > 0) {
+        toast({
+          title: "Warning",
+          description: "Some API errors occurred but we've generated results with available data",
+          variant: "destructive",
+        });
+      }
+      
+      setTimeout(() => {
+        navigate('/analysis');
+      }, 500);
+      
+    } catch (error) {
+      console.error('Error processing resume:', error);
+      setProgress(0);
+      toast({
+        title: "Error",
+        description: "Failed to process your resume",
+        variant: "destructive",
+      });
+      
+      if (error instanceof Error) {
+        setApiErrorsLocal(prev => [...prev, `Process Error: ${error.message}`]);
+        setApiErrors(prev => [...prev, `Process Error: ${error.message}`]);
+      }
+      
+      showErrorDialog();
+      setIsUploading(false);
+    }
+  };
+
+  const handlePasteTextInstead = () => {
+    // Find and click the resume text collapsible trigger
+    const resumeTextTrigger = document.querySelector('span:contains("Paste Resume Text")');
+    if (resumeTextTrigger) {
+      const triggerButton = resumeTextTrigger.closest('button');
+      if (triggerButton instanceof HTMLButtonElement) {
+        triggerButton.click();
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-6 py-4">
+      <div className="relative">
+        <div className="absolute -top-6 -right-6 text-indigo-300 animate-spin-slow">
+          <Sparkle size={20} />
+        </div>
+        <div className="absolute -bottom-6 -left-6 text-purple-300 animate-pulse">
+          <Sparkle size={16} />
+        </div>
+        
+        <ErrorAlert 
+          errors={apiErrors} 
+          onShowDetails={showErrorDialog}
+        />
+        
+        <FileUploader 
+          onFileUpload={handleFileUpload} 
+          onTextInput={handleTextInput}
+          jobPosting={jobPosting?.description}
+        />
+      </div>
+      
+      <UploadProgress
+        isUploading={isUploading}
+        progress={setProgress}
+        progressText={setProgressText}
+      />
+      
+      <SubmitButton
+        onClick={handleSubmit}
+        disabled={(!uploadedFile && !resumeText) || isUploading}
+        isUploading={isUploading}
+      />
+    </div>
+  );
+};
+
+export default UploadForm;
