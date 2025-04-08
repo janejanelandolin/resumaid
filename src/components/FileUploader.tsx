@@ -9,21 +9,17 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 interface FileUploaderProps {
   onFileUpload: (file: File) => void;
   onTextInput?: (text: string) => void;
-  onJobPostingInput?: (text: string) => void;
   jobPosting?: string;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({ 
   onFileUpload, 
-  onTextInput, 
-  onJobPostingInput,
+  onTextInput,
   jobPosting = '' 
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [resumeText, setResumeText] = useState('');
-  const [jobPostingText, setJobPostingText] = useState(jobPosting);
-  const [isJobPostingOpen, setIsJobPostingOpen] = useState(false);
   const [isResumeTextOpen, setIsResumeTextOpen] = useState(false);
 
   const onDrop = useCallback(
@@ -61,15 +57,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     }
   };
 
-  const handleJobPostingSubmit = () => {
-    if (jobPostingText.trim() && onJobPostingInput) {
-      onJobPostingInput(jobPostingText);
-    }
-  };
-
   return (
     <div className="space-y-6">
-      {/* File Upload Section - Now takes full width */}
+      {/* File Upload Section */}
       <div className="space-y-2">
         <h3 className="text-md font-medium text-center mb-3 text-gray-700">Upload Resume File</h3>
         <div
@@ -117,7 +107,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
           <div className="flex items-center gap-2">
             <ClipboardPaste className="h-5 w-5 text-primary" />
-            <span>Advanced: Paste Resume Text</span>
+            <span>Paste Resume Text</span>
           </div>
           {isResumeTextOpen ? (
             <ChevronUp className="h-5 w-5 text-gray-500" />
@@ -150,46 +140,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         </CollapsibleContent>
       </Collapsible>
       
-      {/* Optional Job Posting Collapsible Section */}
-      <Collapsible 
-        open={isJobPostingOpen} 
-        onOpenChange={setIsJobPostingOpen}
-        className="border rounded-lg"
-      >
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-          <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
-            <span>Advanced: Paste Job Posting Text</span>
-          </div>
-          {isJobPostingOpen ? (
-            <ChevronUp className="h-5 w-5 text-gray-500" />
-          ) : (
-            <ChevronDown className="h-5 w-5 text-gray-500" />
-          )}
-        </CollapsibleTrigger>
-        <CollapsibleContent className="p-4 pt-2">
-          <div className="space-y-4">
-            <p className="text-sm text-gray-600">Paste the job description to override the one you entered earlier.</p>
-            <Textarea
-              placeholder="Paste the job posting description here..."
-              className="min-h-[150px]"
-              value={jobPostingText}
-              onChange={(e) => setJobPostingText(e.target.value)}
-            />
-            <Button
-              onClick={handleJobPostingSubmit}
-              className="w-full"
-              disabled={!jobPostingText.trim()}
-              variant="outline"
-              size="sm"
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              Use This Job Posting
-            </Button>
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
-      
       <div className="text-center text-sm text-gray-500">
         <p>Choose upload method or paste text to submit your resume for ATS compatibility analysis</p>
       </div>
@@ -198,3 +148,4 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 };
 
 export default FileUploader;
+

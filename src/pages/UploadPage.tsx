@@ -57,12 +57,10 @@ const UploadPage = () => {
 
   const handleJobPostingInput = (text: string) => {
     if (text.trim() && jobPosting) {
-      // Create a new jobPosting object with the updated description
-      // This handles the case where the user provides their own job posting text
       const updatedJobPosting = {
         ...jobPosting,
         description: text,
-        userProvided: true // Mark this as user-provided
+        userProvided: true
       };
       setJobPosting(updatedJobPosting);
       
@@ -251,7 +249,6 @@ const UploadPage = () => {
               <FileUploader 
                 onFileUpload={handleFileUpload} 
                 onTextInput={handleTextInput}
-                onJobPostingInput={handleJobPostingInput}
                 jobPosting={jobPosting?.description}
               />
             </div>
