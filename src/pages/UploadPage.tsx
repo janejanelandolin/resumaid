@@ -209,10 +209,14 @@ const UploadPage = () => {
 
   const handlePasteTextInstead = () => {
     setShowContentWarning(false);
-    // Find the paste option button by checking for a button with variant="link"
-    const pasteOption = document.querySelector('button[variant="link"]');
-    if (pasteOption instanceof HTMLButtonElement) {
-      pasteOption.click();
+    
+    // Find and click the resume text collapsible trigger
+    const resumeTextTrigger = document.querySelector('span:contains("Advanced: Paste Resume Text")');
+    if (resumeTextTrigger) {
+      const triggerButton = resumeTextTrigger.closest('button');
+      if (triggerButton instanceof HTMLButtonElement) {
+        triggerButton.click();
+      }
     }
   };
 

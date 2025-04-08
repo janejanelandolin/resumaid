@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, ClipboardPaste, ChevronDown, ChevronUp } from 'lucide-react';
@@ -23,6 +24,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const [resumeText, setResumeText] = useState('');
   const [jobPostingText, setJobPostingText] = useState(jobPosting);
   const [isJobPostingOpen, setIsJobPostingOpen] = useState(false);
+  const [isResumeTextOpen, setIsResumeTextOpen] = useState(false);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -67,57 +69,70 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* File Upload Section */}
-        <div className="space-y-2">
-          <h3 className="text-md font-medium text-center mb-3 text-gray-700">Upload Resume File</h3>
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center h-full min-h-[300px] ${
-              isDragging ? 'border-primary bg-primary/10' : 'border-gray-300 hover:border-primary/50 hover:bg-gray-50'
-            }`}
-          >
-            <input {...getInputProps()} />
-            <Upload 
-              className={`mb-3 ${isDragging ? 'text-primary' : 'text-gray-400'}`} 
-              size={28} 
-            />
-            
-            {file ? (
-              <div className="animate-fade-in">
-                <p className="text-sm font-medium text-primary mb-1">File selected:</p>
-                <p className="text-sm text-gray-600">{file.name}</p>
-                <p className="text-xs text-gray-500 mt-2">
-                  Click or drag to replace the file
-                </p>
-              </div>
-            ) : (
-              <div>
-                <p className="font-medium text-gray-700 mb-2">
-                  Drag & drop your resume here
-                </p>
-                <p className="text-sm text-gray-500">
-                  Supported formats: PDF, DOCX, TXT
-                </p>
-                <p className="mt-2 text-xs text-gray-400">
-                  Or click to browse your files
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Text Input Section */}
-        <div className="space-y-2">
-          <h3 className="text-md font-medium text-center mb-3 text-gray-700">Or Paste Resume Text</h3>
-          <div className="border-2 rounded-lg p-6 space-y-4 min-h-[300px] flex flex-col">
-            <div className="flex items-center gap-2 mb-1">
-              <ClipboardPaste className="text-primary" size={20} />
-              <h3 className="text-sm font-medium text-gray-600">Paste your content below</h3>
+      {/* File Upload Section - Now takes full width */}
+      <div className="space-y-2">
+        <h3 className="text-md font-medium text-center mb-3 text-gray-700">Upload Resume File</h3>
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center h-full min-h-[300px] ${
+            isDragging ? 'border-primary bg-primary/10' : 'border-gray-300 hover:border-primary/50 hover:bg-gray-50'
+          }`}
+        >
+          <input {...getInputProps()} />
+          <Upload 
+            className={`mb-3 ${isDragging ? 'text-primary' : 'text-gray-400'}`} 
+            size={28} 
+          />
+          
+          {file ? (
+            <div className="animate-fade-in">
+              <p className="text-sm font-medium text-primary mb-1">File selected:</p>
+              <p className="text-sm text-gray-600">{file.name}</p>
+              <p className="text-xs text-gray-500 mt-2">
+                Click or drag to replace the file
+              </p>
             </div>
+          ) : (
+            <div>
+              <p className="font-medium text-gray-700 mb-2">
+                Drag & drop your resume here
+              </p>
+              <p className="text-sm text-gray-500">
+                Supported formats: PDF, DOCX, TXT
+              </p>
+              <p className="mt-2 text-xs text-gray-400">
+                Or click to browse your files
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Resume Text Input as Collapsible */}
+      <Collapsible 
+        open={isResumeTextOpen} 
+        onOpenChange={setIsResumeTextOpen}
+        className="border rounded-lg"
+      >
+        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+          <div className="flex items-center gap-2">
+            <ClipboardPaste className="h-5 w-5 text-primary" />
+            <span>Advanced: Paste Resume Text</span>
+          </div>
+          {isResumeTextOpen ? (
+            <ChevronUp className="h-5 w-5 text-gray-500" />
+          ) : (
+            <ChevronDown className="h-5 w-5 text-gray-500" />
+          )}
+        </CollapsibleTrigger>
+        <CollapsibleContent className="p-4 pt-2">
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              Paste your resume content directly if you don't have a file to upload.
+            </p>
             <Textarea 
               placeholder="Paste the content of your resume here..." 
-              className="min-h-[100px] flex-grow"
+              className="min-h-[150px]"
               value={resumeText}
               onChange={(e) => setResumeText(e.target.value)}
             />
@@ -132,19 +147,19 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               Use This Text
             </Button>
           </div>
-        </div>
-      </div>
+        </CollapsibleContent>
+      </Collapsible>
       
       {/* Optional Job Posting Collapsible Section */}
       <Collapsible 
         open={isJobPostingOpen} 
         onOpenChange={setIsJobPostingOpen}
-        className="border rounded-lg mt-6"
+        className="border rounded-lg"
       >
         <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
-            <span>Optional: Paste Job Posting Text</span>
+            <span>Advanced: Paste Job Posting Text</span>
           </div>
           {isJobPostingOpen ? (
             <ChevronUp className="h-5 w-5 text-gray-500" />
@@ -176,7 +191,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       </Collapsible>
       
       <div className="text-center text-sm text-gray-500">
-        <p>Choose either method to submit your resume for ATS compatibility analysis</p>
+        <p>Choose upload method or paste text to submit your resume for ATS compatibility analysis</p>
       </div>
     </div>
   );
