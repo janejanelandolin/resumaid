@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
@@ -17,8 +18,8 @@ interface UploadFormProps {
   setApiErrors: (errors: string[]) => void;
   setProgress: (progress: number) => void;
   setProgressText: (text: string) => void;
-  progress: number; // Add missing progress prop
-  progressText: string; // Add missing progressText prop
+  progress: number;
+  progressText: string;
 }
 
 const UploadForm = ({
@@ -27,8 +28,8 @@ const UploadForm = ({
   setApiErrors,
   setProgress,
   setProgressText,
-  progress, // Include progress in destructuring
-  progressText, // Include progressText in destructuring
+  progress,
+  progressText,
 }: UploadFormProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
