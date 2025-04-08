@@ -46,6 +46,8 @@ const UploadPage = () => {
                     setApiErrors={setApiErrors}
                     setProgress={setProgress}
                     setProgressText={setProgressText}
+                    progress={progress}
+                    progressText={progressText}
                   />
                 )}
               </UploadStateManager>
