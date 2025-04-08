@@ -40,7 +40,7 @@ const UploadForm = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [resumeText, setResumeText] = useState<string>('');
-  const [apiErrors, setApiErrorsLocal] = useState<string[]>([]);
+  const [apiErrorsLocal, setApiErrorsLocal] = useState<string[]>([]);
 
   const handleFileUpload = async (file: File) => {
     setUploadedFile(file);
@@ -116,8 +116,9 @@ const UploadForm = ({
       console.log("Upload response:", uploadResponse);
       
       if (uploadResponse.error) {
-        setApiErrorsLocal(prev => [...prev, `Upload Error: ${uploadResponse.error}`]);
-        setApiErrors(prev => [...prev, `Upload Error: ${uploadResponse.error}`]);
+        const newErrors = [...apiErrorsLocal, `Upload Error: ${uploadResponse.error}`];
+        setApiErrorsLocal(newErrors);
+        setApiErrors(newErrors);
         showErrorDialog();
       }
       
@@ -140,8 +141,9 @@ const UploadForm = ({
       const atsFeedbackResponse = await apiService.getATSFeedback(jobPosting, uploadResponse.data);
       
       if (atsFeedbackResponse.error) {
-        setApiErrorsLocal(prev => [...prev, `ATS Feedback Error: ${atsFeedbackResponse.error}`]);
-        setApiErrors(prev => [...prev, `ATS Feedback Error: ${atsFeedbackResponse.error}`]);
+        const newErrors = [...apiErrorsLocal, `ATS Feedback Error: ${atsFeedbackResponse.error}`];
+        setApiErrorsLocal(newErrors);
+        setApiErrors(newErrors);
         if (atsFeedbackResponse.data) {
           setAtsFeedback(atsFeedbackResponse.data);
         } else {
@@ -158,8 +160,9 @@ const UploadForm = ({
       const feedbackResponse = await apiService.getFeedback(jobPosting, uploadResponse.data);
       
       if (feedbackResponse.error) {
-        setApiErrorsLocal(prev => [...prev, `Feedback Error: ${feedbackResponse.error}`]);
-        setApiErrors(prev => [...prev, `Feedback Error: ${feedbackResponse.error}`]);
+        const newErrors = [...apiErrorsLocal, `Feedback Error: ${feedbackResponse.error}`];
+        setApiErrorsLocal(newErrors);
+        setApiErrors(newErrors);
         if (feedbackResponse.data) {
           setFeedback(feedbackResponse.data);
         } else {
@@ -175,7 +178,7 @@ const UploadForm = ({
       setProgressText('Analysis complete!');
       
       // If we have errors but also data, toast the user
-      if (apiErrors.length > 0) {
+      if (apiErrorsLocal.length > 0) {
         toast({
           title: "Warning",
           description: "Some API errors occurred but we've generated results with available data",
@@ -197,8 +200,9 @@ const UploadForm = ({
       });
       
       if (error instanceof Error) {
-        setApiErrorsLocal(prev => [...prev, `Process Error: ${error.message}`]);
-        setApiErrors(prev => [...prev, `Process Error: ${error.message}`]);
+        const newErrors = [...apiErrorsLocal, `Process Error: ${error.message}`];
+        setApiErrorsLocal(newErrors);
+        setApiErrors(newErrors);
       }
       
       showErrorDialog();
@@ -228,7 +232,7 @@ const UploadForm = ({
         </div>
         
         <ErrorAlert 
-          errors={apiErrors} 
+          errors={apiErrorsLocal} 
           onShowDetails={showErrorDialog}
         />
         
@@ -241,8 +245,8 @@ const UploadForm = ({
       
       <UploadProgress
         isUploading={isUploading}
-        progress={setProgress}
-        progressText={setProgressText}
+        progress={progress}
+        progressText={progressText}
       />
       
       <SubmitButton
