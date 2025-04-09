@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext } from 'react';
 
 export interface JobPosting {
@@ -61,12 +60,13 @@ export interface ResumeJson {
     }>;
   };
   work: Array<{
-    company: string;
+    name: string; // Changed from company to name to match API requirements
     position: string;
     startDate: string;
     endDate?: string;
     summary?: string;
     highlights?: string[];
+    company?: string; // Keep for backward compatibility
   }>;
   education: Array<{
     institution: string;

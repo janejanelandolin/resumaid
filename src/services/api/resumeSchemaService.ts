@@ -55,6 +55,7 @@ export const getResumeSchema = async (resumeText: string): Promise<ApiResponse<R
     console.error("Failed to get resume schema:", error);
     
     // Fallback to mock data if API call fails
+    // Important fix: Add "name" to work items instead of "company" to match API expectations
     const fallbackData = {
       basics: {
         name: "John Doe",
@@ -64,7 +65,7 @@ export const getResumeSchema = async (resumeText: string): Promise<ApiResponse<R
       },
       work: [
         {
-          company: "Example Corporation",
+          name: "Example Corporation", // Changed from "company" to "name"
           position: "Senior Developer",
           startDate: "2020-01",
           endDate: "2023-04",

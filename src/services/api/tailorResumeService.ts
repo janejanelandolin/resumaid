@@ -10,6 +10,23 @@ export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: strin
     const params = new URLSearchParams();
     params.append('job_posting', jobPostingText);
     
+    // Ensure resumeJson has the correct structure
+    // Make a copy to avoid modifying the original
+    const processedResumeJson = { ...resumeJson };
+    
+    // Ensure work items have 'name' field
+    if (processedResumeJson.work && Array.isArray(processedResumeJson.work)) {
+      processedResumeJson.work = processedResumeJson.work.map(item => {
+        if (item.company && !item.name) {
+          return {
+            ...item,
+            name: item.company // Copy company to name if needed
+          };
+        }
+        return item;
+      });
+    }
+    
     // Log the API call request
     logApiCall('tailorResume (request)', { 
       jobPostingLength: jobPostingText.length,
@@ -23,7 +40,7 @@ export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: strin
         'Content-Type': 'application/json',
         'accept': 'application/json',
       },
-      body: JSON.stringify(resumeJson)
+      body: JSON.stringify(processedResumeJson)
     });
     
     const responseText = await response.text();
@@ -72,7 +89,12 @@ export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: strin
           name: "Leadership",
           keywords: ["Team Management", "Project Planning", "Strategic Decision Making"]
         }
-      ]
+      ],
+      // Ensure work items have correct structure in fallback
+      work: resumeJson.work ? resumeJson.work.map(item => ({
+        ...item,
+        name: item.company || item.name || "Example Corporation"
+      })) : []
     } : null;
     
     logApiCall('tailorResume (fallback)', { 
@@ -87,7 +109,16 @@ export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: strin
           phone: "(555) 123-4567",
           summary: "Experienced professional with expertise in team leadership and project management."
         },
-        work: [],
+        work: [
+          {
+            name: "Example Corporation", // Use name instead of company
+            position: "Senior Developer",
+            startDate: "2020-01",
+            endDate: "2023-04",
+            summary: "Led key initiatives and projects.",
+            highlights: ["Increased revenue by 20%", "Managed a team of 5"]
+          }
+        ],
         education: [],
         skills: [
           {

@@ -10,6 +10,23 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
     const params = new URLSearchParams();
     params.append('job_posting', jobPostingText);
     
+    // Ensure resumeJson has the correct structure
+    // Make a copy to avoid modifying the original
+    const processedResumeJson = { ...resumeJson };
+    
+    // Ensure work items have 'name' field
+    if (processedResumeJson.work && Array.isArray(processedResumeJson.work)) {
+      processedResumeJson.work = processedResumeJson.work.map(item => {
+        if (item.company && !item.name) {
+          return {
+            ...item,
+            name: item.company // Copy company to name if needed
+          };
+        }
+        return item;
+      });
+    }
+    
     // Log the API call request
     logApiCall('scoreResume (request)', { 
       jobPostingLength: jobPostingText.length,
@@ -23,7 +40,7 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
         'Content-Type': 'application/json',
         'accept': 'application/json',
       },
-      body: JSON.stringify(resumeJson)
+      body: JSON.stringify(processedResumeJson)
     });
     
     const responseText = await response.text();
