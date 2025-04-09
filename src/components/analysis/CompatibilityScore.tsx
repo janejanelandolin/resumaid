@@ -19,8 +19,9 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
 }) => {
   // Helper function to determine qualification badge color
   const getQualificationColor = (qualification: string) => {
-    if (qualification === 'Qualified') return 'bg-green-100 text-green-800';
-    if (qualification === 'Unqualified') return 'bg-red-100 text-red-800';
+    if (!qualification) return 'bg-gray-100 text-gray-800';
+    if (qualification.toLowerCase().includes('qualified')) return 'bg-green-100 text-green-800';
+    if (qualification.toLowerCase().includes('unqualified')) return 'bg-red-100 text-red-800';
     return 'bg-yellow-100 text-yellow-800';
   };
 

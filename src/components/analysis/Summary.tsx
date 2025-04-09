@@ -4,7 +4,11 @@ import { Sparkle } from 'lucide-react';
 import { useResumeContext } from '../../contexts/ResumeContext';
 
 const Summary: React.FC = () => {
-  const { jobTitle } = useResumeContext();
+  const { jobTitle, originalScore, tailoredScore } = useResumeContext();
+  
+  // Get the explanation/score_reason from the API response, or use a default message
+  const scoreReason = tailoredScore?.explanation || originalScore?.explanation || 
+    `Your resume could be better aligned with the ${jobTitle} position. We've identified several opportunities to highlight your relevant experience and add keywords that will help you pass ATS screening.`;
   
   return (
     <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden">
@@ -19,7 +23,7 @@ const Summary: React.FC = () => {
         <Sparkle size={20} />
       </div>
       <TypewriterText
-        text={`Your resume could be better aligned with the ${jobTitle} position. We've identified several opportunities to highlight your relevant experience and add keywords that will help you pass ATS screening.`}
+        text={scoreReason}
         className="text-sm relative z-10"
       />
     </div>
