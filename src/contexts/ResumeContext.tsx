@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext } from 'react';
 
 export interface JobPosting {
@@ -39,6 +40,67 @@ export interface Feedback {
   }[];
 }
 
+// Add EditDecision interface
+export interface EditDecision {
+  editIndex: number;
+  accepted: boolean;
+}
+
+// Add ResumeTemplate interface
+export interface ResumeTemplate {
+  id: string;
+  name: string;
+  thumbnail: string;
+  description: string;
+}
+
+// JSON Resume interfaces for getOptimizedResume
+export interface ResumeBasics {
+  name: string;
+  email: string;
+  phone: string;
+  url?: string;
+  summary?: string;
+}
+
+export interface ResumeWorkExperience {
+  name: string;
+  position: string;
+  startDate: string;
+  endDate?: string;
+  summary?: string;
+  highlights?: string[];
+}
+
+export interface ResumeEducation {
+  institution: string;
+  area: string;
+  studyType: string;
+  startDate: string;
+  endDate?: string;
+}
+
+export interface ResumeSkill {
+  name: string;
+  keywords: string[];
+}
+
+export interface ResumeProject {
+  name: string;
+  description: string;
+  startDate?: string;
+  endDate?: string;
+  highlights?: string[];
+}
+
+export interface OptimizedResume {
+  basics: ResumeBasics;
+  work: ResumeWorkExperience[];
+  education: ResumeEducation[];
+  skills: ResumeSkill[];
+  projects?: ResumeProject[];
+}
+
 export interface ResumeContextType {
   jobTitle: string;
   setJobTitle: (title: string) => void;
@@ -52,6 +114,15 @@ export interface ResumeContextType {
   setFeedback: (feedback: Feedback) => void;
   apiErrors: string[];
   setApiErrors: (errors: string[]) => void;
+  
+  // Add missing properties
+  selectedTemplates: ResumeTemplate[];
+  addTemplate: (template: ResumeTemplate) => void;
+  removeTemplate: (templateId: string) => void;
+  editDecisions: EditDecision[];
+  addEditDecision: (decision: EditDecision) => void;
+  parseResumeContent: (content: string) => void;
+  getOptimizedResume: () => OptimizedResume | null;
 }
 
 export const ResumeContext = createContext<ResumeContextType | undefined>(undefined);
@@ -62,9 +133,97 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [uploadData, setUploadData] = useState<UploadData | null>(null);
   const [atsFeedback, setAtsFeedback] = useState<ATSFeedback | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
-
-  // Add API errors state
   const [apiErrors, setApiErrors] = useState<string[]>([]);
+  
+  // Add state for the missing properties
+  const [selectedTemplates, setSelectedTemplates] = useState<ResumeTemplate[]>([]);
+  const [editDecisions, setEditDecisions] = useState<EditDecision[]>([]);
+  const [parsedResume, setParsedResume] = useState<OptimizedResume | null>(null);
+
+  // Template management functions
+  const addTemplate = (template: ResumeTemplate) => {
+    if (selectedTemplates.length < 5 && !selectedTemplates.some(t => t.id === template.id)) {
+      setSelectedTemplates([...selectedTemplates, template]);
+    }
+  };
+
+  const removeTemplate = (templateId: string) => {
+    setSelectedTemplates(selectedTemplates.filter(t => t.id !== templateId));
+  };
+
+  // Edit decision management
+  const addEditDecision = (decision: EditDecision) => {
+    // If a decision for this edit already exists, replace it
+    const existingIndex = editDecisions.findIndex(d => d.editIndex === decision.editIndex);
+    
+    if (existingIndex >= 0) {
+      const newDecisions = [...editDecisions];
+      newDecisions[existingIndex] = decision;
+      setEditDecisions(newDecisions);
+    } else {
+      setEditDecisions([...editDecisions, decision]);
+    }
+  };
+
+  // Parse resume content from uploaded text
+  const parseResumeContent = (content: string) => {
+    try {
+      // This is a simplified implementation - in a real app, this would parse
+      // the resume content into a structured format
+      
+      // Mock implementation - create a basic resume structure
+      const mockResume: OptimizedResume = {
+        basics: {
+          name: "John Doe",
+          email: "john.doe@example.com",
+          phone: "(555) 123-4567",
+          summary: "Experienced professional with a track record of success."
+        },
+        work: [
+          {
+            name: "Example Company",
+            position: "Senior Position",
+            startDate: "2020-01",
+            endDate: "2023-01",
+            summary: "Led key initiatives and projects.",
+            highlights: ["Increased revenue by 20%", "Managed a team of 5"]
+          }
+        ],
+        education: [
+          {
+            institution: "University of Example",
+            area: "Computer Science",
+            studyType: "Bachelor",
+            startDate: "2014-09",
+            endDate: "2018-05"
+          }
+        ],
+        skills: [
+          {
+            name: "Programming",
+            keywords: ["JavaScript", "TypeScript", "React"]
+          },
+          {
+            name: "Soft Skills",
+            keywords: ["Leadership", "Communication", "Problem Solving"]
+          }
+        ]
+      };
+      
+      setParsedResume(mockResume);
+    } catch (error) {
+      console.error("Error parsing resume content:", error);
+    }
+  };
+
+  // Get optimized resume with edit decisions applied
+  const getOptimizedResume = (): OptimizedResume | null => {
+    if (!parsedResume) return null;
+    
+    // In a real implementation, this would apply all accepted edits
+    // to the resume content and return the optimized version
+    return parsedResume;
+  };
 
   const value = {
     jobTitle,
@@ -79,6 +238,15 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setFeedback,
     apiErrors,
     setApiErrors,
+    
+    // Add the missing properties to the context value
+    selectedTemplates,
+    addTemplate,
+    removeTemplate,
+    editDecisions,
+    addEditDecision,
+    parseResumeContent,
+    getOptimizedResume,
   };
 
   return <ResumeContext.Provider value={value}>{children}</ResumeContext.Provider>;
