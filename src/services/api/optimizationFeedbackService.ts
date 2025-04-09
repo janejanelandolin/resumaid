@@ -1,3 +1,4 @@
+
 import { JobPosting, UploadData, Feedback } from '../../contexts/ResumeContext';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
@@ -50,19 +51,19 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
       jobPostingTitle: jobPosting.title,
       jobPostingContentPreview: jobPostingContent.substring(0, 50) + '...',
       jobPostingSource: jobPosting.userProvided ? 'user-provided' : 'API-generated'
-    }, 'Sending POST request with query parameters');
+    }, 'Sending POST request with request body');
     
-    // Build query parameters - using exactly 'resume' and 'job_posting' as parameter names
-    const params = new URLSearchParams();
-    params.append('resume', uploadData.content);
-    params.append('job_posting', jobPostingContent);
-    
-    // Send as POST with query parameters in the URL
-    const response = await fetch(`${API_BASE_URL}feedback?${params.toString()}`, {
+    // FIX: Send as POST with request body instead of query parameters
+    const response = await fetch(`${API_BASE_URL}feedback`, {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'accept': 'application/json',
-      }
+      },
+      body: JSON.stringify({
+        resume: uploadData.content,
+        job_posting: jobPostingContent
+      })
     });
     
     const responseText = await response.text();

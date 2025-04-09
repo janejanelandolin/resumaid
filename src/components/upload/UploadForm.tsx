@@ -38,7 +38,8 @@ const UploadForm = ({
     setUploadData, 
     setAtsFeedback, 
     setFeedback,
-    setJobPosting
+    setJobPosting,
+    setApiErrors: setGlobalApiErrors // Use the global API errors state
   } = useResumeContext();
   
   const [isUploading, setIsUploading] = useState(false);
@@ -51,6 +52,7 @@ const UploadForm = ({
     setResumeText('');
     setApiErrorsLocal([]);
     setApiErrors([]);
+    setGlobalApiErrors([]); // Clear global API errors
   };
 
   const handleTextInput = (text: string) => {
@@ -58,6 +60,7 @@ const UploadForm = ({
     setUploadedFile(null);
     setApiErrorsLocal([]);
     setApiErrors([]);
+    setGlobalApiErrors([]); // Clear global API errors
   };
 
   const handleJobPostingInput = (text: string) => {
@@ -102,6 +105,7 @@ const UploadForm = ({
     setProgressText('Uploading resume...');
     setApiErrorsLocal([]);
     setApiErrors([]);
+    setGlobalApiErrors([]); // Clear global API errors
 
     try {
       // Step 1: Upload resume
@@ -123,6 +127,7 @@ const UploadForm = ({
         const newErrors = [...apiErrorsLocal, `Upload Error: ${uploadResponse.error}`];
         setApiErrorsLocal(newErrors);
         setApiErrors(newErrors);
+        setGlobalApiErrors(newErrors); // Set global API errors
         showErrorDialog();
       }
       
@@ -148,6 +153,7 @@ const UploadForm = ({
         const newErrors = [...apiErrorsLocal, `ATS Feedback Error: ${atsFeedbackResponse.error}`];
         setApiErrorsLocal(newErrors);
         setApiErrors(newErrors);
+        setGlobalApiErrors(newErrors); // Set global API errors
         if (atsFeedbackResponse.data) {
           setAtsFeedback(atsFeedbackResponse.data);
         } else {
@@ -167,6 +173,7 @@ const UploadForm = ({
         const newErrors = [...apiErrorsLocal, `Feedback Error: ${feedbackResponse.error}`];
         setApiErrorsLocal(newErrors);
         setApiErrors(newErrors);
+        setGlobalApiErrors(newErrors); // Set global API errors
         if (feedbackResponse.data) {
           setFeedback(feedbackResponse.data);
         } else {
@@ -207,6 +214,7 @@ const UploadForm = ({
         const newErrors = [...apiErrorsLocal, `Process Error: ${error.message}`];
         setApiErrorsLocal(newErrors);
         setApiErrors(newErrors);
+        setGlobalApiErrors(newErrors); // Set global API errors
       }
       
       showErrorDialog();

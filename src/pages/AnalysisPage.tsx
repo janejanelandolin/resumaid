@@ -9,10 +9,12 @@ import MissingKeywords from '@/components/analysis/MissingKeywords';
 import Summary from '@/components/analysis/Summary';
 import CompatibilityScore from '@/components/analysis/CompatibilityScore';
 import ImprovementSuggestions from '@/components/analysis/ImprovementSuggestions';
+import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
+import ApiErrorDisplay from '@/components/analysis/ApiErrorDisplay';
 
 const AnalysisPage = () => {
   const navigate = useNavigate();
-  const { jobTitle, atsFeedback, feedback } = useResumeContext();
+  const { jobTitle, atsFeedback, feedback, apiErrors } = useResumeContext();
   const [showDebug, setShowDebug] = useState(false);
 
   useEffect(() => {
@@ -41,6 +43,12 @@ const AnalysisPage = () => {
       <PageContainer className="py-6 justify-start">
         <div className="w-full space-y-6 relative">
           <PageHeader />
+          
+          {/* Display API errors if any */}
+          {apiErrors && apiErrors.length > 0 && (
+            <ApiErrorDisplay errors={apiErrors} />
+          )}
+          
           <MissingKeywords atsFeedback={atsFeedback} />
           <Summary />
           <CompatibilityScore 
@@ -83,6 +91,13 @@ const AnalysisPage = () => {
               </div>
             )}
           </div>
+          
+          {/* Add the API debug helper */}
+          {apiErrors && apiErrors.length > 0 && (
+            <ApiDebugHelper 
+              error="API errors occurred while processing your resume. Check details above or try the troubleshooting options."
+            />
+          )}
         </div>
       </PageContainer>
     </div>
