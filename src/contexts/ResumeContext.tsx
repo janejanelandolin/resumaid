@@ -40,6 +40,66 @@ export interface Feedback {
   }[];
 }
 
+// Add ResumeJson interface for /resume_schema endpoint
+export interface ResumeJson {
+  basics: {
+    name: string;
+    email: string;
+    phone: string;
+    summary?: string;
+    location?: {
+      address?: string;
+      city?: string;
+      region?: string;
+      postalCode?: string;
+      countryCode?: string;
+    };
+    profiles?: Array<{
+      network: string;
+      username: string;
+      url?: string;
+    }>;
+  };
+  work: Array<{
+    company: string;
+    position: string;
+    startDate: string;
+    endDate?: string;
+    summary?: string;
+    highlights?: string[];
+  }>;
+  education: Array<{
+    institution: string;
+    area: string;
+    studyType: string;
+    startDate: string;
+    endDate?: string;
+    gpa?: string;
+  }>;
+  skills: Array<{
+    name: string;
+    level?: string;
+    keywords: string[];
+  }>;
+  projects?: Array<{
+    name: string;
+    description: string;
+    highlights?: string[];
+    keywords?: string[];
+    startDate?: string;
+    endDate?: string;
+    url?: string;
+  }>;
+}
+
+// Add ScoreResponse interface for /score_resume endpoint
+export interface ScoreResponse {
+  score: number;
+  qualification: string;
+  missing_keywords: string[];
+  explanation: string;
+}
+
 // Add EditDecision interface
 export interface EditDecision {
   editIndex: number;
@@ -123,6 +183,16 @@ export interface ResumeContextType {
   addEditDecision: (decision: EditDecision) => void;
   parseResumeContent: (content: string) => void;
   getOptimizedResume: () => OptimizedResume | null;
+  
+  // Add new properties for the updated workflow
+  resumeJson: ResumeJson | null;
+  setResumeJson: (resumeJson: ResumeJson | null) => void;
+  tailoredResumeJson: ResumeJson | null;
+  setTailoredResumeJson: (tailoredResumeJson: ResumeJson | null) => void;
+  originalScore: ScoreResponse | null;
+  setOriginalScore: (score: ScoreResponse | null) => void;
+  tailoredScore: ScoreResponse | null;
+  setTailoredScore: (score: ScoreResponse | null) => void;
 }
 
 export const ResumeContext = createContext<ResumeContextType | undefined>(undefined);
@@ -139,6 +209,12 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [selectedTemplates, setSelectedTemplates] = useState<ResumeTemplate[]>([]);
   const [editDecisions, setEditDecisions] = useState<EditDecision[]>([]);
   const [parsedResume, setParsedResume] = useState<OptimizedResume | null>(null);
+  
+  // Add new state for the updated workflow
+  const [resumeJson, setResumeJson] = useState<ResumeJson | null>(null);
+  const [tailoredResumeJson, setTailoredResumeJson] = useState<ResumeJson | null>(null);
+  const [originalScore, setOriginalScore] = useState<ScoreResponse | null>(null);
+  const [tailoredScore, setTailoredScore] = useState<ScoreResponse | null>(null);
 
   // Template management functions
   const addTemplate = (template: ResumeTemplate) => {
@@ -247,6 +323,16 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     addEditDecision,
     parseResumeContent,
     getOptimizedResume,
+    
+    // Add new properties to the context value
+    resumeJson,
+    setResumeJson,
+    tailoredResumeJson,
+    setTailoredResumeJson,
+    originalScore,
+    setOriginalScore,
+    tailoredScore,
+    setTailoredScore,
   };
 
   return <ResumeContext.Provider value={value}>{children}</ResumeContext.Provider>;

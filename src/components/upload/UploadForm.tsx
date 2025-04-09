@@ -36,10 +36,13 @@ const UploadForm = ({
   const { 
     jobPosting, 
     setUploadData, 
-    setAtsFeedback, 
-    setFeedback,
+    setApiErrors: setGlobalApiErrors,
     setJobPosting,
-    setApiErrors: setGlobalApiErrors // Use the global API errors state
+    // Add new context values for the updated workflow
+    setResumeJson,
+    setTailoredResumeJson,
+    setOriginalScore,
+    setTailoredScore
   } = useResumeContext();
   
   const [isUploading, setIsUploading] = useState(false);
@@ -109,7 +112,7 @@ const UploadForm = ({
 
     try {
       // Step 1: Upload resume
-      setProgress(20);
+      setProgress(15);
       let fileToUpload = uploadedFile;
       
       if (!fileToUpload && resumeText) {
@@ -144,44 +147,96 @@ const UploadForm = ({
         return;
       }
       
-      // Step 2: Get ATS feedback
-      setProgress(50);
-      setProgressText('Analyzing with ATS systems...');
-      const atsFeedbackResponse = await apiService.getATSFeedback(jobPosting, uploadResponse.data);
+      // Step 2: Get Resume Schema
+      setProgress(35);
+      setProgressText('Converting resume to structured format...');
+      const resumeSchemaResponse = await apiService.getResumeSchema(uploadResponse.data.content);
       
-      if (atsFeedbackResponse.error) {
-        const newErrors = [...apiErrorsLocal, `ATS Feedback Error: ${atsFeedbackResponse.error}`];
+      if (resumeSchemaResponse.error) {
+        const newErrors = [...apiErrorsLocal, `Resume Schema Error: ${resumeSchemaResponse.error}`];
         setApiErrorsLocal(newErrors);
         setApiErrors(newErrors);
         setGlobalApiErrors(newErrors); // Set global API errors
-        if (atsFeedbackResponse.data) {
-          setAtsFeedback(atsFeedbackResponse.data);
+        if (resumeSchemaResponse.data) {
+          setResumeJson(resumeSchemaResponse.data);
         } else {
           showErrorDialog();
-          throw new Error("Failed to get ATS feedback");
+          throw new Error("Failed to get resume schema");
         }
-      } else if (atsFeedbackResponse.data) {
-        setAtsFeedback(atsFeedbackResponse.data);
+      } else if (resumeSchemaResponse.data) {
+        setResumeJson(resumeSchemaResponse.data);
       }
       
-      // Step 3: Get optimization feedback
-      setProgress(80);
-      setProgressText('Generating optimization suggestions...');
-      const feedbackResponse = await apiService.getFeedback(jobPosting, uploadResponse.data);
-      
-      if (feedbackResponse.error) {
-        const newErrors = [...apiErrorsLocal, `Feedback Error: ${feedbackResponse.error}`];
-        setApiErrorsLocal(newErrors);
-        setApiErrors(newErrors);
-        setGlobalApiErrors(newErrors); // Set global API errors
-        if (feedbackResponse.data) {
-          setFeedback(feedbackResponse.data);
-        } else {
-          showErrorDialog();
-          throw new Error("Failed to get optimization suggestions");
+      // Format job posting as a simple string
+      let jobPostingText = '';
+      if (jobPosting.userProvided && jobPosting.description) {
+        jobPostingText = jobPosting.description;
+      } else if (jobPosting.description) {
+        jobPostingText = jobPosting.description;
+      } else {
+        jobPostingText = jobPosting.title || '';
+        
+        if (jobPosting.requirements && jobPosting.requirements.length > 0) {
+          jobPostingText += `\n\nRequirements:\n${jobPosting.requirements.join('\n')}`;
         }
-      } else if (feedbackResponse.data) {
-        setFeedback(feedbackResponse.data);
+        
+        if (jobPosting.skills && jobPosting.skills.length > 0) {
+          jobPostingText += `\n\nSkills:\n${jobPosting.skills.join('\n')}`;
+        }
+      }
+      
+      // Step 3: Score the original resume
+      setProgress(55);
+      setProgressText('Scoring your resume...');
+      
+      if (resumeSchemaResponse.data) {
+        const scoreResponse = await apiService.scoreResume(resumeSchemaResponse.data, jobPostingText);
+        
+        if (scoreResponse.error) {
+          const newErrors = [...apiErrorsLocal, `Score Error: ${scoreResponse.error}`];
+          setApiErrorsLocal(newErrors);
+          setApiErrors(newErrors);
+          setGlobalApiErrors(newErrors); // Set global API errors
+          if (scoreResponse.data) {
+            setOriginalScore(scoreResponse.data);
+          }
+        } else if (scoreResponse.data) {
+          setOriginalScore(scoreResponse.data);
+        }
+        
+        // Step 4: Tailor the resume
+        setProgress(75);
+        setProgressText('Tailoring your resume to the job...');
+        const tailorResponse = await apiService.tailorResume(resumeSchemaResponse.data, jobPostingText);
+        
+        if (tailorResponse.error) {
+          const newErrors = [...apiErrorsLocal, `Tailor Error: ${tailorResponse.error}`];
+          setApiErrorsLocal(newErrors);
+          setApiErrors(newErrors);
+          setGlobalApiErrors(newErrors); // Set global API errors
+          if (tailorResponse.data) {
+            setTailoredResumeJson(tailorResponse.data);
+          }
+        } else if (tailorResponse.data) {
+          setTailoredResumeJson(tailorResponse.data);
+          
+          // Step 5: Score the tailored resume
+          setProgress(90);
+          setProgressText('Evaluating optimized resume...');
+          const tailoredScoreResponse = await apiService.scoreResume(tailorResponse.data, jobPostingText);
+          
+          if (tailoredScoreResponse.error) {
+            const newErrors = [...apiErrorsLocal, `Tailored Score Error: ${tailoredScoreResponse.error}`];
+            setApiErrorsLocal(newErrors);
+            setApiErrors(newErrors);
+            setGlobalApiErrors(newErrors); // Set global API errors
+            if (tailoredScoreResponse.data) {
+              setTailoredScore(tailoredScoreResponse.data);
+            }
+          } else if (tailoredScoreResponse.data) {
+            setTailoredScore(tailoredScoreResponse.data);
+          }
+        }
       }
       
       // Complete and navigate
@@ -219,17 +274,6 @@ const UploadForm = ({
       
       showErrorDialog();
       setIsUploading(false);
-    }
-  };
-
-  const handlePasteTextInstead = () => {
-    // Find and click the resume text collapsible trigger
-    const resumeTextTrigger = document.querySelector('span:contains("Paste Resume Text")');
-    if (resumeTextTrigger) {
-      const triggerButton = resumeTextTrigger.closest('button');
-      if (triggerButton instanceof HTMLButtonElement) {
-        triggerButton.click();
-      }
     }
   };
 

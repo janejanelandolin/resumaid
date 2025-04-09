@@ -14,16 +14,31 @@ import ApiErrorDisplay from '@/components/analysis/ApiErrorDisplay';
 
 const AnalysisPage = () => {
   const navigate = useNavigate();
-  const { jobTitle, atsFeedback, feedback, apiErrors } = useResumeContext();
+  const { 
+    jobTitle, 
+    atsFeedback, 
+    feedback, 
+    apiErrors,
+    // New workflow values
+    originalScore,
+    tailoredScore,
+    resumeJson,
+    tailoredResumeJson
+  } = useResumeContext();
   const [showDebug, setShowDebug] = useState(false);
 
   useEffect(() => {
-    if (!atsFeedback || !feedback) {
+    // Check if we have at least the new data or the old data
+    const hasOldData = atsFeedback && feedback;
+    const hasNewData = originalScore && tailoredScore;
+    
+    if (!hasOldData && !hasNewData) {
       navigate('/upload');
     }
-  }, [atsFeedback, feedback, navigate]);
+  }, [atsFeedback, feedback, originalScore, tailoredScore, navigate]);
 
-  if (!atsFeedback || !feedback) {
+  // If neither old nor new data is available, don't render
+  if ((!atsFeedback || !feedback) && (!originalScore || !tailoredScore)) {
     return null;
   }
 
@@ -31,12 +46,34 @@ const AnalysisPage = () => {
     navigate('/payment');
   };
 
-  // Get the similarity score from JobPostingFulltext_ResumeFulltext_similarity
-  // Removed the *100 multiplication
-  const atsSimilarity = atsFeedback.JobPostingFulltext_ResumeFulltext_similarity || 0;
+  // Determine which data source to use
+  const useNewWorkflow = !!originalScore && !!tailoredScore;
+  
+  // Get the scores based on data availability
+  const originalSimilarity = useNewWorkflow 
+    ? originalScore?.score || 0 
+    : atsFeedback?.JobPostingFulltext_ResumeFulltext_similarity || 0;
+  
+  const tailoredSimilarity = useNewWorkflow
+    ? tailoredScore?.score || 0
+    : feedback?.similarity || 0;
   
   // Calculate the improvement percentage
-  const improvement = feedback.similarity - atsSimilarity;
+  const improvement = tailoredSimilarity - originalSimilarity;
+
+  // Get qualifications
+  const originalQualification = useNewWorkflow
+    ? originalScore?.qualification || "Unknown"
+    : atsFeedback?.qualification || "Unknown";
+    
+  const tailoredQualification = useNewWorkflow
+    ? tailoredScore?.qualification || "Unknown"
+    : feedback?.qualification || "Unknown";
+
+  // Get missing keywords
+  const missingKeywords = useNewWorkflow
+    ? originalScore?.missing_keywords || []
+    : atsFeedback?.missing_keywords || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pt-6">
@@ -49,16 +86,32 @@ const AnalysisPage = () => {
             <ApiErrorDisplay errors={apiErrors} />
           )}
           
-          <MissingKeywords atsFeedback={atsFeedback} />
-          <Summary />
-          <CompatibilityScore 
-            atsSimilarity={atsSimilarity}
-            feedbackSimilarity={feedback.similarity}
-            improvement={improvement}
-            atsQualification={atsFeedback.qualification}
-            feedbackQualification={feedback.qualification}
+          <MissingKeywords 
+            atsFeedback={useNewWorkflow ? { missing_keywords: missingKeywords } as any : atsFeedback} 
           />
-          <ImprovementSuggestions feedback={feedback} />
+          
+          <Summary />
+          
+          <CompatibilityScore 
+            atsSimilarity={originalSimilarity}
+            feedbackSimilarity={tailoredSimilarity}
+            improvement={improvement}
+            atsQualification={originalQualification}
+            feedbackQualification={tailoredQualification}
+          />
+          
+          <ImprovementSuggestions 
+            feedback={
+              useNewWorkflow 
+                ? { 
+                    suggested_edits: [], 
+                    similarity: tailoredSimilarity,
+                    qualification: tailoredQualification,
+                    score_reason: tailoredScore?.explanation || "Your resume has been optimized for this job."
+                  }
+                : feedback
+            } 
+          />
 
           <Button 
             onClick={handleContinue} 
@@ -84,10 +137,26 @@ const AnalysisPage = () => {
             
             {showDebug && (
               <div className="mt-4 p-4 bg-slate-800 text-slate-100 rounded-md overflow-auto max-h-[400px]">
-                <h3 className="font-mono text-sm mb-2">ATS Feedback Response:</h3>
-                <pre className="text-xs whitespace-pre-wrap">
-                  {JSON.stringify(atsFeedback, null, 2)}
-                </pre>
+                {useNewWorkflow ? (
+                  <>
+                    <h3 className="font-mono text-sm mb-2">Original Score Response:</h3>
+                    <pre className="text-xs whitespace-pre-wrap">
+                      {JSON.stringify(originalScore, null, 2)}
+                    </pre>
+                    
+                    <h3 className="font-mono text-sm mt-4 mb-2">Tailored Score Response:</h3>
+                    <pre className="text-xs whitespace-pre-wrap">
+                      {JSON.stringify(tailoredScore, null, 2)}
+                    </pre>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="font-mono text-sm mb-2">ATS Feedback Response:</h3>
+                    <pre className="text-xs whitespace-pre-wrap">
+                      {JSON.stringify(atsFeedback, null, 2)}
+                    </pre>
+                  </>
+                )}
               </div>
             )}
           </div>
