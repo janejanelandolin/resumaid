@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useResumeContext } from '../contexts/ResumeContext';
 import PageContainer from '@/components/PageContainer';
@@ -10,7 +11,17 @@ import ApiOutputsTab from '@/components/debug/ApiOutputsTab';
 import ApiEndpointInfo from '@/components/debug/ApiEndpointInfo';
 
 const DebugPage = () => {
-  const { jobPosting, uploadData, atsFeedback, feedback } = useResumeContext();
+  const { 
+    jobPosting, 
+    uploadData, 
+    atsFeedback, 
+    feedback,
+    // Add new workflow state values
+    resumeJson,
+    tailoredResumeJson,
+    originalScore,
+    tailoredScore
+  } = useResumeContext();
   const [activeTab, setActiveTab] = useState('inputs');
 
   // Format JSON for display with proper indentation
@@ -99,6 +110,10 @@ const DebugPage = () => {
                 uploadData={uploadData}
                 atsFeedback={atsFeedback}
                 feedback={feedback}
+                resumeJson={resumeJson}
+                tailoredResumeJson={tailoredResumeJson}
+                originalScore={originalScore}
+                tailoredScore={tailoredScore}
                 hasData={hasData}
               />
             </TabsContent>
