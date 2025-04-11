@@ -21,11 +21,14 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const [file, setFile] = useState<File | null>(null);
   const [resumeText, setResumeText] = useState('');
   const [isResumeTextOpen, setIsResumeTextOpen] = useState(false);
+  const [fileUploadError, setFileUploadError] = useState<string | null>(null);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
+        setFileUploadError(null);
         const uploadedFile = acceptedFiles[0];
+        console.log(`File selected: ${uploadedFile.name} (${uploadedFile.type}), size: ${uploadedFile.size} bytes`);
         setFile(uploadedFile);
         onFileUpload(uploadedFile);
         // Clear text input when file is uploaded
@@ -43,6 +46,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       'text/plain': ['.txt'],
     },
     multiple: false,
+    onDropRejected: (fileRejections) => {
+      const error = fileRejections[0]?.errors[0]?.message || 'Invalid file type';
+      setFileUploadError(`Error: ${error}`);
+    }
   });
 
   React.useEffect(() => {
@@ -54,6 +61,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       onTextInput(resumeText);
       // Clear file when text is submitted
       setFile(null);
+      setFileUploadError(null);
     }
   };
 
@@ -66,7 +74,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           {...getRootProps()}
           className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center h-full min-h-[300px] ${
             isDragging ? 'border-primary bg-primary/10' : 'border-gray-300 hover:border-primary/50 hover:bg-gray-50'
-          }`}
+          } ${fileUploadError ? 'border-red-300' : ''}`}
         >
           <input {...getInputProps()} />
           <Upload 
@@ -93,6 +101,12 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               <p className="mt-2 text-xs text-gray-400">
                 Or click to browse your files
               </p>
+              
+              {fileUploadError && (
+                <p className="mt-2 text-sm text-red-500">
+                  {fileUploadError}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -148,4 +162,3 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 };
 
 export default FileUploader;
-
