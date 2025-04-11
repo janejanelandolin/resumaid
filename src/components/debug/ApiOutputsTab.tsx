@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DebugCard from './DebugCard';
 import { JobPosting, UploadData, ATSFeedback, Feedback, ResumeJson, ScoreResponse } from '../../contexts/ResumeContext';
@@ -6,9 +5,10 @@ import { JobPosting, UploadData, ATSFeedback, Feedback, ResumeJson, ScoreRespons
 interface ApiOutputsTabProps {
   jobPosting: JobPosting | null;
   uploadData: UploadData | null;
-  atsFeedback: ATSFeedback | null;
-  feedback: Feedback | null;
-  // Add new workflow data
+  // Remove old workflow data
+  // atsFeedback: ATSFeedback | null;
+  // feedback: Feedback | null;
+  // Keep new workflow data
   resumeJson: ResumeJson | null;
   tailoredResumeJson: ResumeJson | null;
   originalScore: ScoreResponse | null;
@@ -19,8 +19,10 @@ interface ApiOutputsTabProps {
 const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
   jobPosting,
   uploadData,
-  atsFeedback,
-  feedback,
+  // Remove old workflow props
+  // atsFeedback,
+  // feedback,
+  // Keep new workflow props
   resumeJson,
   tailoredResumeJson,
   originalScore,
@@ -53,35 +55,18 @@ const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
         }}
       />
 
-      {/* Old workflow responses */}
-      <DebugCard
-        title="ATS Feedback Response (Legacy)"
-        description="Response from the ATS feedback API endpoint (old workflow)"
-        data={atsFeedback}
-        isAvailable={hasData(atsFeedback)}
-        notAvailableText="No ATS feedback available."
-      />
-
-      <DebugCard
-        title="Optimization Feedback Response (Legacy)"
-        description="Response from the optimization feedback API endpoint (old workflow)"
-        data={feedback}
-        isAvailable={hasData(feedback)}
-        notAvailableText="No optimization feedback available."
-      />
-
-      {/* New workflow responses */}
+      {/* New workflow responses - rearranged to match API workflow */}
       <DebugCard
         title="Resume Schema Response"
-        description="Response from the resume schema API endpoint (new workflow)"
+        description="Response from the /resume_schema API endpoint"
         data={resumeJson}
         isAvailable={hasData(resumeJson)}
         notAvailableText="No resume schema available."
       />
 
       <DebugCard
-        title="Original Score Response"
-        description="Response from scoring the original resume (new workflow)"
+        title="Original Score Response (Unoptimized)"
+        description="Response from the /score_resume API for original resume"
         data={originalScore}
         isAvailable={hasData(originalScore)}
         notAvailableText="No original score available."
@@ -89,15 +74,15 @@ const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
 
       <DebugCard
         title="Tailored Resume Response"
-        description="Response from the tailor resume API endpoint (new workflow)"
+        description="Response from the /tailor_resume API endpoint"
         data={tailoredResumeJson}
         isAvailable={hasData(tailoredResumeJson)}
         notAvailableText="No tailored resume available."
       />
 
       <DebugCard
-        title="Tailored Score Response"
-        description="Response from scoring the tailored resume (new workflow)"
+        title="Optimized Score Response"
+        description="Response from the /score_resume API for tailored resume"
         data={tailoredScore}
         isAvailable={hasData(tailoredScore)}
         notAvailableText="No tailored score available."
