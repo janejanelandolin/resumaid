@@ -105,55 +105,57 @@ const UploadForm = ({
     // Reset state
     setIsUploading(true);
     setProgress(0);
-    setProgressText('Uploading resume...');
+    setProgressText('Processing resume...');
     setApiErrorsLocal([]);
     setApiErrors([]);
     setGlobalApiErrors([]); // Clear global API errors
 
     try {
-      // Step 1: Upload resume
-      setProgress(15);
-      let fileToUpload = uploadedFile;
+      // Different processing flow based on whether we have a file or text input
+      let extractedContent = '';
       
-      if (!fileToUpload && resumeText) {
-        fileToUpload = createTextFile(resumeText);
+      // If we have a file, upload it through the /upload endpoint
+      if (uploadedFile) {
+        setProgressText('Uploading resume file...');
+        setProgress(15);
+        
+        const uploadResponse = await apiService.uploadResume(uploadedFile);
+        console.log("Upload response:", uploadResponse);
+        
+        if (uploadResponse.error) {
+          const newErrors = [...apiErrorsLocal, `Upload Error: ${uploadResponse.error}`];
+          setApiErrorsLocal(newErrors);
+          setApiErrors(newErrors);
+          setGlobalApiErrors(newErrors);
+          showErrorDialog();
+        }
+        
+        if (!uploadResponse.data) {
+          throw new Error("Failed to upload resume: No data returned");
+        }
+        
+        setUploadData(uploadResponse.data);
+        
+        // Check if content is properly set
+        if (!uploadResponse.data.content || uploadResponse.data.content.trim() === '') {
+          setIsUploading(false);
+          showContentWarning();
+          return;
+        }
+        
+        // Extract the resume text content from the upload response
+        extractedContent = uploadResponse.data.content;
+      } else if (resumeText) {
+        // If we have direct text input, use it directly
+        extractedContent = resumeText;
+        setProgress(30);
       }
       
-      if (!fileToUpload) {
-        throw new Error("No file or text to upload");
-      }
-      
-      const uploadResponse = await apiService.uploadResume(fileToUpload);
-      console.log("Upload response:", uploadResponse);
-      
-      if (uploadResponse.error) {
-        const newErrors = [...apiErrorsLocal, `Upload Error: ${uploadResponse.error}`];
-        setApiErrorsLocal(newErrors);
-        setApiErrors(newErrors);
-        setGlobalApiErrors(newErrors); // Set global API errors
-        showErrorDialog();
-      }
-      
-      if (!uploadResponse.data) {
-        throw new Error("Failed to upload resume: No data returned");
-      }
-      
-      setUploadData(uploadResponse.data);
-      
-      // Check if content is properly set
-      if (!uploadResponse.data.content || uploadResponse.data.content.trim() === '') {
-        setIsUploading(false);
-        showContentWarning();
-        return;
-      }
-      
-      // Extract the resume text content from the upload response
-      const extractedContent = uploadResponse.data.content;
-      console.log("Extracted content length:", extractedContent.length);
+      console.log("Content to process length:", extractedContent.length);
       console.log("Content preview:", extractedContent.substring(0, 100) + '...');
       
-      // Step 2: Get Resume Schema - Using the extracted text content, not the file
-      setProgress(35);
+      // Step 2: Get Resume Schema - Using the extracted text content
+      setProgress(40);
       setProgressText('Converting resume to structured format...');
       
       const resumeSchemaResponse = await apiService.getResumeSchema(extractedContent);
@@ -163,7 +165,7 @@ const UploadForm = ({
         const newErrors = [...apiErrorsLocal, `Resume Schema Error: ${resumeSchemaResponse.error}`];
         setApiErrorsLocal(newErrors);
         setApiErrors(newErrors);
-        setGlobalApiErrors(newErrors); // Set global API errors
+        setGlobalApiErrors(newErrors);
         if (resumeSchemaResponse.data) {
           setResumeJson(resumeSchemaResponse.data);
         } else {
@@ -193,7 +195,7 @@ const UploadForm = ({
       }
       
       // Step 3: Score the original resume
-      setProgress(55);
+      setProgress(60);
       setProgressText('Scoring your resume...');
       
       if (resumeSchemaResponse.data) {
@@ -203,7 +205,7 @@ const UploadForm = ({
           const newErrors = [...apiErrorsLocal, `Score Error: ${scoreResponse.error}`];
           setApiErrorsLocal(newErrors);
           setApiErrors(newErrors);
-          setGlobalApiErrors(newErrors); // Set global API errors
+          setGlobalApiErrors(newErrors);
           if (scoreResponse.data) {
             setOriginalScore(scoreResponse.data);
           }
@@ -212,7 +214,7 @@ const UploadForm = ({
         }
         
         // Step 4: Tailor the resume
-        setProgress(75);
+        setProgress(80);
         setProgressText('Tailoring your resume to the job...');
         const tailorResponse = await apiService.tailorResume(resumeSchemaResponse.data, jobPostingText);
         
@@ -220,7 +222,7 @@ const UploadForm = ({
           const newErrors = [...apiErrorsLocal, `Tailor Error: ${tailorResponse.error}`];
           setApiErrorsLocal(newErrors);
           setApiErrors(newErrors);
-          setGlobalApiErrors(newErrors); // Set global API errors
+          setGlobalApiErrors(newErrors);
           if (tailorResponse.data) {
             setTailoredResumeJson(tailorResponse.data);
           }
@@ -236,7 +238,7 @@ const UploadForm = ({
             const newErrors = [...apiErrorsLocal, `Tailored Score Error: ${tailoredScoreResponse.error}`];
             setApiErrorsLocal(newErrors);
             setApiErrors(newErrors);
-            setGlobalApiErrors(newErrors); // Set global API errors
+            setGlobalApiErrors(newErrors);
             if (tailoredScoreResponse.data) {
               setTailoredScore(tailoredScoreResponse.data);
             }
@@ -276,7 +278,7 @@ const UploadForm = ({
         const newErrors = [...apiErrorsLocal, `Process Error: ${error.message}`];
         setApiErrorsLocal(newErrors);
         setApiErrors(newErrors);
-        setGlobalApiErrors(newErrors); // Set global API errors
+        setGlobalApiErrors(newErrors);
       }
       
       showErrorDialog();
