@@ -29,6 +29,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         setFileUploadError(null);
         const uploadedFile = acceptedFiles[0];
         console.log(`File selected: ${uploadedFile.name} (${uploadedFile.type}), size: ${uploadedFile.size} bytes`);
+        
+        // Verify file is valid
+        if (uploadedFile.size === 0) {
+          setFileUploadError('Error: File is empty');
+          return;
+        }
+        
         setFile(uploadedFile);
         onFileUpload(uploadedFile);
         // Clear text input when file is uploaded

@@ -1,5 +1,5 @@
 
-import { UploadData } from '../../contexts/ResumeContext';
+import { UploadData } from '../../types/resume';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
 export const uploadResume = async (file: File): Promise<ApiResponse<UploadData>> => {
@@ -7,7 +7,7 @@ export const uploadResume = async (file: File): Promise<ApiResponse<UploadData>>
   
   try {
     const formData = new FormData();
-    formData.append('file', file); // Use 'file' as the field name to match API expectation
+    formData.append('file', file);
     
     console.log("Upload endpoint:", `${API_BASE_URL}upload`);
     logApiCall('uploadResume (request)', { 
@@ -16,18 +16,26 @@ export const uploadResume = async (file: File): Promise<ApiResponse<UploadData>>
       fileSize: file.size 
     }, 'FormData object (not shown for brevity)');
     
+    // Log the form data entries to verify content
+    for (const pair of formData.entries()) {
+      console.log('FormData entry:', pair[0], pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]);
+    }
+    
     const response = await fetch(`${API_BASE_URL}upload`, {
       method: 'POST',
-      body: formData
+      body: formData,
       // Don't set Content-Type header, let the browser set it with the boundary
     });
     
+    console.log("Upload response status:", response.status);
+    console.log("Upload response headers:", [...response.headers.entries()]);
+    
     // Store the raw response text for potential error debugging
     const responseText = await response.text();
-    console.log("Upload raw response:", responseText);
+    console.log("Upload raw response:", responseText.substring(0, 200) + '...');
     
     if (!response.ok) {
-      const errorMessage = `API error: ${response.status} - ${responseText || 'No error details'}`;
+      const errorMessage = `API error: ${response.status} - ${responseText.substring(0, 200) || 'No error details'}`;
       logApiCall('uploadResume (response)', { 
         fileName: file.name 
       }, null, errorMessage);
@@ -40,6 +48,7 @@ export const uploadResume = async (file: File): Promise<ApiResponse<UploadData>>
     let result;
     try {
       result = JSON.parse(responseText);
+      console.log("Parsed JSON result:", result);
     } catch (parseError) {
       console.error("Failed to parse JSON response:", parseError);
       
@@ -68,11 +77,6 @@ export const uploadResume = async (file: File): Promise<ApiResponse<UploadData>>
         reader.readAsText(file);
       });
     }
-    
-    // Log the result for debugging
-    logApiCall('uploadResume (response)', { 
-      fileName: file.name 
-    }, result);
     
     // Check if content is empty or undefined
     if (!result.content || result.content.trim() === '') {
