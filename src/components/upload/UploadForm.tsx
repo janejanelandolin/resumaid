@@ -147,10 +147,17 @@ const UploadForm = ({
         return;
       }
       
-      // Step 2: Get Resume Schema
+      // Extract the resume text content from the upload response
+      const extractedContent = uploadResponse.data.content;
+      console.log("Extracted content length:", extractedContent.length);
+      console.log("Content preview:", extractedContent.substring(0, 100) + '...');
+      
+      // Step 2: Get Resume Schema - Using the extracted text content, not the file
       setProgress(35);
       setProgressText('Converting resume to structured format...');
-      const resumeSchemaResponse = await apiService.getResumeSchema(uploadResponse.data.content);
+      
+      const resumeSchemaResponse = await apiService.getResumeSchema(extractedContent);
+      console.log("Resume schema response:", resumeSchemaResponse);
       
       if (resumeSchemaResponse.error) {
         const newErrors = [...apiErrorsLocal, `Resume Schema Error: ${resumeSchemaResponse.error}`];

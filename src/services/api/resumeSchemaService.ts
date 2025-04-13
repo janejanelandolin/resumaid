@@ -1,32 +1,37 @@
 
-import { ResumeJson } from '../../contexts/ResumeContext';
+import { ResumeJson } from '../../types/resume';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
 export const getResumeSchema = async (resumeText: string): Promise<ApiResponse<ResumeJson>> => {
   console.log('Converting resume text to schema');
   
   try {
-    // Prepare the query parameter
-    const params = new URLSearchParams();
-    params.append('resume_text', resumeText);
+    // Prepare the body for a POST request instead of query parameters
+    const requestBody = JSON.stringify({ resume_text: resumeText });
     
     // Log the API call request
     logApiCall('getResumeSchema (request)', { 
       resumeTextLength: resumeText.length,
       resumeTextPreview: resumeText.substring(0, 50) + '...'
-    }, 'Sending GET request with query parameters');
+    }, 'Sending POST request with request body');
     
-    const response = await fetch(`${API_BASE_URL}resume_schema?${params.toString()}`, {
-      method: 'GET',
+    // Make a POST request with the text in the body instead of GET with query params
+    const response = await fetch(`${API_BASE_URL}resume_schema`, {
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'accept': 'application/json',
-      }
+      },
+      body: requestBody
     });
     
+    console.log("Resume schema response status:", response.status);
+    
     const responseText = await response.text();
+    console.log("Resume schema raw response:", responseText.substring(0, 100) + '...');
     
     if (!response.ok) {
-      const errorMessage = `API error: ${response.status} - ${responseText || 'No error details'}`;
+      const errorMessage = `API error: ${response.status} - ${responseText.substring(0, 200) || 'No error details'}`;
       logApiCall('getResumeSchema (response)', { 
         resumeTextLength: resumeText.length 
       }, null, errorMessage);
@@ -43,6 +48,7 @@ export const getResumeSchema = async (resumeText: string): Promise<ApiResponse<R
       
       return { data };
     } catch (parseError) {
+      console.error("Failed to parse server response:", parseError);
       const errorMessage = `Failed to parse server response: ${responseText.substring(0, 100)}...`;
       logApiCall('getResumeSchema (parse error)', { 
         resumeTextLength: resumeText.length 
@@ -55,7 +61,6 @@ export const getResumeSchema = async (resumeText: string): Promise<ApiResponse<R
     console.error("Failed to get resume schema:", error);
     
     // Fallback to mock data if API call fails
-    // Important fix: Add "name" to work items instead of "company" to match API expectations
     const fallbackData = {
       basics: {
         name: "John Doe",
@@ -65,7 +70,7 @@ export const getResumeSchema = async (resumeText: string): Promise<ApiResponse<R
       },
       work: [
         {
-          name: "Example Corporation", // Changed from "company" to "name"
+          name: "Example Corporation", // Use "name" for the company name (not "company")
           position: "Senior Developer",
           startDate: "2020-01",
           endDate: "2023-04",
