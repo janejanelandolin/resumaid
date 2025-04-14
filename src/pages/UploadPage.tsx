@@ -11,6 +11,7 @@ import UploadDialogManager from '@/components/upload/UploadDialogManager';
 import UploadStateManager from '@/components/upload/UploadStateManager';
 import UploadForm from '@/components/upload/UploadForm';
 import UploadSummary from '@/components/upload/UploadSummary';
+import UploadDebugSection from '@/components/upload/UploadDebugSection';
 
 const UploadPage = () => {
   const navigate = useNavigate();
@@ -55,6 +56,9 @@ const UploadPage = () => {
           </UploadDialogManager>
 
           <UploadSummary jobTitle={jobTitle} />
+          
+          {/* Add the debug section */}
+          <UploadDebugSection />
         </div>
       </PageContainer>
     </div>
