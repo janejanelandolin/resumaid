@@ -1,10 +1,13 @@
 
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { apiService } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
-import { ResumeProcessorState, UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
+import { UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
+import { useResumeProcessorState } from './resume/useResumeProcessorState';
+import { useJobPostingHandler } from './resume/useJobPostingHandler';
+import { useResumeApiProcessor } from './resume/useResumeApiProcessor';
 
 export const useResumeProcessor = ({
   setProgress,
@@ -18,66 +21,20 @@ export const useResumeProcessor = ({
     jobPosting, 
     setUploadData, 
     setApiErrors: setGlobalApiErrors,
-    setJobPosting,
-    setResumeJson,
-    setTailoredResumeJson,
-    setOriginalScore,
-    setTailoredScore
+    setJobPosting
   } = useResumeContext();
   
-  const [state, setState] = useState<ResumeProcessorState>({
-    isUploading: false,
-    uploadedFile: null,
-    resumeText: '',
-    apiErrors: [],
-  });
-
-  // Use useCallback for functions to prevent unnecessary recreation on re-renders
-  const setApiErrors = useCallback((errors: string[]) => {
-    setState(prev => ({ ...prev, apiErrors: errors }));
-    setGlobalApiErrors(errors);
-  }, [setGlobalApiErrors]);
-
-  const handleFileUpload = useCallback(async (file: File) => {
-    setState(prev => ({ 
-      ...prev, 
-      uploadedFile: file, 
-      resumeText: '',
-      apiErrors: [] 
-    }));
-    setApiErrors([]);
-  }, [setApiErrors]);
-
-  const handleTextInput = useCallback((text: string) => {
-    setState(prev => ({ 
-      ...prev, 
-      resumeText: text, 
-      uploadedFile: null,
-      apiErrors: [] 
-    }));
-    setApiErrors([]);
-  }, [setApiErrors]);
-
-  const handleJobPostingInput = useCallback((text: string) => {
-    if (text.trim() && jobPosting) {
-      const updatedJobPosting = {
-        ...jobPosting,
-        description: text,
-        userProvided: true
-      };
-      setJobPosting(updatedJobPosting);
-      
-      toast({
-        title: "Job Posting Updated",
-        description: "The job posting has been updated with your text input.",
-      });
-    }
-  }, [jobPosting, setJobPosting, toast]);
-
-  const createTextFile = useCallback((text: string): File => {
-    const blob = new Blob([text], { type: 'text/plain' });
-    return new File([blob], 'resume.txt', { type: 'text/plain' });
-  }, []);
+  const { 
+    state, 
+    setApiErrors, 
+    handleFileUpload, 
+    handleTextInput, 
+    setUploading,
+    createTextFile
+  } = useResumeProcessorState(setGlobalApiErrors);
+  
+  const { handleJobPostingInput } = useJobPostingHandler(jobPosting, setJobPosting);
+  const { processResumeContent } = useResumeApiProcessor();
 
   const processResume = useCallback(async () => {
     const { uploadedFile, resumeText } = state;
@@ -97,7 +54,7 @@ export const useResumeProcessor = ({
     }
 
     // Reset state
-    setState(prev => ({ ...prev, isUploading: true }));
+    setUploading(true);
     setProgress(0);
     setProgressText('Processing resume...');
     setApiErrors([]);
@@ -118,12 +75,12 @@ export const useResumeProcessor = ({
           const newErrors = [...state.apiErrors, `Upload Error: ${uploadResponse.error}`];
           setApiErrors(newErrors);
           showErrorDialog();
-          setState(prev => ({ ...prev, isUploading: false }));
+          setUploading(false);
           return; // Add early return to prevent navigation on error
         }
         
         if (!uploadResponse.data) {
-          setState(prev => ({ ...prev, isUploading: false }));
+          setUploading(false);
           throw new Error("Failed to upload resume: No data returned");
         }
         
@@ -131,7 +88,7 @@ export const useResumeProcessor = ({
         
         // Check if content is properly set
         if (!uploadResponse.data.content || uploadResponse.data.content.trim() === '') {
-          setState(prev => ({ ...prev, isUploading: false }));
+          setUploading(false);
           showContentWarning();
           return;
         }
@@ -144,101 +101,14 @@ export const useResumeProcessor = ({
         setProgress(30);
       }
       
-      console.log("Content to process length:", extractedContent.length);
-      console.log("Content preview:", extractedContent.substring(0, 100) + '...');
-      
-      // Step 2: Get Resume Schema - Using the extracted text content
-      setProgress(40);
-      setProgressText('Converting resume to structured format...');
-      
-      const resumeSchemaResponse = await apiService.getResumeSchema(extractedContent);
-      console.log("Resume schema response:", resumeSchemaResponse);
-      
-      if (resumeSchemaResponse.error) {
-        const newErrors = [...state.apiErrors, `Resume Schema Error: ${resumeSchemaResponse.error}`];
-        setApiErrors(newErrors);
-        if (resumeSchemaResponse.data) {
-          setResumeJson(resumeSchemaResponse.data);
-        } else {
-          showErrorDialog();
-          setState(prev => ({ ...prev, isUploading: false }));
-          return; // Add early return to prevent navigation on error
-        }
-      } else if (resumeSchemaResponse.data) {
-        setResumeJson(resumeSchemaResponse.data);
-      }
-      
-      // Format job posting as a simple string
-      let jobPostingText = '';
-      if (jobPosting.userProvided && jobPosting.description) {
-        jobPostingText = jobPosting.description;
-      } else if (jobPosting.description) {
-        jobPostingText = jobPosting.description;
-      } else {
-        jobPostingText = jobPosting.title || '';
-        
-        if (jobPosting.requirements && jobPosting.requirements.length > 0) {
-          jobPostingText += `\n\nRequirements:\n${jobPosting.requirements.join('\n')}`;
-        }
-        
-        if (jobPosting.skills && jobPosting.skills.length > 0) {
-          jobPostingText += `\n\nSkills:\n${jobPosting.skills.join('\n')}`;
-        }
-      }
-      
-      // Step 3: Score the original resume
-      setProgress(60);
-      setProgressText('Scoring your resume...');
-      
-      if (resumeSchemaResponse.data) {
-        const scoreResponse = await apiService.scoreResume(resumeSchemaResponse.data, jobPostingText);
-        console.log("Score response:", scoreResponse);
-        
-        if (scoreResponse.error) {
-          const newErrors = [...state.apiErrors, `Score Error: ${scoreResponse.error}`];
-          setApiErrors(newErrors);
-          if (scoreResponse.data) {
-            setOriginalScore(scoreResponse.data);
-          }
-        } else if (scoreResponse.data) {
-          setOriginalScore(scoreResponse.data);
-        }
-        
-        // Step 4: Tailor the resume
-        setProgress(80);
-        setProgressText('Tailoring your resume to the job...');
-        
-        console.log("Sending tailor request with job posting length:", jobPostingText.length);
-        console.log("Job posting preview:", jobPostingText.substring(0, 100) + '...');
-        
-        const tailorResponse = await apiService.tailorResume(resumeSchemaResponse.data, jobPostingText);
-        console.log("Tailor response:", tailorResponse);
-        
-        if (tailorResponse.error) {
-          const newErrors = [...state.apiErrors, `Tailor Error: ${tailorResponse.error}`];
-          setApiErrors(newErrors);
-          if (tailorResponse.data) {
-            setTailoredResumeJson(tailorResponse.data);
-          }
-        } else if (tailorResponse.data) {
-          setTailoredResumeJson(tailorResponse.data);
-          
-          // Step 5: Score the tailored resume
-          setProgress(90);
-          setProgressText('Evaluating optimized resume...');
-          const tailoredScoreResponse = await apiService.scoreResume(tailorResponse.data, jobPostingText);
-          
-          if (tailoredScoreResponse.error) {
-            const newErrors = [...state.apiErrors, `Tailored Score Error: ${tailoredScoreResponse.error}`];
-            setApiErrors(newErrors);
-            if (tailoredScoreResponse.data) {
-              setTailoredScore(tailoredScoreResponse.data);
-            }
-          } else if (tailoredScoreResponse.data) {
-            setTailoredScore(tailoredScoreResponse.data);
-          }
-        }
-      }
+      // Process the resume with the API
+      await processResumeContent(
+        extractedContent,
+        setApiErrors,
+        setProgress,
+        setProgressText,
+        state.apiErrors
+      );
       
       // Complete and navigate
       setProgress(100);
@@ -257,7 +127,7 @@ export const useResumeProcessor = ({
       sessionStorage.setItem('resumeUploaded', 'true');
       
       setTimeout(() => {
-        setState(prev => ({ ...prev, isUploading: false }));
+        setUploading(false);
         navigate('/analysis');
       }, 500);
       
@@ -276,7 +146,7 @@ export const useResumeProcessor = ({
       }
       
       showErrorDialog();
-      setState(prev => ({ ...prev, isUploading: false }));
+      setUploading(false);
     }
   }, [
     state,
@@ -289,10 +159,8 @@ export const useResumeProcessor = ({
     showErrorDialog,
     showContentWarning,
     setUploadData,
-    setResumeJson,
-    setOriginalScore,
-    setTailoredResumeJson,
-    setTailoredScore
+    setUploading,
+    processResumeContent
   ]);
 
   return {
