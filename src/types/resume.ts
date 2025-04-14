@@ -1,3 +1,4 @@
+
 export interface JobPosting {
   id?: string;
   title?: string;
@@ -17,6 +18,7 @@ export interface UploadData {
 export interface ATSFeedback {
   JobPostingFulltext_ResumeFulltext_similarity: number;
   missing_keywords: string[];
+  keywords_missing?: string[]; // Added missing property
   qualification: string;
 }
 
@@ -38,6 +40,13 @@ export interface ScoreResponse {
   missing_keywords: string[];
   qualification: string;
   explanation: string;
+  score?: number; // Added missing property
+  // Additional fields from API response
+  evaluatorA_qualification?: string;
+  evaluatorB_qualification?: string;
+  evaluatorC_qualification?: string;
+  consensus_qualification?: string;
+  score_reason?: string;
 }
 
 export interface EditDecision {
@@ -50,12 +59,12 @@ export interface ResumeTemplate {
   name: string;
   image: string;
   url: string;
+  thumbnail: string; // Added missing property
+  description: string; // Added missing property
 }
 
-export interface OptimizedResume {
-  content: string;
-  filename: string;
-}
+// Updated OptimizedResume to match ResumeJson structure
+export type OptimizedResume = ResumeJson;
 
 export interface ResumeJson {
   basics: {
@@ -77,6 +86,7 @@ export interface ResumeJson {
       url: string;
     }[];
     website?: string;
+    url?: string; // Added missing property
   };
   work?: {
     company?: string;
