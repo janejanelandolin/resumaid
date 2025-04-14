@@ -6,15 +6,15 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion';
 import { KeyRound } from 'lucide-react';
-import { ATSFeedback } from '@/contexts/ResumeContext';
+import { ScoreResponse } from '@/types/resume';
 
 interface MissingKeywordsProps {
-  atsFeedback: ATSFeedback;
+  scoreResponse: ScoreResponse;
 }
 
-const MissingKeywords: React.FC<MissingKeywordsProps> = ({ atsFeedback }) => {
-  // Get missing keywords from either the new or legacy property
-  const missingKeywords = atsFeedback.missing_keywords || atsFeedback.keywords_missing || [];
+const MissingKeywords: React.FC<MissingKeywordsProps> = ({ scoreResponse }) => {
+  // Get missing keywords from the score response
+  const missingKeywords = scoreResponse.missing_keywords || [];
   
   // If there are no missing keywords, show a success message
   if (!missingKeywords.length) {

@@ -1,29 +1,37 @@
 
-import { ResumeTemplate } from '../contexts/ResumeContext';
+import { ResumeTemplate } from '../types/resume';
 
 // Template data with 4 specific templates
 export const resumeTemplates: ResumeTemplate[] = [
   {
     id: 'professional',
     name: 'Professional',
+    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b',
+    url: 'https://templates.example.com/professional',
     thumbnail: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=500&auto=format&fit=crop',
     description: 'Clean, professional layout ideal for corporate environments'
   },
   {
     id: 'creative',
     name: 'Creative',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475',
+    url: 'https://templates.example.com/creative',
     thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&auto=format&fit=crop',
     description: 'Bold design for creative industries and roles'
   },
   {
     id: 'minimalist',
     name: 'Minimalist',
+    image: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7',
+    url: 'https://templates.example.com/minimalist',
     thumbnail: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=500&auto=format&fit=crop',
     description: 'Simple, elegant design focused on content'
   },
   {
     id: 'technical',
     name: 'Technical',
+    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6',
+    url: 'https://templates.example.com/technical',
     thumbnail: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&auto=format&fit=crop',
     description: 'Optimized for technical roles with skills emphasis'
   }

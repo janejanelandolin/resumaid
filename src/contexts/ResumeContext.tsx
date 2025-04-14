@@ -7,7 +7,6 @@ import { ResumeContextType } from '../types/context';
 import { 
   JobPosting, 
   UploadData, 
-  ATSFeedback, 
   Feedback, 
   ResumeJson, 
   ScoreResponse
@@ -25,7 +24,6 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [uploadData, setUploadData] = useState<UploadData | null>(null);
   
   // Legacy feedback data
-  const [atsFeedback, setAtsFeedback] = useState<ATSFeedback | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   
   // Error handling
@@ -40,7 +38,7 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Custom hooks
   const { selectedTemplates, addTemplate, removeTemplate } = useTemplateManager();
   const { editDecisions, addEditDecision } = useEditDecisions();
-  const { parseResumeContent, getOptimizedResume } = useResumeParser();
+  const { parseResumeContent } = useResumeParser();
 
   const value: ResumeContextType = {
     // Basic resume data
@@ -52,8 +50,6 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setUploadData,
     
     // Legacy feedback data
-    atsFeedback,
-    setAtsFeedback,
     feedback,
     setFeedback,
     
@@ -72,7 +68,6 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     // Resume content management
     parseResumeContent,
-    getOptimizedResume,
     
     // New workflow properties
     resumeJson,

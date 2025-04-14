@@ -2,13 +2,11 @@
 import {
   JobPosting,
   UploadData,
-  ATSFeedback,
   Feedback,
   ResumeJson,
   ScoreResponse,
   EditDecision,
-  ResumeTemplate,
-  OptimizedResume
+  ResumeTemplate
 } from './resume';
 
 export interface ResumeContextType {
@@ -21,8 +19,6 @@ export interface ResumeContextType {
   setUploadData: (uploadData: UploadData) => void;
   
   // Legacy feedback data
-  atsFeedback: ATSFeedback | null;
-  setAtsFeedback: (atsFeedback: ATSFeedback) => void;
   feedback: Feedback | null;
   setFeedback: (feedback: Feedback) => void;
   
@@ -41,7 +37,6 @@ export interface ResumeContextType {
   
   // Resume content management
   parseResumeContent: (content: string) => void;
-  getOptimizedResume: () => OptimizedResume | null;
   
   // New workflow properties
   resumeJson: ResumeJson | null;

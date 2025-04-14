@@ -1,14 +1,12 @@
-
 import React from 'react';
 import DebugCard from './DebugCard';
-import { JobPosting, UploadData, ATSFeedback, Feedback, ResumeJson, ScoreResponse } from '../../contexts/ResumeContext';
+import { JobPosting, UploadData, Feedback, ResumeJson, ScoreResponse } from '../../types/resume';
 
 interface ApiOutputsTabProps {
   jobPosting: JobPosting | null;
   uploadData: UploadData | null;
   // Remove old workflow data
-  // atsFeedback: ATSFeedback | null;
-  // feedback: Feedback | null;
+  feedback: Feedback | null;
   // Keep new workflow data
   resumeJson: ResumeJson | null;
   tailoredResumeJson: ResumeJson | null;
@@ -21,8 +19,7 @@ const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
   jobPosting,
   uploadData,
   // Remove old workflow props
-  // atsFeedback,
-  // feedback,
+  feedback,
   // Keep new workflow props
   resumeJson,
   tailoredResumeJson,

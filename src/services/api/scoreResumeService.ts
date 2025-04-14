@@ -1,4 +1,4 @@
-import { ScoreResponse, ResumeJson } from '../../contexts/ResumeContext';
+import { ScoreResponse, ResumeJson } from '../../types/resume';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
 export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string): Promise<ApiResponse<ScoreResponse>> => {
@@ -45,10 +45,8 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
         jobPostingLength: jobPostingText.length 
       }, data);
       
-      // Ensure data has all the fields we need for ScoreResponse
       // Map from backend format to our expected format if needed
       const mappedData: ScoreResponse = {
-        score: data.similarity || data.score || 0,
         qualification: data.consensus_qualification || data.qualification || "Unknown",
         missing_keywords: data.missing_keywords || [],
         explanation: data.score_reason || data.explanation || "",
@@ -78,7 +76,6 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
     
     // Fallback to mock data if API call fails
     const fallbackData = {
-      score: 0.65,
       qualification: "Somewhat qualified",
       missing_keywords: ["leadership", "team management", "project planning"],
       explanation: "Your resume shows some relevant skills but is missing key qualifications required for this position.",
