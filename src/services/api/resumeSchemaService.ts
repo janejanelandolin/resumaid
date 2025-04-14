@@ -6,23 +6,26 @@ export const getResumeSchema = async (resumeText: string): Promise<ApiResponse<R
   console.log('Converting resume text to schema');
   
   try {
-    // Prepare the body for a POST request with the resume_text in the body
-    const requestBody = { resume_text: resumeText };
+    // URL encode the resume text and append it as a query parameter
+    const encodedResumeText = encodeURIComponent(resumeText);
+    const url = `${API_BASE_URL}resume_schema?resume_text=${encodedResumeText}`;
     
     // Log the API call request
     logApiCall('getResumeSchema (request)', { 
       resumeTextLength: resumeText.length,
-      resumeTextPreview: resumeText.substring(0, 50) + '...'
-    }, 'Sending POST request with request body');
+      resumeTextPreview: resumeText.substring(0, 50) + '...',
+      endpoint: url
+    }, 'Sending POST request with resume_text as query parameter');
     
-    // Make a POST request with the text in the body
-    const response = await fetch(`${API_BASE_URL}resume_schema`, {
+    // Make a POST request with empty body, resume_text as query parameter
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'accept': 'application/json',
       },
-      body: JSON.stringify(requestBody)
+      // Empty body as per the API requirements
+      body: JSON.stringify({})
     });
     
     console.log("Resume schema response status:", response.status);

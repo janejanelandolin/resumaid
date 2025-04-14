@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
+import { API_BASE_URL } from '@/services/api/utils';
 
 const UploadDebugSection = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -77,8 +77,8 @@ const UploadDebugSection = () => {
                 <h4 className="font-semibold mb-1">Input:</h4>
                 <pre className="bg-gray-100 p-2 rounded overflow-auto max-h-40 whitespace-pre-wrap">
                   {uploadData?.content 
-                    ? `Resume Text (first 200 chars): ${uploadData.content.substring(0, 200)}...` 
-                    : "No text input yet"}
+                    ? `POST ${API_BASE_URL}resume_schema?resume_text=${encodeURIComponent(uploadData.content.substring(0, 50))}...` 
+                    : "No resume text available for input yet"}
                 </pre>
                 
                 <h4 className="font-semibold mt-4 mb-1">Output:</h4>
