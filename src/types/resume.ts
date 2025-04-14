@@ -1,4 +1,3 @@
-
 // Resume data interfaces
 export interface JobPosting {
   id?: string;
@@ -98,6 +97,12 @@ export interface ScoreResponse {
   qualification: string;
   missing_keywords: string[];
   explanation: string;
+  similarity?: number; // Adding similarity property to handle backend response
+  evaluatorA_qualification?: string;
+  evaluatorB_qualification?: string;
+  evaluatorC_qualification?: string;
+  consensus_qualification?: string;
+  score_reason?: string;
 }
 
 // Edit decision interface

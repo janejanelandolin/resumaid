@@ -42,6 +42,14 @@ const AnalysisPage = () => {
     return null;
   }
 
+  // Debug the actual data we have
+  console.log("Analysis Page Data:", {
+    originalScore,
+    tailoredScore,
+    atsFeedback,
+    feedback
+  });
+
   const handleContinue = () => {
     navigate('/payment');
   };
@@ -51,15 +59,23 @@ const AnalysisPage = () => {
   
   // Get the scores based on data availability
   const originalSimilarity = useNewWorkflow 
-    ? originalScore?.score || 0 
+    ? originalScore?.similarity || 0 
     : atsFeedback?.JobPostingFulltext_ResumeFulltext_similarity || 0;
   
   const tailoredSimilarity = useNewWorkflow
-    ? tailoredScore?.score || 0
+    ? tailoredScore?.similarity || 0
     : feedback?.similarity || 0;
   
   // Calculate the improvement percentage
   const improvement = tailoredSimilarity - originalSimilarity;
+
+  // Log the calculated values for debugging
+  console.log("Calculated scores:", {
+    originalSimilarity,
+    tailoredSimilarity,
+    improvement,
+    useNewWorkflow
+  });
 
   // Get qualifications
   const originalQualification = useNewWorkflow

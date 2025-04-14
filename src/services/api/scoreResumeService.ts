@@ -1,4 +1,3 @@
-
 import { ScoreResponse, ResumeJson } from '../../contexts/ResumeContext';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
@@ -46,7 +45,25 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
         jobPostingLength: jobPostingText.length 
       }, data);
       
-      return { data };
+      // Ensure data has all the fields we need for ScoreResponse
+      // Map from backend format to our expected format if needed
+      const mappedData: ScoreResponse = {
+        score: data.similarity || data.score || 0,
+        qualification: data.consensus_qualification || data.qualification || "Unknown",
+        missing_keywords: data.missing_keywords || [],
+        explanation: data.score_reason || data.explanation || "",
+        similarity: data.similarity || 0,
+        // Keep original fields too
+        evaluatorA_qualification: data.evaluatorA_qualification,
+        evaluatorB_qualification: data.evaluatorB_qualification,
+        evaluatorC_qualification: data.evaluatorC_qualification,
+        consensus_qualification: data.consensus_qualification,
+        score_reason: data.score_reason
+      };
+      
+      console.log('Score response mapped data:', mappedData);
+      
+      return { data: mappedData };
     } catch (parseError) {
       const errorMessage = `Failed to parse server response: ${responseText.substring(0, 100)}...`;
       logApiCall('scoreResume (parse error)', { 
@@ -64,7 +81,8 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
       score: 0.65,
       qualification: "Somewhat qualified",
       missing_keywords: ["leadership", "team management", "project planning"],
-      explanation: "Your resume shows some relevant skills but is missing key qualifications required for this position."
+      explanation: "Your resume shows some relevant skills but is missing key qualifications required for this position.",
+      similarity: 0.65
     };
     
     logApiCall('scoreResume (fallback)', { 

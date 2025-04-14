@@ -33,6 +33,16 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
   // Also normalize improvement - if it's already in percentage form (e.g., 0.18) convert it
   const normalizedImprovement = improvement <= 1 ? improvement * 100 : improvement;
 
+  // Debug log to verify we're getting the correct values
+  console.log('Compatibility Score values:', { 
+    atsSimilarity, 
+    normalizedAtsSimilarity,
+    feedbackSimilarity,
+    normalizedFeedbackSimilarity,
+    improvement,
+    normalizedImprovement 
+  });
+
   return (
     <div className="flex flex-col items-center justify-center py-6 relative">
       <div className="absolute inset-0 bg-gradient-to-r from-indigo-100/50 to-purple-100/50 rounded-lg -z-10"></div>
