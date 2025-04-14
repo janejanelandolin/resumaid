@@ -1,5 +1,6 @@
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import { useResumeApiProcessor } from '@/hooks/resume/useResumeApiProcessor';
 import { mockJobPosting, mockResumeJson, mockScoreResponse, mockTailoredResponse } from '../mocks/resumeTestMocks';
 import { apiServiceMock, apiServiceWithErrors } from '../mocks/apiServiceMock';

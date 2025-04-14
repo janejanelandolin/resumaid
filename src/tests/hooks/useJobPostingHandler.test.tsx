@@ -1,5 +1,6 @@
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import { useJobPostingHandler } from '@/hooks/resume/useJobPostingHandler';
 import { mockJobPosting } from '../mocks/resumeTestMocks';
 
