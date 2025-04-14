@@ -127,6 +127,40 @@ Body: JSON object (ResumeJson structure)`}
             </Card>
           )}
           
+          {/* Tailor Resume Endpoint Debug */}
+          {resumeJson && jobPosting && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Tailor Resume API (/tailor_resume)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs">
+                  <h4 className="font-semibold mb-1">Input:</h4>
+                  <p className="mb-1">Job posting as query parameter:</p>
+                  <pre className="bg-gray-100 p-2 rounded overflow-auto max-h-40 whitespace-pre-wrap mb-2">
+                    {jobPosting ? 
+                      `job_posting=${encodeURIComponent(jobPosting.description || jobPosting.title || '').substring(0, 50)}...` : 
+                      "No job posting available"}
+                  </pre>
+                  
+                  <p className="mb-1">Resume JSON in request body:</p>
+                  <pre className="bg-gray-100 p-2 rounded overflow-auto max-h-40">
+                    {resumeJson ? 
+                      "ResumeJson object (too large to display)" : 
+                      "No resume JSON available"}
+                  </pre>
+                  
+                  <h4 className="font-semibold mt-4 mb-1">Full API Call:</h4>
+                  <pre className="bg-gray-100 p-2 rounded overflow-auto max-h-40 whitespace-pre-wrap">
+                    {`POST ${API_BASE_URL}tailor_resume?job_posting=${encodeURIComponent((jobPosting?.description || jobPosting?.title || '').substring(0, 50))}...
+Content-Type: application/json
+Body: JSON object (ResumeJson structure)`}
+                  </pre>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
           {/* API Errors */}
           {apiErrors && apiErrors.length > 0 && (
             <Card className="border-red-200">

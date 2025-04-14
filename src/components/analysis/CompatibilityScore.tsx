@@ -25,6 +25,14 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
     return 'bg-yellow-100 text-yellow-800';
   };
 
+  // Ensure that similarity values are treated as percentages
+  // Convert decimal values (0-1) to percentages (0-100)
+  const normalizedAtsSimilarity = atsSimilarity <= 1 ? atsSimilarity * 100 : atsSimilarity;
+  const normalizedFeedbackSimilarity = feedbackSimilarity <= 1 ? feedbackSimilarity * 100 : feedbackSimilarity;
+  
+  // Also normalize improvement - if it's already in percentage form (e.g., 0.18) convert it
+  const normalizedImprovement = improvement <= 1 ? improvement * 100 : improvement;
+
   return (
     <div className="flex flex-col items-center justify-center py-6 relative">
       <div className="absolute inset-0 bg-gradient-to-r from-indigo-100/50 to-purple-100/50 rounded-lg -z-10"></div>
@@ -38,7 +46,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
       <div className="flex justify-center items-center space-x-4 py-4">
         <div className="flex flex-col items-center">
           <AnimatedDial 
-            score={Math.round(atsSimilarity * 100)} 
+            score={Math.round(normalizedAtsSimilarity)} 
             max={100} 
             color="text-orange-500" 
             label="Without optimization" 
@@ -57,7 +65,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
           <ArrowRight className="h-8 w-8 text-indigo-400 animate-pulse" />
           <div className="mt-2 py-1 px-3 bg-green-100 rounded-full">
             <span className="text-xs font-bold text-green-700 flex items-center">
-              <span>+{Math.round(improvement * 100)}%</span>
+              <span>+{Math.round(normalizedImprovement)}%</span>
               <CheckCircle2 className="h-3 w-3 ml-1" />
             </span>
           </div>
@@ -65,7 +73,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
         
         <div className="flex flex-col items-center">
           <AnimatedDial 
-            score={Math.round(feedbackSimilarity * 100)} 
+            score={Math.round(normalizedFeedbackSimilarity)} 
             max={100} 
             color="text-indigo-600" 
             label="With optimization" 
