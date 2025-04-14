@@ -191,6 +191,7 @@ export const useResumeProcessor = ({
       
       if (resumeSchemaResponse.data) {
         const scoreResponse = await apiService.scoreResume(resumeSchemaResponse.data, jobPostingText);
+        console.log("Score response:", scoreResponse);
         
         if (scoreResponse.error) {
           const newErrors = [...state.apiErrors, `Score Error: ${scoreResponse.error}`];
@@ -205,7 +206,12 @@ export const useResumeProcessor = ({
         // Step 4: Tailor the resume
         setProgress(80);
         setProgressText('Tailoring your resume to the job...');
+        
+        console.log("Sending tailor request with job posting length:", jobPostingText.length);
+        console.log("Job posting preview:", jobPostingText.substring(0, 100) + '...');
+        
         const tailorResponse = await apiService.tailorResume(resumeSchemaResponse.data, jobPostingText);
+        console.log("Tailor response:", tailorResponse);
         
         if (tailorResponse.error) {
           const newErrors = [...state.apiErrors, `Tailor Error: ${tailorResponse.error}`];
