@@ -15,13 +15,21 @@ import UploadDebugSection from '@/components/upload/UploadDebugSection';
 
 const UploadPage = () => {
   const navigate = useNavigate();
-  const { jobTitle, jobPosting } = useResumeContext();
+  const { jobTitle, jobPosting, resumeJson, tailoredResumeJson } = useResumeContext();
   
   useEffect(() => {
+    // If no job posting, redirect to home
     if (!jobTitle || !jobPosting) {
       navigate('/');
+      return;
     }
-  }, [jobTitle, jobPosting, navigate]);
+
+    // Check if resume is already processed, redirect to analysis
+    const resumeUploaded = sessionStorage.getItem('resumeUploaded');
+    if (resumeUploaded === 'true' && resumeJson && tailoredResumeJson) {
+      navigate('/analysis');
+    }
+  }, [jobTitle, jobPosting, navigate, resumeJson, tailoredResumeJson]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">

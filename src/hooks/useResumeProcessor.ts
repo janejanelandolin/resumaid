@@ -4,20 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { apiService } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
-
-interface UseResumeProcessorProps {
-  setProgress: (progress: number) => void;
-  setProgressText: (text: string) => void;
-  showErrorDialog: () => void;
-  showContentWarning: () => void;
-}
-
-interface ResumeProcessorState {
-  isUploading: boolean;
-  uploadedFile: File | null;
-  resumeText: string;
-  apiErrors: string[];
-}
+import { ResumeProcessorState, UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
 
 export const useResumeProcessor = ({
   setProgress,
@@ -130,9 +117,12 @@ export const useResumeProcessor = ({
           const newErrors = [...state.apiErrors, `Upload Error: ${uploadResponse.error}`];
           setApiErrors(newErrors);
           showErrorDialog();
+          setState(prev => ({ ...prev, isUploading: false }));
+          return; // Add early return to prevent navigation on error
         }
         
         if (!uploadResponse.data) {
+          setState(prev => ({ ...prev, isUploading: false }));
           throw new Error("Failed to upload resume: No data returned");
         }
         
@@ -170,7 +160,8 @@ export const useResumeProcessor = ({
           setResumeJson(resumeSchemaResponse.data);
         } else {
           showErrorDialog();
-          throw new Error("Failed to get resume schema");
+          setState(prev => ({ ...prev, isUploading: false }));
+          return; // Add early return to prevent navigation on error
         }
       } else if (resumeSchemaResponse.data) {
         setResumeJson(resumeSchemaResponse.data);
@@ -255,7 +246,11 @@ export const useResumeProcessor = ({
         });
       }
       
+      // Store in sessionStorage that we've completed the resume upload
+      sessionStorage.setItem('resumeUploaded', 'true');
+      
       setTimeout(() => {
+        setState(prev => ({ ...prev, isUploading: false }));
         navigate('/analysis');
       }, 500);
       
