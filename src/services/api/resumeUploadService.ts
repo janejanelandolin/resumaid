@@ -44,76 +44,20 @@ export const uploadResume = async (file: File): Promise<ApiResponse<UploadData>>
       };
     }
     
-    // Parse the response JSON manually since we already read the text
-    let result;
-    try {
-      result = JSON.parse(responseText);
-      console.log("Parsed JSON result:", result);
-    } catch (parseError) {
-      console.error("Failed to parse JSON response:", parseError);
-      
-      // If we can't parse the response but it was successful, try to extract content
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const content = e.target?.result as string || '';
-          console.log("Extracted content locally after parse error, length:", content.length);
-          
-          const localResult = {
-            id: Math.random().toString(36).substr(2, 9),
-            filename: file.name,
-            content: content
-          };
-          
-          logApiCall('uploadResume (parse error fallback)', { 
-            fileName: file.name 
-          }, { contentLength: content.length, id: localResult.id });
-          
-          resolve({
-            data: localResult,
-            error: `Failed to parse server response: ${responseText.substring(0, 100)}...`
-          });
-        };
-        reader.readAsText(file);
-      });
-    }
+    // The response is now a plain text string (extracted resume content)
+    // Create an UploadData object with the response text as content
+    const uploadData: UploadData = {
+      id: Math.random().toString(36).substr(2, 9),
+      filename: file.name,
+      content: responseText
+    };
     
-    // Check if content is empty or undefined
-    if (!result.content || result.content.trim() === '') {
-      console.warn("Resume content is empty or undefined in API response, reading file locally");
-      
-      // Read the file locally to extract content
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const content = e.target?.result as string || '';
-          console.log("Extracted content locally, length:", content.length);
-          
-          const localResult = {
-            id: result.id || Math.random().toString(36).substr(2, 9),
-            filename: file.name,
-            content: content
-          };
-          
-          logApiCall('uploadResume (local content fallback)', { 
-            fileName: file.name 
-          }, { contentLength: content.length, id: localResult.id });
-          
-          resolve({
-            data: localResult
-          });
-        };
-        
-        // For PDFs and binary files, attempt to read as text but we might not get good results
-        if (file.type === 'application/pdf' || file.type.includes('word')) {
-          console.log("Binary file detected, attempting to read as text");
-        }
-        
-        reader.readAsText(file);
-      });
-    }
+    logApiCall('uploadResume (response)', { 
+      fileName: file.name 
+    }, { contentLength: responseText.length, id: uploadData.id });
     
-    return { data: result };
+    return { data: uploadData };
+    
   } catch (error) {
     console.error("Failed to upload resume:", error);
     

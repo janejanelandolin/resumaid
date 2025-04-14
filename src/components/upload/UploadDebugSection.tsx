@@ -4,6 +4,7 @@ import { useResumeContext } from '@/contexts/ResumeContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
 
 const UploadDebugSection = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -45,17 +46,22 @@ const UploadDebugSection = () => {
                     : "No file uploaded yet"}
                 </pre>
                 
-                <h4 className="font-semibold mt-4 mb-1">Output:</h4>
+                <h4 className="font-semibold mt-4 mb-1">Output (Raw Response):</h4>
+                <pre className="bg-gray-100 p-2 rounded overflow-auto max-h-40 whitespace-pre-wrap">
+                  {uploadData?.content 
+                    ? uploadData.content.substring(0, 300) + (uploadData.content.length > 300 ? '...' : '')
+                    : "No upload response yet"}
+                </pre>
+                
+                <h4 className="font-semibold mt-4 mb-1">Processed Upload Data:</h4>
                 <pre className="bg-gray-100 p-2 rounded overflow-auto max-h-40">
                   {uploadData 
                     ? formatJSON({
                         id: uploadData.id,
                         filename: uploadData.filename,
-                        content_preview: uploadData.content 
-                          ? uploadData.content.substring(0, 100) + '...' 
-                          : 'No content'
+                        content_length: uploadData.content ? uploadData.content.length : 0
                       }) 
-                    : "No upload response yet"}
+                    : "No upload data available"}
                 </pre>
               </div>
             </CardContent>
@@ -69,9 +75,9 @@ const UploadDebugSection = () => {
             <CardContent>
               <div className="text-xs">
                 <h4 className="font-semibold mb-1">Input:</h4>
-                <pre className="bg-gray-100 p-2 rounded overflow-auto max-h-40">
+                <pre className="bg-gray-100 p-2 rounded overflow-auto max-h-40 whitespace-pre-wrap">
                   {uploadData?.content 
-                    ? `Text Content (first 100 chars): ${uploadData.content.substring(0, 100)}...` 
+                    ? `Resume Text (first 200 chars): ${uploadData.content.substring(0, 200)}...` 
                     : "No text input yet"}
                 </pre>
                 
@@ -96,6 +102,8 @@ const UploadDebugSection = () => {
                   <pre className="bg-red-50 text-red-700 p-2 rounded overflow-auto max-h-40">
                     {formatJSON(apiErrors)}
                   </pre>
+                  
+                  <ApiDebugHelper error={apiErrors[0]} />
                 </div>
               </CardContent>
             </Card>
