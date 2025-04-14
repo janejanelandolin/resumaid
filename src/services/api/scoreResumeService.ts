@@ -6,41 +6,26 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
   console.log('Scoring resume against job posting');
   
   try {
-    // Prepare the query parameter
-    const params = new URLSearchParams();
-    params.append('job_posting', jobPostingText);
-    
-    // Ensure resumeJson has the correct structure
-    // Make a copy to avoid modifying the original
-    const processedResumeJson = { ...resumeJson };
-    
-    // Ensure work items have 'name' field
-    if (processedResumeJson.work && Array.isArray(processedResumeJson.work)) {
-      processedResumeJson.work = processedResumeJson.work.map(item => {
-        if (item.company && !item.name) {
-          return {
-            ...item,
-            name: item.company // Copy company to name if needed
-          };
-        }
-        return item;
-      });
-    }
+    // Prepare the query parameter - encode the job posting text
+    const encodedJobPosting = encodeURIComponent(jobPostingText);
+    const url = `${API_BASE_URL}score_resume?job_posting=${encodedJobPosting}`;
     
     // Log the API call request
     logApiCall('scoreResume (request)', { 
       jobPostingLength: jobPostingText.length,
       jobPostingPreview: jobPostingText.substring(0, 50) + '...',
-      resumeJson: 'ResumeJson object (not shown for brevity)'
-    }, 'Sending POST request with request body and query parameter');
+      resumeJsonPreview: 'ResumeJson object (not shown for brevity)',
+      endpoint: url
+    }, 'Sending POST request with resume JSON in body and job_posting as query parameter');
     
-    const response = await fetch(`${API_BASE_URL}score_resume?${params.toString()}`, {
+    // Send the resume JSON in the body and job posting as query parameter
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'accept': 'application/json',
       },
-      body: JSON.stringify(processedResumeJson)
+      body: JSON.stringify(resumeJson)
     });
     
     const responseText = await response.text();
