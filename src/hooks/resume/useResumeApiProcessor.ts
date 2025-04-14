@@ -1,11 +1,13 @@
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { apiService } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 
 export const useResumeApiProcessor = () => {
   const { toast } = useToast();
+  const [tailoringRationale, setTailoringRationale] = useState<string[]>([]);
+  
   const { 
     jobPosting,
     setResumeJson,
@@ -97,16 +99,31 @@ export const useResumeApiProcessor = () => {
       if (tailorResponse.error) {
         const newErrors = [...apiErrors, `Tailor Error: ${tailorResponse.error}`];
         setApiErrors(newErrors);
-        if (tailorResponse.data) {
-          setTailoredResumeJson(tailorResponse.data);
+        if (tailorResponse.data && tailorResponse.data.resume) {
+          // Extract just the resume object from the response
+          setTailoredResumeJson(tailorResponse.data.resume);
+          // Store the rationale for UI display if needed
+          if (tailorResponse.data.rationale) {
+            setTailoringRationale(tailorResponse.data.rationale);
+          }
         }
       } else if (tailorResponse.data) {
-        setTailoredResumeJson(tailorResponse.data);
+        // Extract just the resume object from the response
+        setTailoredResumeJson(tailorResponse.data.resume);
+        // Store the rationale for UI display if needed
+        if (tailorResponse.data.rationale) {
+          setTailoringRationale(tailorResponse.data.rationale);
+        }
         
         // Step 5: Score the tailored resume
         setProgress(90);
         setProgressText('Evaluating optimized resume...');
-        const tailoredScoreResponse = await apiService.scoreResume(tailorResponse.data, jobPostingText);
+        
+        // Use the resume object from the tailor response
+        const tailoredScoreResponse = await apiService.scoreResume(
+          tailorResponse.data.resume, 
+          jobPostingText
+        );
         
         if (tailoredScoreResponse.error) {
           const newErrors = [...apiErrors, `Tailored Score Error: ${tailoredScoreResponse.error}`];
@@ -124,6 +141,7 @@ export const useResumeApiProcessor = () => {
   }, [jobPosting, setResumeJson, setOriginalScore, setTailoredResumeJson, setTailoredScore]);
 
   return {
-    processResumeContent
+    processResumeContent,
+    tailoringRationale
   };
 };

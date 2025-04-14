@@ -2,7 +2,13 @@
 import { ResumeJson } from '../../contexts/ResumeContext';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
-export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: string): Promise<ApiResponse<ResumeJson>> => {
+// Define the response type from the tailor_resume endpoint
+interface TailorResumeResponse {
+  rationale: string[];
+  resume: ResumeJson;
+}
+
+export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: string): Promise<ApiResponse<TailorResumeResponse>> => {
   console.log('Tailoring resume to job posting');
   
   try {
@@ -41,9 +47,10 @@ export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: strin
     }
     
     try {
-      const data = JSON.parse(responseText);
+      const data = JSON.parse(responseText) as TailorResumeResponse;
       logApiCall('tailorResume (response)', { 
-        jobPostingLength: jobPostingText.length 
+        jobPostingLength: jobPostingText.length,
+        rationale: data.rationale
       }, data);
       
       return { data };
@@ -60,58 +67,41 @@ export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: strin
     console.error("Failed to tailor resume:", error);
     
     // Fallback to mock data if API call fails - improve original resumeJson
-    const fallbackData = resumeJson ? {
-      ...resumeJson,
-      basics: {
-        ...resumeJson.basics,
-        summary: resumeJson.basics.summary 
-          ? resumeJson.basics.summary + " Expertise in team leadership and project management."
-          : "Experienced professional with expertise in team leadership and project management."
-      },
-      skills: [
-        ...(resumeJson.skills || []),
-        {
-          name: "Leadership",
-          keywords: ["Team Management", "Project Planning", "Strategic Decision Making"]
-        }
+    const fallbackData = {
+      rationale: [
+        "Added relevant keywords to align with job requirements",
+        "Restructured work experience to highlight relevant accomplishments",
+        "Enhanced summary to better match job description"
       ],
-      // Ensure work items have correct structure in fallback
-      work: resumeJson.work ? resumeJson.work.map(item => ({
-        ...item,
-        name: item.company || item.name || "Example Corporation"
-      })) : []
-    } : null;
+      resume: resumeJson ? {
+        ...resumeJson,
+        basics: {
+          ...resumeJson.basics,
+          summary: resumeJson.basics.summary 
+            ? resumeJson.basics.summary + " Expertise in team leadership and project management."
+            : "Experienced professional with expertise in team leadership and project management."
+        },
+        skills: [
+          ...(resumeJson.skills || []),
+          {
+            name: "Leadership",
+            keywords: ["Team Management", "Project Planning", "Strategic Decision Making"]
+          }
+        ],
+        // Ensure work items have correct structure in fallback
+        work: resumeJson.work ? resumeJson.work.map(item => ({
+          ...item,
+          name: item.company || item.name || "Example Corporation"
+        })) : []
+      } : null
+    };
     
     logApiCall('tailorResume (fallback)', { 
       jobPostingLength: jobPostingText.length 
     }, fallbackData, error);
     
     return {
-      data: fallbackData || {
-        basics: {
-          name: "John Doe",
-          email: "john.doe@example.com",
-          phone: "(555) 123-4567",
-          summary: "Experienced professional with expertise in team leadership and project management."
-        },
-        work: [
-          {
-            name: "Example Corporation", // Use name instead of company
-            position: "Senior Developer",
-            startDate: "2020-01",
-            endDate: "2023-04",
-            summary: "Led key initiatives and projects.",
-            highlights: ["Increased revenue by 20%", "Managed a team of 5"]
-          }
-        ],
-        education: [],
-        skills: [
-          {
-            name: "Leadership",
-            keywords: ["Team Management", "Project Planning", "Strategic Decision Making"]
-          }
-        ]
-      },
+      data: fallbackData,
       error: `API error: ${error instanceof Error ? error.message : String(error)}`
     };
   }
