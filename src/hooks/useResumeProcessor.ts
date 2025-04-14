@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { apiService } from '@/services/api';
@@ -32,12 +32,13 @@ export const useResumeProcessor = ({
     apiErrors: [],
   });
 
-  const setApiErrors = (errors: string[]) => {
+  // Use useCallback for functions to prevent unnecessary recreation on re-renders
+  const setApiErrors = useCallback((errors: string[]) => {
     setState(prev => ({ ...prev, apiErrors: errors }));
     setGlobalApiErrors(errors);
-  };
+  }, [setGlobalApiErrors]);
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = useCallback(async (file: File) => {
     setState(prev => ({ 
       ...prev, 
       uploadedFile: file, 
@@ -45,9 +46,9 @@ export const useResumeProcessor = ({
       apiErrors: [] 
     }));
     setApiErrors([]);
-  };
+  }, [setApiErrors]);
 
-  const handleTextInput = (text: string) => {
+  const handleTextInput = useCallback((text: string) => {
     setState(prev => ({ 
       ...prev, 
       resumeText: text, 
@@ -55,9 +56,9 @@ export const useResumeProcessor = ({
       apiErrors: [] 
     }));
     setApiErrors([]);
-  };
+  }, [setApiErrors]);
 
-  const handleJobPostingInput = (text: string) => {
+  const handleJobPostingInput = useCallback((text: string) => {
     if (text.trim() && jobPosting) {
       const updatedJobPosting = {
         ...jobPosting,
@@ -71,14 +72,14 @@ export const useResumeProcessor = ({
         description: "The job posting has been updated with your text input.",
       });
     }
-  };
+  }, [jobPosting, setJobPosting, toast]);
 
-  const createTextFile = (text: string): File => {
+  const createTextFile = useCallback((text: string): File => {
     const blob = new Blob([text], { type: 'text/plain' });
     return new File([blob], 'resume.txt', { type: 'text/plain' });
-  };
+  }, []);
 
-  const processResume = async () => {
+  const processResume = useCallback(async () => {
     const { uploadedFile, resumeText } = state;
     
     if (!uploadedFile && !resumeText) {
@@ -277,7 +278,22 @@ export const useResumeProcessor = ({
       showErrorDialog();
       setState(prev => ({ ...prev, isUploading: false }));
     }
-  };
+  }, [
+    state,
+    toast,
+    jobPosting,
+    navigate,
+    setProgress,
+    setProgressText,
+    setApiErrors,
+    showErrorDialog,
+    showContentWarning,
+    setUploadData,
+    setResumeJson,
+    setOriginalScore,
+    setTailoredResumeJson,
+    setTailoredScore
+  ]);
 
   return {
     state,
