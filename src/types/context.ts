@@ -38,6 +38,9 @@ export interface ResumeContextType {
   // Resume content management
   parseResumeContent: (content: string) => void;
   
+  // Get optimized resume
+  getOptimizedResume: () => ResumeJson | null;
+  
   // New workflow properties
   resumeJson: ResumeJson | null;
   setResumeJson: (resumeJson: ResumeJson | null) => void;

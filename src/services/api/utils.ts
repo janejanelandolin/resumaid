@@ -1,4 +1,5 @@
-import { JobPosting, UploadData, ATSFeedback, Feedback } from '../../contexts/ResumeContext';
+
+import { JobPosting, UploadData, Feedback } from '../../types/resume';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://bridgeworks-api-758224663478.us-central1.run.app/";
 

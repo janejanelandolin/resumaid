@@ -1,5 +1,5 @@
 
-import { JobPosting, ResumeJson, ScoreResponse, UploadData } from '@/contexts/ResumeContext';
+import { JobPosting, ResumeJson, ScoreResponse, UploadData } from '@/types/resume';
 
 // Mock job posting
 export const mockJobPosting: JobPosting = {
@@ -48,7 +48,6 @@ export const mockResumeJson: ResumeJson = {
 
 // Mock score response
 export const mockScoreResponse: ScoreResponse = {
-  score: 75,
   qualification: 'Qualified',
   missing_keywords: ['Angular'],
   explanation: 'Good match for the position but missing some desired skills.',

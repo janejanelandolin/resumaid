@@ -1,8 +1,7 @@
-
-import { JobPosting, UploadData, ATSFeedback } from '../../contexts/ResumeContext';
+import { JobPosting, UploadData, Feedback } from '../../types/resume';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
-export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadData): Promise<ApiResponse<ATSFeedback>> => {
+export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadData): Promise<ApiResponse<Feedback>> => {
   console.log('Getting ATS feedback');
   
   // Check if content is available
@@ -113,9 +112,7 @@ export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadD
     // Fallback to mock data if API call fails
     const fallbackData = {
       qualification: "Unqualified",
-      JobPostingFulltext_ResumeFulltext_similarity: 0.39,
-      JobPostingKeyword_ResumeKeyword_similarity: 0.03,
-      JobPostingKeyword_ResumeFulltext_similarity: 0.02,
+      similarity: 0.39,
       missing_keywords: [
         "revenue growth",
         "key alliances",
@@ -128,14 +125,6 @@ export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadD
         "partner conflicts",
         "this role",
         "strong relationships"
-      ],
-      // For backward compatibility
-      similarity: 0.39,
-      keywords_missing: [
-        "revenue growth",
-        "key alliances",
-        "ccm strategic",
-        "partner communication"
       ],
       format_issues: [
         'Resume lacks proper section headers',

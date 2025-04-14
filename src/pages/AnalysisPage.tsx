@@ -16,7 +16,6 @@ const AnalysisPage = () => {
   const navigate = useNavigate();
   const { 
     jobTitle, 
-    atsFeedback, 
     feedback, 
     apiErrors,
     // New workflow values
@@ -29,16 +28,16 @@ const AnalysisPage = () => {
 
   useEffect(() => {
     // Check if we have at least the new data or the old data
-    const hasOldData = atsFeedback && feedback;
+    const hasOldData = feedback;
     const hasNewData = originalScore && tailoredScore;
     
     if (!hasOldData && !hasNewData) {
       navigate('/upload');
     }
-  }, [atsFeedback, feedback, originalScore, tailoredScore, navigate]);
+  }, [feedback, originalScore, tailoredScore, navigate]);
 
   // If neither old nor new data is available, don't render
-  if ((!atsFeedback || !feedback) && (!originalScore || !tailoredScore)) {
+  if (!feedback && (!originalScore || !tailoredScore)) {
     return null;
   }
 
@@ -46,7 +45,6 @@ const AnalysisPage = () => {
   console.log("Analysis Page Data:", {
     originalScore,
     tailoredScore,
-    atsFeedback,
     feedback
   });
 
@@ -60,7 +58,7 @@ const AnalysisPage = () => {
   // Get the scores based on data availability
   const originalSimilarity = useNewWorkflow 
     ? originalScore?.similarity || 0 
-    : atsFeedback?.JobPostingFulltext_ResumeFulltext_similarity || 0;
+    : 0;
   
   const tailoredSimilarity = useNewWorkflow
     ? tailoredScore?.similarity || 0
@@ -80,7 +78,7 @@ const AnalysisPage = () => {
   // Get qualifications
   const originalQualification = useNewWorkflow
     ? originalScore?.qualification || "Unknown"
-    : atsFeedback?.qualification || "Unknown";
+    : "Unknown";
     
   const tailoredQualification = useNewWorkflow
     ? tailoredScore?.qualification || "Unknown"
@@ -89,7 +87,7 @@ const AnalysisPage = () => {
   // Get missing keywords
   const missingKeywords = useNewWorkflow
     ? originalScore?.missing_keywords || []
-    : atsFeedback?.missing_keywords || [];
+    : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pt-6">
@@ -102,9 +100,9 @@ const AnalysisPage = () => {
             <ApiErrorDisplay errors={apiErrors} />
           )}
           
-          <MissingKeywords 
-            atsFeedback={useNewWorkflow ? { missing_keywords: missingKeywords } as any : atsFeedback} 
-          />
+          {originalScore && (
+            <MissingKeywords scoreResponse={originalScore} />
+          )}
           
           <Summary />
           
@@ -167,9 +165,9 @@ const AnalysisPage = () => {
                   </>
                 ) : (
                   <>
-                    <h3 className="font-mono text-sm mb-2">ATS Feedback Response:</h3>
+                    <h3 className="font-mono text-sm mb-2">Feedback Response:</h3>
                     <pre className="text-xs whitespace-pre-wrap">
-                      {JSON.stringify(atsFeedback, null, 2)}
+                      {JSON.stringify(feedback, null, 2)}
                     </pre>
                   </>
                 )}

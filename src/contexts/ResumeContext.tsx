@@ -40,6 +40,11 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const { editDecisions, addEditDecision } = useEditDecisions();
   const { parseResumeContent } = useResumeParser();
 
+  // Function to get optimized resume for preview and download
+  const getOptimizedResume = () => {
+    return tailoredResumeJson || resumeJson;
+  };
+
   const value: ResumeContextType = {
     // Basic resume data
     jobTitle,
@@ -68,6 +73,9 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     // Resume content management
     parseResumeContent,
+    
+    // Get optimized resume
+    getOptimizedResume,
     
     // New workflow properties
     resumeJson,

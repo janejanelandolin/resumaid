@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useResumeContext } from '../contexts/ResumeContext';
 import PageContainer from '@/components/PageContainer';
@@ -13,7 +14,6 @@ const DebugPage = () => {
   const { 
     jobPosting, 
     uploadData, 
-    atsFeedback, 
     feedback,
     // Add new workflow state values
     resumeJson,
@@ -107,6 +107,7 @@ const DebugPage = () => {
               <ApiOutputsTab 
                 jobPosting={jobPosting}
                 uploadData={uploadData}
+                feedback={feedback}
                 resumeJson={resumeJson}
                 tailoredResumeJson={tailoredResumeJson}
                 originalScore={originalScore}

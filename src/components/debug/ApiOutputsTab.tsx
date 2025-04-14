@@ -5,7 +5,6 @@ import { JobPosting, UploadData, Feedback, ResumeJson, ScoreResponse } from '../
 interface ApiOutputsTabProps {
   jobPosting: JobPosting | null;
   uploadData: UploadData | null;
-  // Remove old workflow data
   feedback: Feedback | null;
   // Keep new workflow data
   resumeJson: ResumeJson | null;
@@ -18,7 +17,6 @@ interface ApiOutputsTabProps {
 const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
   jobPosting,
   uploadData,
-  // Remove old workflow props
   feedback,
   // Keep new workflow props
   resumeJson,
@@ -97,6 +95,14 @@ const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
         data={tailoredScore}
         isAvailable={hasData(tailoredScore)}
         notAvailableText="No tailored score available."
+      />
+      
+      <DebugCard
+        title="Legacy Feedback Response"
+        description="Response from the /feedback API endpoint"
+        data={feedback}
+        isAvailable={hasData(feedback)}
+        notAvailableText="No feedback response available."
       />
     </div>
   );
