@@ -1,3 +1,4 @@
+
 import React from 'react';
 import DebugCard from './DebugCard';
 import { JobPosting, UploadData, ATSFeedback, Feedback, ResumeJson, ScoreResponse } from '../../contexts/ResumeContext';
@@ -78,6 +79,19 @@ const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
         data={tailoredResumeJson}
         isAvailable={hasData(tailoredResumeJson)}
         notAvailableText="No tailored resume available."
+        renderContent={(data) => {
+          if (!data) return '';
+          
+          // Include rationale in debug display if available
+          const rationale = data.rationale ? 
+            { 
+              ...data,
+              rationale: data.rationale 
+            } : 
+            data;
+            
+          return JSON.stringify(rationale, null, 2);
+        }}
       />
 
       <DebugCard

@@ -1,7 +1,7 @@
-// Resume data interfaces
 export interface JobPosting {
   id?: string;
-  title: string;
+  title?: string;
+  company?: string;
   description?: string;
   requirements?: string[];
   skills?: string[];
@@ -16,34 +16,53 @@ export interface UploadData {
 
 export interface ATSFeedback {
   JobPostingFulltext_ResumeFulltext_similarity: number;
-  JobPostingKeyword_ResumeKeyword_similarity: number;
-  JobPostingKeyword_ResumeFulltext_similarity: number;
   missing_keywords: string[];
-  format_issues: string[];
   qualification: string;
-  similarity?: number;
-  keywords_missing?: string[];
 }
 
 export interface Feedback {
   similarity: number;
-  score_reason: string;
-  qualification: string;
   suggested_edits: {
-    section: string;
-    suggestion: string;
-    edit_reason: string;
-    resume_line_old: string;
-    resume_line_new: string;
+    section?: string;
+    suggestion?: string;
+    edit_reason?: string;
+    resume_line_old?: string;
+    resume_line_new?: string;
   }[];
+  qualification: string;
+  score_reason: string;
 }
 
-// Resume JSON schema
+export interface ScoreResponse {
+  similarity: number;
+  missing_keywords: string[];
+  qualification: string;
+  explanation: string;
+}
+
+export interface EditDecision {
+  editIndex: number;
+  accepted: boolean;
+}
+
+export interface ResumeTemplate {
+  id: string;
+  name: string;
+  image: string;
+  url: string;
+}
+
+export interface OptimizedResume {
+  content: string;
+  filename: string;
+}
+
 export interface ResumeJson {
   basics: {
     name: string;
-    email: string;
-    phone: string;
+    label?: string;
+    email?: string;
+    phone?: string;
     summary?: string;
     location?: {
       address?: string;
@@ -52,35 +71,34 @@ export interface ResumeJson {
       postalCode?: string;
       countryCode?: string;
     };
-    profiles?: Array<{
+    profiles?: {
       network: string;
       username: string;
-      url?: string;
-    }>;
+      url: string;
+    }[];
+    website?: string;
   };
-  work: Array<{
-    name: string;
+  work?: {
+    company?: string;
+    name?: string;
     position: string;
     startDate: string;
     endDate?: string;
     summary?: string;
     highlights?: string[];
-    company?: string;
-  }>;
-  education: Array<{
+  }[];
+  education?: {
     institution: string;
     area: string;
     studyType: string;
     startDate: string;
     endDate?: string;
-    gpa?: string;
-  }>;
-  skills: Array<{
+  }[];
+  skills?: {
     name: string;
-    level?: string;
-    keywords: string[];
-  }>;
-  projects?: Array<{
+    keywords?: string[];
+  }[];
+  projects?: {
     name: string;
     description: string;
     highlights?: string[];
@@ -88,80 +106,45 @@ export interface ResumeJson {
     startDate?: string;
     endDate?: string;
     url?: string;
-  }>;
-}
-
-// Score response interface
-export interface ScoreResponse {
-  score: number;
-  qualification: string;
-  missing_keywords: string[];
-  explanation: string;
-  similarity?: number; // Adding similarity property to handle backend response
-  evaluatorA_qualification?: string;
-  evaluatorB_qualification?: string;
-  evaluatorC_qualification?: string;
-  consensus_qualification?: string;
-  score_reason?: string;
-}
-
-// Edit decision interface
-export interface EditDecision {
-  editIndex: number;
-  accepted: boolean;
-}
-
-// Resume template interface
-export interface ResumeTemplate {
-  id: string;
-  name: string;
-  thumbnail: string;
-  description: string;
-}
-
-// JSON Resume interfaces for optimized resume
-export interface ResumeBasics {
-  name: string;
-  email: string;
-  phone: string;
-  url?: string;
-  summary?: string;
-}
-
-export interface ResumeWorkExperience {
-  name: string;
-  position: string;
-  startDate: string;
-  endDate?: string;
-  summary?: string;
-  highlights?: string[];
-}
-
-export interface ResumeEducation {
-  institution: string;
-  area: string;
-  studyType: string;
-  startDate: string;
-  endDate?: string;
-}
-
-export interface ResumeSkill {
-  name: string;
-  keywords: string[];
-}
-
-export interface ResumeProject {
-  name: string;
-  description: string;
-  startDate?: string;
-  endDate?: string;
-  highlights?: string[];
-}
-
-export interface OptimizedResume {
-  basics: ResumeBasics;
-  work: ResumeWorkExperience[];
-  education: ResumeEducation[];
-  skills: ResumeSkill[];
-  projects?: ResumeProject[];
+  }[];
+  awards?: {
+    title: string;
+    date: string;
+    awarder: string;
+    summary?: string;
+  }[];
+  publications?: {
+    name: string;
+    publisher: string;
+    releaseDate: string;
+    summary?: string;
+  }[];
+  languages?: {
+    language: string;
+    fluency: string;
+  }[];
+  interests?: {
+    name: string;
+    keywords?: string[];
+  }[];
+  references?: {
+    name: string;
+    reference: string;
+  }[];
+  volunteer?: {
+    organization: string;
+    position: string;
+    startDate: string;
+    endDate?: string;
+    summary?: string;
+    highlights?: string[];
+  }[];
+  certifications?: {
+    name: string;
+    date: string;
+    issuer: string;
+    url?: string;
+  }[];
+  // Add rationale property to support the API response
+  rationale?: string[];
 }
