@@ -26,6 +26,8 @@ export interface Feedback {
   }[];
   qualification: string;
   score_reason: string;
+  missing_keywords?: string[];
+  format_issues?: string[];
 }
 
 export interface ScoreResponse {

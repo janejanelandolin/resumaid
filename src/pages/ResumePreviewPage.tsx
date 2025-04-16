@@ -68,8 +68,8 @@ const ResumePreviewPage = () => {
               <div className="text-right">
                 <p className="text-gray-700">{optimizedResume.basics.email}</p>
                 <p className="text-gray-700">{optimizedResume.basics.phone}</p>
-                {optimizedResume.basics.url && (
-                  <p className="text-gray-700">{optimizedResume.basics.url}</p>
+                {optimizedResume.basics.website && (
+                  <p className="text-gray-700">{optimizedResume.basics.website}</p>
                 )}
               </div>
             </div>
