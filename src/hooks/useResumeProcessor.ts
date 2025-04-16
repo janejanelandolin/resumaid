@@ -99,7 +99,7 @@ export const useResumeProcessor = ({
       }
       
       // Process the resume with the API
-      await processResumeContent(
+      const processingResult = await processResumeContent(
         extractedContent,
         setApiErrors,
         setProgress,
@@ -107,11 +107,29 @@ export const useResumeProcessor = ({
         state.apiErrors
       );
       
-      // Complete and navigate
+      // Complete and navigate only if processing was successful
       setProgress(100);
       setProgressText('Analysis complete!');
       
-      // If we have errors but also data, toast the user
+      // Check if we have critical errors that should prevent navigation
+      const hasCriticalErrors = state.apiErrors.some(err => 
+        err.includes('Schema Error') || 
+        err.includes('Upload Error') || 
+        err.includes('Process Error')
+      );
+      
+      if (hasCriticalErrors) {
+        toast({
+          title: "Warning",
+          description: "We encountered some errors processing your resume. Please check the details and try again.",
+          variant: "destructive",
+        });
+        showErrorDialog();
+        setUploading(false);
+        return;
+      }
+      
+      // If we have non-critical errors but also data, toast the user
       if (state.apiErrors.length > 0) {
         toast({
           title: "Warning",
@@ -123,9 +141,11 @@ export const useResumeProcessor = ({
       // Store in sessionStorage that we've completed the resume upload
       sessionStorage.setItem('resumeUploaded', 'true');
       
+      // Use setTimeout to ensure state updates are completed before navigation
       setTimeout(() => {
         setUploading(false);
-        navigate('/analysis');
+        // Use navigate without reload
+        navigate('/analysis', { replace: true });
       }, 500);
       
     } catch (error) {
