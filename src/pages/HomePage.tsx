@@ -35,13 +35,13 @@ const HomePage = () => {
                 <Rocket size={20} className="animate-fade-in" />
               </span>
             </h1>
-            <p className="text-muted-foreground">
+            <div className="text-muted-foreground">
               <RotatingText 
                 texts={["OPTIMIZE", "Optimize your RESUME", "Optimize your resume for your DREAM JOB"]}
                 className="text-base font-medium"
                 highlightedText="true"
               />
-            </p>
+            </div>
           </div>
 
           <JobSearchForm />
