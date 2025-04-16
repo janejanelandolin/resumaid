@@ -16,6 +16,29 @@ export const useResumeApiProcessor = () => {
     setTailoredScore
   } = useResumeContext();
   
+  // Helper function to normalize skills data
+  const normalizeSkills = (resumeData: any) => {
+    if (!resumeData) return resumeData;
+    
+    // If skills is a string, convert it to an array with that string as the only element
+    if (typeof resumeData.skills === 'string') {
+      return {
+        ...resumeData,
+        skills: [{ name: resumeData.skills, keywords: [] }]
+      };
+    }
+    
+    // If skills is not an array, make it an empty array
+    if (!Array.isArray(resumeData.skills)) {
+      return {
+        ...resumeData,
+        skills: []
+      };
+    }
+    
+    return resumeData;
+  };
+  
   // Process the uploaded resume with the API
   const processResumeContent = useCallback(async (
     extractedContent: string, 
@@ -34,6 +57,11 @@ export const useResumeApiProcessor = () => {
     
     const resumeSchemaResponse = await apiService.getResumeSchema(extractedContent);
     console.log("Resume schema response:", resumeSchemaResponse);
+    
+    // Normalize the skills data before processing
+    if (resumeSchemaResponse.data) {
+      resumeSchemaResponse.data = normalizeSkills(resumeSchemaResponse.data);
+    }
     
     if (resumeSchemaResponse.error) {
       const newErrors = [...apiErrors, `Resume Schema Error: ${resumeSchemaResponse.error}`];
@@ -77,13 +105,8 @@ export const useResumeApiProcessor = () => {
     
     if (resumeSchemaResponse.data) {
       try {
-        // Ensure the resume data has a 'skills' array property if it doesn't exist
-        const resumeDataWithValidSkills = { 
-          ...resumeSchemaResponse.data,
-          skills: Array.isArray(resumeSchemaResponse.data.skills) 
-            ? resumeSchemaResponse.data.skills 
-            : []
-        };
+        // We've already normalized skills above, so we can use the data directly
+        const resumeDataWithValidSkills = resumeSchemaResponse.data;
         
         const scoreResponse = await apiService.scoreResume(resumeDataWithValidSkills, jobPostingText);
         console.log("Score response:", scoreResponse);
@@ -112,13 +135,8 @@ export const useResumeApiProcessor = () => {
       console.log("Job posting preview:", jobPostingText.substring(0, 100) + '...');
       
       try {
-        // Ensure the resume data has a 'skills' array property
-        const resumeDataWithValidSkills = { 
-          ...resumeSchemaResponse.data,
-          skills: Array.isArray(resumeSchemaResponse.data.skills) 
-            ? resumeSchemaResponse.data.skills 
-            : []
-        };
+        // We've already normalized skills above, so we can use the data directly
+        const resumeDataWithValidSkills = resumeSchemaResponse.data;
         
         const tailorResponse = await apiService.tailorResume(resumeDataWithValidSkills, jobPostingText);
         console.log("Tailor response:", tailorResponse);
@@ -127,16 +145,20 @@ export const useResumeApiProcessor = () => {
           const newErrors = [...apiErrors, `Tailor Error: ${tailorResponse.error}`];
           setApiErrors(newErrors);
           if (tailorResponse.data && tailorResponse.data.resume) {
+            // Normalize skills in tailored resume
+            const normalizedTailoredResume = normalizeSkills(tailorResponse.data.resume);
             // Extract just the resume object from the response
-            setTailoredResumeJson(tailorResponse.data.resume);
+            setTailoredResumeJson(normalizedTailoredResume);
             // Store the rationale for UI display if needed
             if (tailorResponse.data.rationale) {
               setTailoringRationale(tailorResponse.data.rationale);
             }
           }
         } else if (tailorResponse.data) {
+          // Normalize skills in tailored resume
+          const normalizedTailoredResume = normalizeSkills(tailorResponse.data.resume);
           // Extract just the resume object from the response
-          setTailoredResumeJson(tailorResponse.data.resume);
+          setTailoredResumeJson(normalizedTailoredResume);
           // Store the rationale for UI display if needed
           if (tailorResponse.data.rationale) {
             setTailoringRationale(tailorResponse.data.rationale);
@@ -147,17 +169,9 @@ export const useResumeApiProcessor = () => {
           setProgressText('Evaluating optimized resume...');
           
           try {
-            // Ensure the tailored resume has a skills array
-            const tailoredResumeWithValidSkills = {
-              ...tailorResponse.data.resume,
-              skills: Array.isArray(tailorResponse.data.resume.skills) 
-                ? tailorResponse.data.resume.skills 
-                : []
-            };
-            
-            // Use the resume object from the tailor response
+            // Use the normalized tailored resume
             const tailoredScoreResponse = await apiService.scoreResume(
-              tailoredResumeWithValidSkills, 
+              normalizedTailoredResume, 
               jobPostingText
             );
             
