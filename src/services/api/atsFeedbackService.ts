@@ -86,17 +86,12 @@ export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadD
         jobPostingTitle: jobPosting.title 
       }, data);
       
-      // Add backwards compatibility for existing code that expects similarity property
-      if (data.JobPostingFulltext_ResumeFulltext_similarity !== undefined && data.similarity === undefined) {
-        data.similarity = data.JobPostingFulltext_ResumeFulltext_similarity;
-      }
+      // Create a Feedback object with only the format_issues property
+      const feedback: Feedback = {
+        format_issues: data.format_issues || []
+      };
       
-      // Add backwards compatibility for existing code that expects keywords_missing property
-      if (data.missing_keywords !== undefined && data.keywords_missing === undefined) {
-        data.keywords_missing = data.missing_keywords;
-      }
-      
-      return { data };
+      return { data: feedback };
     } catch (parseError) {
       const errorMessage = `Failed to parse server response: ${responseText.substring(0, 100)}...`;
       logApiCall('getATSFeedback (parse error)', { 
@@ -109,23 +104,8 @@ export const getATSFeedback = async (jobPosting: JobPosting, uploadData: UploadD
   } catch (error) {
     console.error("Failed to get ATS feedback:", error);
     
-    // Fallback to mock data if API call fails
-    const fallbackData = {
-      qualification: "Unqualified",
-      similarity: 0.39,
-      missing_keywords: [
-        "revenue growth",
-        "key alliances",
-        "ccm strategic",
-        "nicetohaves experience",
-        "cpq",
-        "partner communication",
-        "alignment",
-        "recruit",
-        "partner conflicts",
-        "this role",
-        "strong relationships"
-      ],
+    // Fallback to mock data with only format_issues
+    const fallbackData: Feedback = {
       format_issues: [
         'Resume lacks proper section headers',
         'Content is not well organized'

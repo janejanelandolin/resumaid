@@ -62,7 +62,7 @@ const AnalysisPage = () => {
   
   const tailoredSimilarity = useNewWorkflow
     ? tailoredScore?.similarity || 0
-    : feedback?.similarity || 0;
+    : 0;
   
   // Calculate the improvement percentage
   const improvement = tailoredSimilarity - originalSimilarity;
@@ -74,20 +74,6 @@ const AnalysisPage = () => {
     improvement,
     useNewWorkflow
   });
-
-  // Get qualifications
-  const originalQualification = useNewWorkflow
-    ? originalScore?.qualification || "Unknown"
-    : "Unknown";
-    
-  const tailoredQualification = useNewWorkflow
-    ? tailoredScore?.qualification || "Unknown"
-    : feedback?.qualification || "Unknown";
-
-  // Get missing keywords
-  const missingKeywords = useNewWorkflow
-    ? originalScore?.missing_keywords || []
-    : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 pt-6">
@@ -110,18 +96,15 @@ const AnalysisPage = () => {
             atsSimilarity={originalSimilarity}
             feedbackSimilarity={tailoredSimilarity}
             improvement={improvement}
-            atsQualification={originalQualification}
-            feedbackQualification={tailoredQualification}
+            atsQualification={"Not Applicable"}
+            feedbackQualification={"Not Applicable"}
           />
           
           <ImprovementSuggestions 
             feedback={
               useNewWorkflow 
                 ? { 
-                    suggested_edits: [], 
-                    similarity: tailoredSimilarity,
-                    qualification: tailoredQualification,
-                    score_reason: tailoredScore?.explanation || "Your resume has been optimized for this job."
+                    format_issues: []
                   }
                 : feedback
             } 

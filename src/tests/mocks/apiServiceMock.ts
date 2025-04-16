@@ -5,8 +5,8 @@ import { mockResumeJson, mockScoreResponse, mockTailoredResponse, mockUploadData
 export const apiServiceMock = {
   getJobPosting: jest.fn().mockResolvedValue({ data: { title: 'Software Engineer' } }),
   uploadResume: jest.fn().mockResolvedValue({ data: mockUploadData }),
-  getATSFeedback: jest.fn().mockResolvedValue({ data: { similarity: 0.75 } }),
-  getFeedback: jest.fn().mockResolvedValue({ data: { similarity: 0.75 } }),
+  getATSFeedback: jest.fn().mockResolvedValue({ data: { format_issues: ['Format issue 1'] } }),
+  getFeedback: jest.fn().mockResolvedValue({ data: { format_issues: ['Format issue 1'] } }),
   getResumeSchema: jest.fn().mockResolvedValue({ data: mockResumeJson }),
   scoreResume: jest.fn().mockResolvedValue({ data: mockScoreResponse }),
   tailorResume: jest.fn().mockResolvedValue({ data: mockTailoredResponse })

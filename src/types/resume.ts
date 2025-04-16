@@ -16,31 +16,18 @@ export interface UploadData {
 }
 
 export interface Feedback {
-  similarity: number;
-  suggested_edits: {
-    section?: string;
-    suggestion?: string;
-    edit_reason?: string;
-    resume_line_old?: string;
-    resume_line_new?: string;
-  }[];
-  qualification: string;
-  score_reason: string;
-  missing_keywords?: string[];
   format_issues?: string[];
 }
 
 export interface ScoreResponse {
   similarity: number;
   missing_keywords: string[];
-  qualification: string;
   explanation: string;
   // Additional fields from API response
   evaluatorA_qualification?: string;
   evaluatorB_qualification?: string;
   evaluatorC_qualification?: string;
   consensus_qualification?: string;
-  score_reason?: string;
 }
 
 export interface EditDecision {
