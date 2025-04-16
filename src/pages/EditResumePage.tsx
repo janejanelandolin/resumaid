@@ -16,7 +16,8 @@ const EditResumePage = () => {
     uploadData, 
     editDecisions, 
     addEditDecision,
-    parseResumeContent 
+    parseResumeContent,
+    tailoredResumeJson
   } = useResumeContext();
   
   const [currentEditIndex, setCurrentEditIndex] = useState(0);
@@ -25,22 +26,23 @@ const EditResumePage = () => {
   
   // Parse resume content when page loads if not already parsed
   useEffect(() => {
-    if (uploadData?.content && feedback) {
+    if (uploadData?.content && tailoredResumeJson) {
       parseResumeContent(uploadData.content);
-    } else if (!feedback) {
-      // Redirect if there's no feedback
+    } else {
+      // Redirect if there's no tailored resume
       navigate('/analysis');
     }
-  }, [uploadData, feedback, parseResumeContent, navigate]);
+  }, [uploadData, tailoredResumeJson, parseResumeContent, navigate]);
 
-  // Get suggested edits from feedback
-  const suggestedEdits = feedback?.suggested_edits || [];
+  // Get suggested edits from the tailored resume's rationale
+  const suggestedEdits = tailoredResumeJson?.rationale?.map((rationale, index) => ({
+    section: `Improvement ${index + 1}`,
+    suggestion: rationale
+  })) || [];
   
   // Set editable text when current edit changes
   useEffect(() => {
-    if (suggestedEdits[currentEditIndex]?.resume_line_new) {
-      setEditableText(suggestedEdits[currentEditIndex].resume_line_new || '');
-    } else if (suggestedEdits[currentEditIndex]?.suggestion) {
+    if (suggestedEdits[currentEditIndex]?.suggestion) {
       setEditableText(suggestedEdits[currentEditIndex].suggestion || '');
     }
     setIsEditing(false);
@@ -136,7 +138,7 @@ const EditResumePage = () => {
   const handleSaveEdit = () => {
     // Update the suggested edit with the new text
     if (suggestedEdits[currentEditIndex]) {
-      suggestedEdits[currentEditIndex].resume_line_new = editableText;
+      suggestedEdits[currentEditIndex].suggestion = editableText;
     }
     setIsEditing(false);
   };

@@ -10,7 +10,7 @@ import { useResumeContext } from '@/contexts/ResumeContext';
 
 const TemplateSelectionPage = () => {
   const navigate = useNavigate();
-  const { uploadData, feedback } = useResumeContext();
+  const { uploadData, tailoredResumeJson } = useResumeContext();
   
   // If there's no resume data, redirect to the homepage
   React.useEffect(() => {
@@ -18,6 +18,9 @@ const TemplateSelectionPage = () => {
       navigate('/');
     }
   }, [uploadData, navigate]);
+
+  // Check if there are rationale items that can be edited
+  const hasEdits = tailoredResumeJson?.rationale && tailoredResumeJson.rationale.length > 0;
 
   return (
     <PageContainer>
@@ -34,7 +37,7 @@ const TemplateSelectionPage = () => {
             </div>
           </div>
           
-          {feedback?.suggested_edits && feedback.suggested_edits.length > 0 && (
+          {hasEdits && (
             <Button 
               onClick={() => navigate('/edit-resume')}
               variant="outline"

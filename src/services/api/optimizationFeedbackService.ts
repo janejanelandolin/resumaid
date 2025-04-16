@@ -1,4 +1,3 @@
-
 import { JobPosting, UploadData, Feedback } from '../../contexts/ResumeContext';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
@@ -98,25 +97,11 @@ export const getFeedback = async (jobPosting: JobPosting, uploadData: UploadData
     console.error("Failed to get feedback:", error);
     
     // Fallback to mock data if API call fails
-    const fallbackData = {
-      similarity: 0.45,
-      score_reason: "Your resume shows some relevant experience but is missing key skills and experiences that the job requires.",
-      qualification: "Somewhat qualified",
-      suggested_edits: [
-        {
-          section: "Skills",
-          suggestion: "Highlight partner management experience and communication skills",
-          edit_reason: "The job posting emphasizes partner relationships and communication",
-          resume_line_old: "Computing Linux (bash), Amazon Web Services",
-          resume_line_new: "Partner Management, Strategic Communications, Computing Linux (bash), Amazon Web Services"
-        },
-        {
-          section: "Experience",
-          suggestion: "Emphasize team leadership and stakeholder management",
-          edit_reason: "The job requires managing relationships with multiple stakeholders",
-          resume_line_old: "Directed team of 14 engineers and scientists with 3 direct reports/team leads.",
-          resume_line_new: "Directed cross-functional team of 14 engineers and scientists, managing key stakeholder relationships and strategic partnerships."
-        }
+    const fallbackData: Feedback = {
+      format_issues: [
+        'Resume lacks proper section headers',
+        'Content is not well organized',
+        'Skills section needs to be more prominent'
       ]
     };
     
