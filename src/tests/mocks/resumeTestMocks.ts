@@ -1,4 +1,3 @@
-
 import { JobPosting, ResumeJson, ScoreResponse, UploadData } from '@/types/resume';
 
 // Mock job posting
@@ -46,9 +45,7 @@ export const mockResumeJson: ResumeJson = {
   ]
 };
 
-// Mock score response
 export const mockScoreResponse: ScoreResponse = {
-  qualification: 'Qualified',
   missing_keywords: ['Angular'],
   explanation: 'Good match for the position but missing some desired skills.',
   similarity: 0.75

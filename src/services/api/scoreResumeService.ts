@@ -47,7 +47,6 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
       
       // Map from backend format to our expected format if needed
       const mappedData: ScoreResponse = {
-        qualification: data.consensus_qualification || data.qualification || "Unknown",
         missing_keywords: data.missing_keywords || [],
         explanation: data.score_reason || data.explanation || "",
         similarity: data.similarity || 0,
@@ -56,7 +55,6 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
         evaluatorB_qualification: data.evaluatorB_qualification,
         evaluatorC_qualification: data.evaluatorC_qualification,
         consensus_qualification: data.consensus_qualification,
-        score_reason: data.score_reason
       };
       
       console.log('Score response mapped data:', mappedData);
@@ -76,7 +74,6 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
     
     // Fallback to mock data if API call fails
     const fallbackData = {
-      qualification: "Somewhat qualified",
       missing_keywords: ["leadership", "team management", "project planning"],
       explanation: "Your resume shows some relevant skills but is missing key qualifications required for this position.",
       similarity: 0.65
