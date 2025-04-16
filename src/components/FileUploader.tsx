@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, ClipboardPaste, ChevronDown, ChevronUp, Briefcase } from 'lucide-react';
+import { Upload, FileText, ClipboardPaste, ChevronDown, ChevronUp } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -9,28 +9,17 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 interface FileUploaderProps {
   onFileUpload: (file: File) => void;
   onTextInput?: (text: string) => void;
-  onJobPostingInput?: (text: string) => void;
-  jobPosting?: string;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({ 
   onFileUpload, 
-  onTextInput,
-  onJobPostingInput,
-  jobPosting = '' 
+  onTextInput
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [resumeText, setResumeText] = useState('');
-  const [jobPostingText, setJobPostingText] = useState(jobPosting);
   const [isResumeTextOpen, setIsResumeTextOpen] = useState(false);
-  const [isJobPostingOpen, setIsJobPostingOpen] = useState(false);
   const [fileUploadError, setFileUploadError] = useState<string | null>(null);
-
-  // Update job posting text when prop changes
-  React.useEffect(() => {
-    setJobPostingText(jobPosting);
-  }, [jobPosting]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -78,12 +67,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       // Clear file when text is submitted
       setFile(null);
       setFileUploadError(null);
-    }
-  };
-
-  const handleJobPostingSubmit = () => {
-    if (jobPostingText.trim() && onJobPostingInput) {
-      onJobPostingInput(jobPostingText);
     }
   };
 
@@ -175,50 +158,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           </div>
         </CollapsibleContent>
       </Collapsible>
-
-      {/* Job Posting Input as Collapsible */}
-      {onJobPostingInput && (
-        <Collapsible 
-          open={isJobPostingOpen} 
-          onOpenChange={setIsJobPostingOpen}
-          className="border rounded-lg"
-        >
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-indigo-500" />
-              <span>Edit Job Posting</span>
-            </div>
-            {isJobPostingOpen ? (
-              <ChevronUp className="h-5 w-5 text-gray-500" />
-            ) : (
-              <ChevronDown className="h-5 w-5 text-gray-500" />
-            )}
-          </CollapsibleTrigger>
-          <CollapsibleContent className="p-4 pt-2">
-            <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                Edit the job posting to better match your target position.
-              </p>
-              <Textarea 
-                placeholder="Edit the job posting description..." 
-                className="min-h-[150px]"
-                value={jobPostingText}
-                onChange={(e) => setJobPostingText(e.target.value)}
-              />
-              <Button 
-                onClick={handleJobPostingSubmit}
-                className="w-full"
-                disabled={!jobPostingText.trim()}
-                variant="outline"
-                size="sm"
-              >
-                <Briefcase className="mr-2 h-4 w-4" />
-                Update Job Posting
-              </Button>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-      )}
       
       <div className="text-center text-sm text-gray-500">
         <p>Choose upload method or paste text to submit your resume for ATS compatibility analysis</p>

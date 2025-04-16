@@ -6,7 +6,6 @@ import { apiService } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 import { UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
 import { useResumeProcessorState } from './resume/useResumeProcessorState';
-import { useJobPostingHandler } from './resume/useJobPostingHandler';
 import { useResumeApiProcessor } from './resume/useResumeApiProcessor';
 
 export const useResumeProcessor = ({
@@ -21,7 +20,6 @@ export const useResumeProcessor = ({
     jobPosting, 
     setUploadData, 
     setApiErrors: setGlobalApiErrors,
-    setJobPosting
   } = useResumeContext();
   
   const { 
@@ -33,7 +31,6 @@ export const useResumeProcessor = ({
     createTextFile
   } = useResumeProcessorState(setGlobalApiErrors);
   
-  const { handleJobPostingInput } = useJobPostingHandler(jobPosting, setJobPosting);
   const { processResumeContent } = useResumeApiProcessor();
 
   const processResume = useCallback(async () => {
@@ -167,7 +164,6 @@ export const useResumeProcessor = ({
     state,
     handleFileUpload,
     handleTextInput,
-    handleJobPostingInput,
     processResume,
   };
 };

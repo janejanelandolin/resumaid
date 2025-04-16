@@ -34,7 +34,6 @@ const UploadForm = ({
     state,
     handleFileUpload,
     handleTextInput,
-    handleJobPostingInput,
     processResume
   } = useResumeProcessor({
     setProgress,
@@ -61,8 +60,6 @@ const UploadForm = ({
         <FileUploader 
           onFileUpload={handleFileUpload} 
           onTextInput={handleTextInput}
-          jobPosting={jobPosting?.description}
-          onJobPostingInput={handleJobPostingInput}
         />
       </div>
       
