@@ -24,7 +24,15 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
     
     // Updated color logic based on qualification text
     if (qualification.toLowerCase().includes('irrelevant')) return 'bg-red-100 text-red-800';
-    if (qualification.toLowerCase().includes('qualified')) return 'bg-green-100 text-green-800';
+    if (qualification.toLowerCase().includes('qualified')) {
+      // Check for underqualified or overqualified (yellow)
+      if (qualification.toLowerCase().includes('under') || 
+          qualification.toLowerCase().includes('over')) {
+        return 'bg-yellow-100 text-yellow-800';
+      }
+      // Regular qualified (green)
+      return 'bg-green-100 text-green-800';
+    }
     
     // Default to yellow for all other cases
     return 'bg-yellow-100 text-yellow-800';

@@ -2,10 +2,9 @@
 /**
  * Hook for processing resume scoring operations
  */
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { apiService } from '@/services/api';
-import { normalizeSkills } from './useResumeNormalizer';
 import { ResumeJson, ScoreResponse } from '@/types/resume';
 
 export const useResumeScoring = () => {
@@ -33,7 +32,6 @@ export const useResumeScoring = () => {
         setProgressText('Evaluating optimized resume...');
       }
       
-      // We've already normalized skills above, so we can use the data directly
       const resumeDataWithValidSkills = resumeData;
       
       const scoreResponse = await apiService.scoreResume(resumeDataWithValidSkills, jobPostingText);

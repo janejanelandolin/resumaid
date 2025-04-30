@@ -1,4 +1,3 @@
-
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
@@ -143,7 +142,10 @@ export const useResumeProcessor = ({
       
       // Use setTimeout to ensure state updates are completed before navigation
       setTimeout(() => {
+        // Important: Don't reset the file state here, keep the file info
+        // Only set isUploading to false for UI purposes
         setUploading(false);
+        
         // Use navigate without reload
         navigate('/analysis', { replace: true });
       }, 500);
