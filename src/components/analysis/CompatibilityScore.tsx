@@ -19,7 +19,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
 }) => {
   // Helper function to determine qualification badge color
   const getQualificationColor = (qualification: string) => {
-    if (!qualification) return 'bg-gray-100 text-gray-800';
+    if (!qualification || qualification === 'Not Available') return 'bg-gray-100 text-gray-800';
     if (qualification.toLowerCase().includes('qualified')) return 'bg-green-100 text-green-800';
     if (qualification.toLowerCase().includes('unqualified')) return 'bg-red-100 text-red-800';
     return 'bg-yellow-100 text-yellow-800';
@@ -40,7 +40,9 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
     feedbackSimilarity,
     normalizedFeedbackSimilarity,
     improvement,
-    normalizedImprovement 
+    normalizedImprovement,
+    atsQualification,
+    feedbackQualification 
   });
 
   return (

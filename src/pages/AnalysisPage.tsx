@@ -67,11 +67,17 @@ const AnalysisPage = () => {
   // Calculate the improvement percentage
   const improvement = tailoredSimilarity - originalSimilarity;
 
+  // Get the qualification values from the API responses
+  const atsQualification = originalScore?.consensus_qualification || "Not Available";
+  const feedbackQualification = tailoredScore?.consensus_qualification || "Not Available";
+
   // Log the calculated values for debugging
   console.log("Calculated scores:", {
     originalSimilarity,
     tailoredSimilarity,
     improvement,
+    atsQualification,
+    feedbackQualification,
     useNewWorkflow
   });
 
@@ -96,8 +102,8 @@ const AnalysisPage = () => {
             atsSimilarity={originalSimilarity}
             feedbackSimilarity={tailoredSimilarity}
             improvement={improvement}
-            atsQualification={"Not Applicable"}
-            feedbackQualification={"Not Applicable"}
+            atsQualification={atsQualification}
+            feedbackQualification={feedbackQualification}
           />
           
           <ImprovementSuggestions 

@@ -1,3 +1,4 @@
+
 import { ScoreResponse, ResumeJson } from '../../types/resume';
 import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
@@ -76,7 +77,8 @@ export const scoreResume = async (resumeJson: ResumeJson, jobPostingText: string
     const fallbackData = {
       missing_keywords: ["leadership", "team management", "project planning"],
       explanation: "Your resume shows some relevant skills but is missing key qualifications required for this position.",
-      similarity: 0.65
+      similarity: 0.65,
+      consensus_qualification: "Potentially Qualified"
     };
     
     logApiCall('scoreResume (fallback)', { 
