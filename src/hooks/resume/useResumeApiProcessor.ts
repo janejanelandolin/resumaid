@@ -1,43 +1,24 @@
 
-import { useCallback, useState } from 'react';
+/**
+ * Main hook for processing resume with APIs
+ */
+import { useCallback } from 'react';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { apiService } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
+import { normalizeSkills, formatJobPostingAsText } from './useResumeNormalizer';
+import { useResumeScoring } from './useResumeScoring';
+import { useResumeTailoring } from './useResumeTailoring';
 
 export const useResumeApiProcessor = () => {
   const { toast } = useToast();
-  const [tailoringRationale, setTailoringRationale] = useState<string[]>([]);
-  
   const { 
     jobPosting,
     setResumeJson,
-    setOriginalScore,
-    setTailoredResumeJson,
-    setTailoredScore
   } = useResumeContext();
   
-  // Helper function to normalize skills data
-  const normalizeSkills = (resumeData: any) => {
-    if (!resumeData) return resumeData;
-    
-    // If skills is a string, convert it to an array with that string as the only element
-    if (typeof resumeData.skills === 'string') {
-      return {
-        ...resumeData,
-        skills: [{ name: resumeData.skills, keywords: [] }]
-      };
-    }
-    
-    // If skills is not an array, make it an empty array
-    if (!Array.isArray(resumeData.skills)) {
-      return {
-        ...resumeData,
-        skills: []
-      };
-    }
-    
-    return resumeData;
-  };
+  const { scoreResume } = useResumeScoring();
+  const { tailorResume, tailoringRationale } = useResumeTailoring();
   
   // Process the uploaded resume with the API
   const processResumeContent = useCallback(async (
@@ -78,130 +59,37 @@ export const useResumeApiProcessor = () => {
     
     // Format job posting as a simple string
     let jobPostingText = '';
-    if (!jobPosting) {
+    try {
+      jobPostingText = formatJobPostingAsText(jobPosting);
+    } catch (error) {
       isSuccessful = false;
-      throw new Error("No job posting available");
+      throw error;
     }
-    
-    if (jobPosting.userProvided && jobPosting.description) {
-      jobPostingText = jobPosting.description;
-    } else if (jobPosting.description) {
-      jobPostingText = jobPosting.description;
-    } else {
-      jobPostingText = jobPosting.title || '';
-      
-      if (jobPosting.requirements && jobPosting.requirements.length > 0) {
-        jobPostingText += `\n\nRequirements:\n${jobPosting.requirements.join('\n')}`;
-      }
-      
-      if (jobPosting.skills && jobPosting.skills.length > 0) {
-        jobPostingText += `\n\nSkills:\n${jobPosting.skills.join('\n')}`;
-      }
-    }
-    
-    // Step 3: Score the original resume
-    setProgress(60);
-    setProgressText('Scoring your resume...');
     
     if (resumeSchemaResponse.data) {
-      try {
-        // We've already normalized skills above, so we can use the data directly
-        const resumeDataWithValidSkills = resumeSchemaResponse.data;
-        
-        const scoreResponse = await apiService.scoreResume(resumeDataWithValidSkills, jobPostingText);
-        console.log("Score response:", scoreResponse);
-        
-        if (scoreResponse.error) {
-          const newErrors = [...apiErrors, `Score Error: ${scoreResponse.error}`];
-          setApiErrors(newErrors);
-          if (scoreResponse.data) {
-            setOriginalScore(scoreResponse.data);
-          }
-        } else if (scoreResponse.data) {
-          setOriginalScore(scoreResponse.data);
-        }
-      } catch (error) {
-        console.error("Error scoring resume:", error);
-        const newErrors = [...apiErrors, `Score Error: ${error instanceof Error ? error.message : String(error)}`];
-        setApiErrors(newErrors);
-        // Continue processing even if scoring fails
-      }
+      // Step 3: Score the original resume
+      await scoreResume(
+        resumeSchemaResponse.data,
+        jobPostingText,
+        setProgress,
+        setProgressText,
+        apiErrors,
+        setApiErrors
+      );
       
-      // Step 4: Tailor the resume
-      setProgress(80);
-      setProgressText('Tailoring your resume to the job...');
-      
-      console.log("Sending tailor request with job posting length:", jobPostingText.length);
-      console.log("Job posting preview:", jobPostingText.substring(0, 100) + '...');
-      
-      try {
-        // We've already normalized skills above, so we can use the data directly
-        const resumeDataWithValidSkills = resumeSchemaResponse.data;
-        
-        const tailorResponse = await apiService.tailorResume(resumeDataWithValidSkills, jobPostingText);
-        console.log("Tailor response:", tailorResponse);
-        
-        if (tailorResponse.error) {
-          const newErrors = [...apiErrors, `Tailor Error: ${tailorResponse.error}`];
-          setApiErrors(newErrors);
-          if (tailorResponse.data && tailorResponse.data.resume) {
-            // Normalize skills in tailored resume
-            const normalizedTailoredResume = normalizeSkills(tailorResponse.data.resume);
-            // Extract just the resume object from the response
-            setTailoredResumeJson(normalizedTailoredResume);
-            // Store the rationale for UI display if needed
-            if (tailorResponse.data.rationale) {
-              setTailoringRationale(tailorResponse.data.rationale);
-            }
-          }
-        } else if (tailorResponse.data) {
-          // Normalize skills in tailored resume
-          const normalizedTailoredResume = normalizeSkills(tailorResponse.data.resume);
-          // Extract just the resume object from the response
-          setTailoredResumeJson(normalizedTailoredResume);
-          // Store the rationale for UI display if needed
-          if (tailorResponse.data.rationale) {
-            setTailoringRationale(tailorResponse.data.rationale);
-          }
-          
-          // Step 5: Score the tailored resume
-          setProgress(90);
-          setProgressText('Evaluating optimized resume...');
-          
-          try {
-            // Use the normalized tailored resume
-            const tailoredScoreResponse = await apiService.scoreResume(
-              normalizedTailoredResume, 
-              jobPostingText
-            );
-            
-            if (tailoredScoreResponse.error) {
-              const newErrors = [...apiErrors, `Tailored Score Error: ${tailoredScoreResponse.error}`];
-              setApiErrors(newErrors);
-              if (tailoredScoreResponse.data) {
-                setTailoredScore(tailoredScoreResponse.data);
-              }
-            } else if (tailoredScoreResponse.data) {
-              setTailoredScore(tailoredScoreResponse.data);
-            }
-          } catch (error) {
-            console.error("Error scoring tailored resume:", error);
-            const newErrors = [...apiErrors, `Tailored Score Error: ${error instanceof Error ? error.message : String(error)}`];
-            setApiErrors(newErrors);
-            // Continue processing even if tailored scoring fails
-          }
-        }
-      } catch (error) {
-        console.error("Error tailoring resume:", error);
-        const newErrors = [...apiErrors, `Tailor Error: ${error instanceof Error ? error.message : String(error)}`];
-        setApiErrors(newErrors);
-        // Set as partial success since we at least have the original resume
-        isSuccessful = resumeSchemaResponse.data !== null;
-      }
+      // Step 4: Tailor the resume and score the tailored version
+      await tailorResume(
+        resumeSchemaResponse.data,
+        jobPostingText,
+        setProgress,
+        setProgressText,
+        apiErrors,
+        setApiErrors
+      );
     }
     
     return isSuccessful;
-  }, [jobPosting, setResumeJson, setOriginalScore, setTailoredResumeJson, setTailoredScore]);
+  }, [jobPosting, setResumeJson, scoreResume, tailorResume]);
 
   return {
     processResumeContent,
