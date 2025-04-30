@@ -9,11 +9,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 interface FileUploaderProps {
   onFileUpload: (file: File) => void;
   onTextInput?: (text: string) => void;
+  isProcessing?: boolean; // Add new prop to indicate processing state
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({ 
   onFileUpload, 
-  onTextInput
+  onTextInput,
+  isProcessing = false // Default to false
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -51,6 +53,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       'text/plain': ['.txt'],
     },
     multiple: false,
+    disabled: isProcessing, // Disable dropzone while processing
     onDropRejected: (fileRejections) => {
       const error = fileRejections[0]?.errors[0]?.message || 'Invalid file type';
       setFileUploadError(`Error: ${error}`);
@@ -77,11 +80,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         <h3 className="text-md font-medium text-center mb-3 text-gray-700">Upload Resume File</h3>
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center h-full min-h-[300px] ${
+          className={`border-2 border-dashed rounded-lg p-6 text-center transition-all ${isProcessing ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'} flex flex-col items-center justify-center h-full min-h-[300px] ${
             isDragging ? 'border-primary bg-primary/10' : 'border-gray-300 hover:border-primary/50 hover:bg-gray-50'
           } ${fileUploadError ? 'border-red-300' : ''}`}
         >
-          <input {...getInputProps()} />
+          <input {...getInputProps()} disabled={isProcessing} />
           <Upload 
             className={`mb-3 ${isDragging ? 'text-primary' : 'text-gray-400'}`} 
             size={28} 
@@ -92,7 +95,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               <p className="text-sm font-medium text-primary mb-1">File selected:</p>
               <p className="text-sm text-gray-600">{file.name}</p>
               <p className="text-xs text-gray-500 mt-2">
-                Click or drag to replace the file
+                {isProcessing ? 'Processing your resume...' : 'Click or drag to replace the file'}
               </p>
             </div>
           ) : (
@@ -122,8 +125,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         open={isResumeTextOpen} 
         onOpenChange={setIsResumeTextOpen}
         className="border rounded-lg"
+        disabled={isProcessing} // Disable collapsible while processing
       >
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+        <CollapsibleTrigger className={`flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors ${isProcessing ? 'cursor-not-allowed opacity-70' : ''}`}>
           <div className="flex items-center gap-2">
             <ClipboardPaste className="h-5 w-5 text-primary" />
             <span>Paste Resume Text</span>
@@ -144,11 +148,12 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               className="min-h-[150px]"
               value={resumeText}
               onChange={(e) => setResumeText(e.target.value)}
+              disabled={isProcessing} // Disable textarea while processing
             />
             <Button 
               onClick={handleTextInputSubmit}
               className="w-full"
-              disabled={!resumeText.trim()}
+              disabled={!resumeText.trim() || isProcessing}
               variant="outline"
               size="sm"
             >

@@ -60,6 +60,7 @@ const UploadForm = ({
         <FileUploader 
           onFileUpload={handleFileUpload} 
           onTextInput={handleTextInput}
+          isProcessing={state.isUploading} // Pass processing state
         />
       </div>
       
