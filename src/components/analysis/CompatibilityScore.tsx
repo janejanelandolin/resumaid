@@ -1,6 +1,7 @@
 
 import AnimatedDial from '@/components/AnimatedDial';
 import { ArrowRight, CheckCircle2, Sparkle } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
 
 interface CompatibilityScoreProps {
   atsSimilarity: number;
@@ -20,8 +21,12 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
   // Helper function to determine qualification badge color
   const getQualificationColor = (qualification: string) => {
     if (!qualification || qualification === 'Not Available') return 'bg-gray-100 text-gray-800';
+    
+    // Updated color logic based on qualification text
+    if (qualification.toLowerCase().includes('irrelevant')) return 'bg-red-100 text-red-800';
     if (qualification.toLowerCase().includes('qualified')) return 'bg-green-100 text-green-800';
-    if (qualification.toLowerCase().includes('unqualified')) return 'bg-red-100 text-red-800';
+    
+    // Default to yellow for all other cases
     return 'bg-yellow-100 text-yellow-800';
   };
 
