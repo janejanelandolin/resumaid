@@ -8,9 +8,15 @@ export const downloadResumeAsDocx = async (resumeJson: ResumeJson, jobTitle: str
   try {
     const url = `${API_BASE_URL}docx`;
     
-    // Log the API call request
+    // Log the API call request with more details
     logApiCall('downloadResumeAsDocx (request)', { 
-      resumeJson: 'ResumeJson object (not shown for brevity)',
+      resumeBasics: resumeJson.basics ? { 
+        name: resumeJson.basics.name,
+        hasEmail: !!resumeJson.basics.email,
+        hasPhone: !!resumeJson.basics.phone,
+        hasSummary: !!resumeJson.basics.summary
+      } : 'Missing basics',
+      workExperience: resumeJson.work ? `${resumeJson.work.length} entries` : 'No work entries',
       endpoint: url
     }, 'Sending POST request with resume JSON to convert to DOCX');
     
@@ -19,14 +25,21 @@ export const downloadResumeAsDocx = async (resumeJson: ResumeJson, jobTitle: str
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'accept': 'application/octet-stream',
+        'Accept': 'application/json'  // Changed from application/octet-stream to application/json
       },
-      body: JSON.stringify(resumeJson)
+      body: JSON.stringify(resumeJson)  // Send the resume JSON directly
     });
     
+    // Enhanced error handling with status text
     if (!response.ok) {
-      const errorMessage = `API error: ${response.status}`;
-      logApiCall('downloadResumeAsDocx (response)', {}, null, errorMessage);
+      const errorText = await response.text().catch(() => 'No error details available');
+      const errorMessage = `API error: ${response.status} - ${response.statusText}. Details: ${errorText}`;
+      console.error("DOCX download failed:", errorMessage);
+      logApiCall('downloadResumeAsDocx (response)', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      }, null, errorMessage);
       return { error: errorMessage };
     }
     
@@ -49,4 +62,3 @@ export const downloadResumeAsDocx = async (resumeJson: ResumeJson, jobTitle: str
   }
 };
 
-// Update the API service index to expose the new function

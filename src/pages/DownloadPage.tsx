@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ const DownloadPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isDownloading, setIsDownloading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const { 
     jobTitle, 
@@ -30,7 +31,7 @@ const DownloadPage = () => {
   const resume = tailoredResumeJson || resumeJson;
   const rationale = tailoredResumeJson?.rationale || [];
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (!resume) {
       navigate('/upload');
     }
@@ -48,8 +49,18 @@ const DownloadPage = () => {
 
     try {
       setIsDownloading(true);
-      const formattedJobTitle = jobTitle.replace(/\s+/g, '-').toLowerCase();
+      setError(null);
+      const formattedJobTitle = jobTitle ? jobTitle.replace(/\s+/g, '-').toLowerCase() : 'my-resume';
       const fileName = `optimized-resume-${formattedJobTitle}.docx`;
+      
+      // Log the resume structure before sending
+      console.log('Resume structure being sent to API:', {
+        hasBasics: !!resume.basics,
+        name: resume.basics?.name,
+        workEntries: resume.work?.length,
+        educationEntries: resume.education?.length,
+        skillsEntries: resume.skills?.length
+      });
       
       const response = await apiService.downloadResumeAsDocx(resume, jobTitle);
       
@@ -75,9 +86,11 @@ const DownloadPage = () => {
       }
     } catch (error) {
       console.error("Download failed:", error);
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      setError(errorMessage);
       toast({
         title: "Download failed",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -131,6 +144,14 @@ const DownloadPage = () => {
                 </>
               )}
             </Button>
+            
+            {error && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-800 text-sm">
+                <p className="font-medium">Error: Unable to download resume</p>
+                <p className="mt-1">{error}</p>
+                <p className="mt-2">Please try again or contact support if the issue persists.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
         
