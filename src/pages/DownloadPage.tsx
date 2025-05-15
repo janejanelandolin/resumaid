@@ -1,0 +1,197 @@
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useResumeContext } from '@/contexts/ResumeContext';
+import { Button } from '@/components/ui/button';
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardHeader, 
+  CardTitle 
+} from '@/components/ui/card';
+import { FileDown, ArrowLeft, Loader2 } from 'lucide-react';
+import PageContainer from '@/components/PageContainer';
+import { apiService } from '@/services/api';
+import { useToast } from '@/hooks/use-toast';
+
+const DownloadPage = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isDownloading, setIsDownloading] = useState(false);
+  
+  const { 
+    jobTitle, 
+    tailoredResumeJson, 
+    resumeJson
+  } = useResumeContext();
+  
+  // Get rationale from tailored resume if available
+  const resume = tailoredResumeJson || resumeJson;
+  const rationale = tailoredResumeJson?.rationale || [];
+  
+  React.useEffect(() => {
+    if (!resume) {
+      navigate('/upload');
+    }
+  }, [resume, navigate]);
+
+  const handleDownloadDocx = async () => {
+    if (!resume) {
+      toast({
+        title: "Error",
+        description: "Resume data is missing. Please go back and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsDownloading(true);
+      const formattedJobTitle = jobTitle.replace(/\s+/g, '-').toLowerCase();
+      const fileName = `optimized-resume-${formattedJobTitle}.docx`;
+      
+      const response = await apiService.downloadResumeAsDocx(resume, jobTitle);
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      if (response.data) {
+        // Create download link
+        const url = window.URL.createObjectURL(response.data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        
+        toast({
+          title: "Download successful",
+          description: "Your optimized resume has been downloaded.",
+        });
+      }
+    } catch (error) {
+      console.error("Download failed:", error);
+      toast({
+        title: "Download failed",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+  
+  if (!resume) {
+    return null;
+  }
+
+  return (
+    <PageContainer>
+      <div className="w-full max-w-4xl mx-auto space-y-8">
+        <div className="flex items-center mb-8">
+          <Button variant="ghost" onClick={() => navigate('/analysis')} className="mr-2">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Analysis
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold">Download Your Optimized Resume</h1>
+            <p className="text-muted-foreground">
+              Your optimized resume is ready for download
+            </p>
+          </div>
+        </div>
+        
+        {/* Download button */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Download Optimized Resume</CardTitle>
+            <CardDescription>
+              Get your resume in Microsoft Word format, ready for final adjustments
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={handleDownloadDocx}
+              disabled={isDownloading} 
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            >
+              {isDownloading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Preparing download...
+                </>
+              ) : (
+                <>
+                  <FileDown className="mr-2 h-4 w-4" />
+                  Download Resume (.docx)
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+        
+        {/* Rationale section */}
+        {rationale && rationale.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Optimization Rationale</CardTitle>
+              <CardDescription>
+                Here's how we optimized your resume for this job
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc pl-5 space-y-2">
+                {rationale.map((item, index) => (
+                  <li key={index} className="text-sm text-gray-700">{item}</li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+        
+        {/* Resume preview summary */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Resume Summary</CardTitle>
+            <CardDescription>
+              A brief overview of your optimized resume
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h3 className="font-medium text-sm text-gray-500">Name</h3>
+              <p>{resume.basics?.name || 'Not provided'}</p>
+            </div>
+            
+            {resume.basics?.summary && (
+              <div>
+                <h3 className="font-medium text-sm text-gray-500">Summary</h3>
+                <p className="text-sm">{resume.basics.summary}</p>
+              </div>
+            )}
+            
+            {resume.work && resume.work.length > 0 && (
+              <div>
+                <h3 className="font-medium text-sm text-gray-500">Experience</h3>
+                <p className="text-sm">{resume.work.length} positions including {resume.work[0].name}</p>
+              </div>
+            )}
+            
+            {resume.skills && resume.skills.length > 0 && (
+              <div>
+                <h3 className="font-medium text-sm text-gray-500">Skills</h3>
+                <p className="text-sm">{resume.skills.length} skill categories</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </PageContainer>
+  );
+};
+
+export default DownloadPage;

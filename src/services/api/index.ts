@@ -1,18 +1,21 @@
 
 import { getJobPosting } from './jobPostingService';
 import { uploadResume } from './resumeUploadService';
-import { getATSFeedback } from './atsFeedbackService';
-import { getFeedback } from './optimizationFeedbackService';
 import { getResumeSchema } from './resumeSchemaService';
 import { scoreResume } from './scoreResumeService';
 import { tailorResume } from './tailorResumeService';
+import { getAtsFeedback } from './atsFeedbackService';
+import { getOptimizationFeedback } from './optimizationFeedbackService';
+import { downloadResumeAsDocx } from './downloadResumeService';
 
+// Centralized API service for the application
 export const apiService = {
   getJobPosting,
   uploadResume,
-  getATSFeedback,
-  getFeedback,
   getResumeSchema,
   scoreResume,
-  tailorResume
+  tailorResume,
+  getAtsFeedback,
+  getOptimizationFeedback,
+  downloadResumeAsDocx
 };

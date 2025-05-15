@@ -11,9 +11,11 @@ import CompatibilityScore from '@/components/analysis/CompatibilityScore';
 import ImprovementSuggestions from '@/components/analysis/ImprovementSuggestions';
 import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
 import ApiErrorDisplay from '@/components/analysis/ApiErrorDisplay';
+import useAppVersion from '@/hooks/useAppVersion';
 
 const AnalysisPage = () => {
   const navigate = useNavigate();
+  const { isFreeVersion } = useAppVersion();
   const { 
     jobTitle, 
     feedback, 
@@ -48,8 +50,13 @@ const AnalysisPage = () => {
     feedback
   });
 
+  // Handle continue button click with version check
   const handleContinue = () => {
-    navigate('/payment');
+    if (isFreeVersion) {
+      navigate('/download');
+    } else {
+      navigate('/payment');
+    }
   };
 
   // Determine which data source to use
@@ -120,11 +127,11 @@ const AnalysisPage = () => {
             onClick={handleContinue} 
             className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
           >
-            Download Optimized Resume!
+            {isFreeVersion ? 'Download Optimized Resume' : 'Download Optimized Resume!'}
           </Button>
 
           <div className="text-center text-xs text-muted-foreground pt-2">
-            <p>Your optimized resume will be ready after the next step</p>
+            <p>{isFreeVersion ? 'Get your optimized resume now' : 'Your optimized resume will be ready after the next step'}</p>
           </div>
           
           {/* Debug section */}
