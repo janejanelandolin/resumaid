@@ -6,9 +6,11 @@ import { useCallback } from 'react';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { apiService } from '@/services/api';
 import { ResumeJson, ScoreResponse } from '@/types/resume';
+import useAppVersion from '@/hooks/useAppVersion';
 
 export const useResumeScoring = () => {
   const { setOriginalScore, setTailoredScore } = useResumeContext();
+  const { isDebugMode } = useAppVersion();
   
   /**
    * Score a resume against a job posting
@@ -35,7 +37,10 @@ export const useResumeScoring = () => {
       const resumeDataWithValidSkills = resumeData;
       
       const scoreResponse = await apiService.scoreResume(resumeDataWithValidSkills, jobPostingText);
-      console.log(`${isTailored ? 'Tailored s' : 'S'}core response:`, scoreResponse);
+      
+      if (isDebugMode) {
+        console.log(`${isTailored ? 'Tailored s' : 'S'}core response:`, scoreResponse);
+      }
       
       if (scoreResponse.error) {
         const newErrors = [...apiErrors, `${isTailored ? 'Tailored ' : ''}Score Error: ${scoreResponse.error}`];
@@ -57,13 +62,15 @@ export const useResumeScoring = () => {
       
       return true;
     } catch (error) {
-      console.error(`Error scoring ${isTailored ? 'tailored ' : ''}resume:`, error);
+      if (isDebugMode) {
+        console.error(`Error scoring ${isTailored ? 'tailored ' : ''}resume:`, error);
+      }
       const newErrors = [...apiErrors, `${isTailored ? 'Tailored ' : ''}Score Error: ${error instanceof Error ? error.message : String(error)}`];
       setApiErrors(newErrors);
       // Continue processing even if scoring fails
       return true;
     }
-  }, [setOriginalScore, setTailoredScore]);
+  }, [setOriginalScore, setTailoredScore, isDebugMode]);
   
   return {
     scoreResume

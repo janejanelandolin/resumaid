@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
 import { API_BASE_URL } from '@/services/api/utils';
+import useAppVersion from '@/hooks/useAppVersion';
 
 const UploadDebugSection = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -15,6 +16,10 @@ const UploadDebugSection = () => {
     apiErrors,
     jobPosting
   } = useResumeContext();
+  const { isDebugMode } = useAppVersion();
+
+  // If debug mode is not enabled, don't render anything
+  if (!isDebugMode) return null;
 
   // Format JSON for display with proper indentation
   const formatJSON = (data: any) => {

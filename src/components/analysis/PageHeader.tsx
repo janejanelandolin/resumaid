@@ -5,10 +5,12 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bug } from 'lucide-react';
+import useAppVersion from '@/hooks/useAppVersion';
 
 const PageHeader: React.FC = () => {
   const { jobTitle, uploadData } = useResumeContext();
   const navigate = useNavigate();
+  const { isDebugMode, isFreeVersion, isFeatureEnabled } = useAppVersion();
 
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 mb-6 border-b">
@@ -35,18 +37,22 @@ const PageHeader: React.FC = () => {
         </p>
       </div>
       <div className="flex mt-4 md:mt-0 gap-2">
-        <Button 
-          variant="outline"
-          size="sm"
-          className="gap-1" 
-          onClick={() => navigate('/debug')}
-        >
-          <Bug className="h-4 w-4" />
-          <span>API Debug</span>
-        </Button>
-        <Button onClick={() => navigate('/payment')}>
-          Get Full Report
-        </Button>
+        {isDebugMode && (
+          <Button 
+            variant="outline"
+            size="sm"
+            className="gap-1" 
+            onClick={() => navigate('/debug')}
+          >
+            <Bug className="h-4 w-4" />
+            <span>API Debug</span>
+          </Button>
+        )}
+        {isFeatureEnabled('payment') && (
+          <Button onClick={() => navigate('/payment')}>
+            {isFreeVersion ? 'Upgrade to Pro' : 'Get Full Report'}
+          </Button>
+        )}
       </div>
     </div>
   );

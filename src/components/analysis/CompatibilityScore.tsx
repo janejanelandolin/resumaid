@@ -1,7 +1,9 @@
 
+import React from 'react';
 import AnimatedDial from '@/components/AnimatedDial';
 import { ArrowRight, CheckCircle2, Sparkle } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
+import useAppVersion from '@/hooks/useAppVersion';
 
 interface CompatibilityScoreProps {
   atsSimilarity: number;
@@ -18,6 +20,8 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
   atsQualification,
   feedbackQualification
 }) => {
+  const { isFreeVersion } = useAppVersion();
+  
   // Helper function to determine qualification badge color
   const getQualificationColor = (qualification: string) => {
     if (!qualification || qualification === 'Not Available') return 'bg-gray-100 text-gray-800';
@@ -118,7 +122,9 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
         <div className="flex items-center justify-center gap-2">
           <Sparkle className="h-5 w-5 text-indigo-400" />
           <p className="font-bold text-md bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            Optimize your resume to stand out!
+            {isFreeVersion 
+              ? 'Unlock premium features to optimize your resume!' 
+              : 'Optimize your resume to stand out!'}
           </p>
           <Sparkle className="h-5 w-5 text-purple-400" />
         </div>

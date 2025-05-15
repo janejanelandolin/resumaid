@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useResumeContext } from '../contexts/ResumeContext';
+import { useNavigate } from 'react-router-dom';
 import PageContainer from '@/components/PageContainer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { FileJson, Webhook } from 'lucide-react';
 import ApiInputsTab from '@/components/debug/ApiInputsTab';
 import ApiOutputsTab from '@/components/debug/ApiOutputsTab';
 import ApiEndpointInfo from '@/components/debug/ApiEndpointInfo';
+import useAppVersion from '@/hooks/useAppVersion';
 
 const DebugPage = () => {
   const { 
@@ -22,6 +24,26 @@ const DebugPage = () => {
     tailoredScore
   } = useResumeContext();
   const [activeTab, setActiveTab] = useState('inputs');
+  const { isDebugMode } = useAppVersion();
+  const navigate = useNavigate();
+  
+  // Redirect if debug mode is disabled
+  useEffect(() => {
+    if (!isDebugMode) {
+      navigate('/');
+    }
+  }, [isDebugMode, navigate]);
+
+  // If debug mode is disabled, show a loading state while redirect happens
+  if (!isDebugMode) {
+    return (
+      <PageContainer>
+        <div className="flex items-center justify-center h-[50vh]">
+          <p>Redirecting...</p>
+        </div>
+      </PageContainer>
+    );
+  }
 
   // Format JSON for display with proper indentation
   const formatJSON = (data: any) => {
