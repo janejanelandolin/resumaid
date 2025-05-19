@@ -15,7 +15,8 @@ export const apiService = {
   getResumeSchema,
   scoreResume,
   tailorResume,
-  getAtsFeedback: getATSFeedback, // Alias to maintain backward compatibility with existing code
-  getOptimizationFeedback: getFeedback, // Alias to maintain backward compatibility with existing code
+  // Mark as deprecated since we should use scoreResume instead
+  getAtsFeedback: scoreResume, // Use scoreResume instead of getATSFeedback 
+  getOptimizationFeedback: getFeedback, // Keep this alias for backward compatibility
   downloadResumeAsDocx
 };

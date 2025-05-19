@@ -1,4 +1,3 @@
-
 import { ApiResponse } from '@/services/api/utils';
 import { mockResumeJson, mockScoreResponse, mockTailoredResponse, mockUploadData } from './resumeTestMocks';
 
@@ -9,7 +8,8 @@ export const apiServiceMock = {
   getFeedback: jest.fn().mockResolvedValue({ data: { format_issues: ['Format issue 1'] } }),
   getResumeSchema: jest.fn().mockResolvedValue({ data: mockResumeJson }),
   scoreResume: jest.fn().mockResolvedValue({ data: mockScoreResponse }),
-  tailorResume: jest.fn().mockResolvedValue({ data: mockTailoredResponse })
+  tailorResume: jest.fn().mockResolvedValue({ data: mockTailoredResponse }),
+  getAtsFeedback: jest.fn().mockResolvedValue({ data: mockScoreResponse }) // Add alias that uses scoreResume
 };
 
 export const apiServiceWithErrors = {

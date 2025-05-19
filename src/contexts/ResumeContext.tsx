@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext } from 'react';
 import { useResumeParser } from '../hooks/useResumeParser';
 import { useTemplateManager } from '../hooks/useTemplateManager';
