@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Card, CardContent } from '@/components/ui/card';
+import TypewriterText from '@/components/TypewriterText';
 
 interface FileUploaderProps {
   onFileUpload: (file: File) => void;
@@ -77,7 +78,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     <Card className="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-100">
       <CardContent className="p-0 space-y-6">
         <div className="mb-4 text-center">
-          <p className="text-muted-foreground font-medium">Choose how you want to submit your resume...</p>
+          <TypewriterText 
+            text="Choose how you want to submit your resume..." 
+            className="text-muted-foreground font-medium"
+            delay={300}
+          />
         </div>
         
         {/* File Upload Section */}
@@ -94,6 +99,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               className={`mb-3 ${isDragging ? 'text-primary' : 'text-gray-400'}`} 
               size={28} 
             />
+            
             
             {file ? (
               <div className="animate-fade-in">
