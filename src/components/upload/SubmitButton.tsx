@@ -24,7 +24,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({ onClick, disabled, isUpload
           </>
         ) : (
           <>
-            Check compatibility score
+            Analyze
             <UploadCloud className="h-4 w-4 transition-transform group-hover:scale-110" />
           </>
         )}

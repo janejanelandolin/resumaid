@@ -1,7 +1,6 @@
-
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, ClipboardPaste, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -136,8 +135,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             disabled={isProcessing} // Disable collapsible while processing
           >
             <CollapsibleTrigger className={`flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors ${isProcessing ? 'cursor-not-allowed opacity-70' : ''}`}>
-              <div className="flex items-center gap-2">
-                <ClipboardPaste className="h-5 w-5 text-primary" />
+              <div className="flex items-center">
                 <span>Paste your resume content directly</span>
               </div>
               {isResumeTextOpen ? (

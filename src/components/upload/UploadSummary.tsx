@@ -17,7 +17,7 @@ const UploadSummary: React.FC<UploadSummaryProps> = ({ jobTitle }) => {
         <Sparkle className="h-4 w-4 text-indigo-400" />
       </div>
       <p className="text-xs text-indigo-500/80">
-        We'll analyze your resume against ATS systems and job requirements.
+        We will analyze your resume against Applicant Tracking Systems (ATS) and job requirements...
       </p>
     </div>
   );
