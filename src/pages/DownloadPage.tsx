@@ -64,9 +64,10 @@ const DownloadPage = () => {
           jobTitle={jobTitle} 
         />
         
-        {/* Resume Summary (now includes both evaluations) */}
+        {/* Resume Summary (now includes both evaluations and summary comparison) */}
         <ResumeSummary 
-          resume={resume} 
+          resume={resume}
+          originalResume={resumeJson}
           originalScoreExplanation={originalScoreExplanation}
           tailoredScoreExplanation={tailoredScoreExplanation}
           originalQualification={originalQualification}

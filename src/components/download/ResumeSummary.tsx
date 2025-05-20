@@ -7,8 +7,8 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { ResumeJson } from '@/types/resume';
+import SummaryComparison from './SummaryComparison';
 
 interface ResumeSummaryProps {
   resume: ResumeJson;
@@ -16,6 +16,7 @@ interface ResumeSummaryProps {
   tailoredScoreExplanation?: string;
   originalQualification?: string;
   tailoredQualification?: string;
+  originalResume?: ResumeJson | null;
 }
 
 const ResumeSummary: React.FC<ResumeSummaryProps> = ({ 
@@ -23,7 +24,8 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
   originalScoreExplanation, 
   tailoredScoreExplanation,
   originalQualification,
-  tailoredQualification
+  tailoredQualification,
+  originalResume
 }) => {
   // Helper function to determine qualification badge color
   const getQualificationColor = (qualification: string) => {
@@ -45,6 +47,10 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
     return 'bg-yellow-100 text-yellow-800';
   };
 
+  // Get the original and optimized summaries
+  const originalSummary = originalResume?.basics?.summary;
+  const optimizedSummary = resume.basics?.summary;
+
   return (
     <Card className="border-2 border-indigo-200 shadow-md">
       <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
@@ -59,12 +65,13 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
           <p className="bg-indigo-50 p-1 rounded">{resume.basics?.name || 'Not provided'}</p>
         </div>
         
-        {resume.basics?.summary && (
-          <div>
-            <h3 className="font-medium text-sm text-indigo-600">Summary</h3>
-            <p className="text-sm bg-indigo-50 p-2 rounded border-l-2 border-indigo-400">{resume.basics.summary}</p>
-          </div>
-        )}
+        <div>
+          <h3 className="font-medium text-sm text-indigo-600">Summary</h3>
+          <SummaryComparison 
+            originalSummary={originalSummary} 
+            optimizedSummary={optimizedSummary} 
+          />
+        </div>
         
         {originalScoreExplanation && (
           <div>
