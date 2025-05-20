@@ -28,7 +28,8 @@ export const useResumeProcessor = ({
     handleFileUpload, 
     handleTextInput, 
     setUploading,
-    createTextFile
+    createTextFile,
+    reset
   } = useResumeProcessorState(setGlobalApiErrors);
   
   const { processResumeContent } = useResumeApiProcessor();
@@ -211,5 +212,6 @@ export const useResumeProcessor = ({
     handleFileUpload,
     handleTextInput,
     processResume,
+    reset
   };
 };

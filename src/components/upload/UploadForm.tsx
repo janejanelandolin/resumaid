@@ -35,7 +35,8 @@ const UploadForm = ({
     state,
     handleFileUpload,
     handleTextInput,
-    processResume
+    processResume,
+    reset
   } = useResumeProcessor({
     setProgress,
     setProgressText,
@@ -58,6 +59,13 @@ const UploadForm = ({
   useEffect(() => {
     setApiErrors(state.apiErrors);
   }, [state.apiErrors, setApiErrors]);
+
+  // Reset state when component mounts
+  useEffect(() => {
+    // Reset state when the component mounts to ensure a fresh start
+    reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Determine if the submit button should be disabled
   const isSubmitDisabled = (!state.uploadedFile && !state.resumeText) || state.isUploading;

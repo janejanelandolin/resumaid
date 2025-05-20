@@ -10,7 +10,7 @@ export const useResumeProcessorState = (
     uploadedFile: null,
     resumeText: '',
     apiErrors: [],
-    hasAttemptedUpload: false, // Add a flag to track upload attempts
+    hasAttemptedUpload: false,
   });
 
   const setApiErrors = useCallback((errors: string[]) => {
@@ -20,25 +20,33 @@ export const useResumeProcessorState = (
 
   const handleFileUpload = useCallback(async (file: File) => {
     console.log("handleFileUpload called with file:", file.name);
+    
+    // Ensure we're clearing any previous state and setting the new file
     setState(prev => ({ 
       ...prev, 
       uploadedFile: file, 
       resumeText: '',
       apiErrors: [],
-      hasAttemptedUpload: true // Mark that we've attempted an upload
+      hasAttemptedUpload: true,
+      isUploading: false // Make sure isUploading is reset to false
     }));
+    
     setApiErrors([]);
   }, [setApiErrors]);
 
   const handleTextInput = useCallback((text: string) => {
     console.log("handleTextInput called with text length:", text.length);
+    
+    // Ensure we're clearing any previous state and setting the new text
     setState(prev => ({ 
       ...prev, 
       resumeText: text, 
       uploadedFile: null,
       apiErrors: [],
-      hasAttemptedUpload: true // Mark that we've attempted a text input
+      hasAttemptedUpload: true,
+      isUploading: false // Make sure isUploading is reset to false
     }));
+    
     setApiErrors([]);
   }, [setApiErrors]);
 
@@ -57,9 +65,10 @@ export const useResumeProcessorState = (
       uploadedFile: null,
       resumeText: '',
       apiErrors: [],
-      hasAttemptedUpload: false, // Reset the upload attempt flag
+      hasAttemptedUpload: false,
     });
-  }, []);
+    setApiErrors([]);
+  }, [setApiErrors]);
   
   return {
     state,
