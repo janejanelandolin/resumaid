@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useEffect, useRef, useState } from "react";
 
 const testimonials = [
   { name: "Sarah J.", role: "Marketing Specialist", text: "ResumAID helped me land my dream job after 3 months of searching!" },
@@ -16,11 +17,36 @@ const testimonials = [
 ];
 
 const TestimonialsSection = () => {
+  const [api, setApi] = useState<any>(null);
+  const intervalRef = useRef<number | null>(null);
+
+  // Set up automatic rotation
+  useEffect(() => {
+    if (!api) return;
+
+    // Clear any existing interval when api changes
+    if (intervalRef.current) {
+      window.clearInterval(intervalRef.current);
+    }
+
+    // Create new interval that advances the carousel every 5 seconds
+    intervalRef.current = window.setInterval(() => {
+      api.scrollNext();
+    }, 5000);
+
+    // Cleanup function to clear interval when component unmounts
+    return () => {
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+      }
+    };
+  }, [api]);
+
   return (
     <div className="mt-12 pt-8 border-t border-purple-100">
       <div className="text-center space-y-6">
         <div className="relative rounded-lg">
-          <Carousel className="w-full max-w-lg mx-auto">
+          <Carousel className="w-full max-w-lg mx-auto" setApi={setApi}>
             <CarouselContent>
               {testimonials.map((testimonial, index) => (
                 <CarouselItem key={index}>
