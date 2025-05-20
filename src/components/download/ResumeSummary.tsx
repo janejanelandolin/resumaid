@@ -7,14 +7,44 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { ResumeJson } from '@/types/resume';
 
 interface ResumeSummaryProps {
   resume: ResumeJson;
   originalScoreExplanation?: string;
+  tailoredScoreExplanation?: string;
+  originalQualification?: string;
+  tailoredQualification?: string;
 }
 
-const ResumeSummary: React.FC<ResumeSummaryProps> = ({ resume, originalScoreExplanation }) => {
+const ResumeSummary: React.FC<ResumeSummaryProps> = ({ 
+  resume, 
+  originalScoreExplanation, 
+  tailoredScoreExplanation,
+  originalQualification,
+  tailoredQualification
+}) => {
+  // Helper function to determine qualification badge color
+  const getQualificationColor = (qualification: string) => {
+    if (!qualification || qualification === 'Not Available') return 'bg-gray-100 text-gray-800';
+    
+    // Updated color logic based on qualification text
+    if (qualification.toLowerCase().includes('irrelevant')) return 'bg-red-100 text-red-800';
+    if (qualification.toLowerCase().includes('qualified')) {
+      // Check for underqualified or overqualified (yellow)
+      if (qualification.toLowerCase().includes('under') || 
+          qualification.toLowerCase().includes('over')) {
+        return 'bg-yellow-100 text-yellow-800';
+      }
+      // Regular qualified (green)
+      return 'bg-green-100 text-green-800';
+    }
+    
+    // Default to yellow for all other cases
+    return 'bg-yellow-100 text-yellow-800';
+  };
+
   return (
     <Card className="border-2 border-indigo-200 shadow-md">
       <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
@@ -38,9 +68,32 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({ resume, originalScoreExpl
         
         {originalScoreExplanation && (
           <div>
-            <h3 className="font-medium text-sm text-indigo-600">Unoptimized Resume Evaluation</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium text-sm text-indigo-600">Unoptimized Resume Evaluation</h3>
+              {originalQualification && (
+                <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getQualificationColor(originalQualification)}`}>
+                  {originalQualification}
+                </div>
+              )}
+            </div>
             <div className="text-sm bg-indigo-50 p-2 rounded border-l-2 border-indigo-400">
               {originalScoreExplanation}
+            </div>
+          </div>
+        )}
+        
+        {tailoredScoreExplanation && (
+          <div>
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium text-sm text-indigo-600">Optimized Resume Evaluation</h3>
+              {tailoredQualification && (
+                <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getQualificationColor(tailoredQualification)}`}>
+                  {tailoredQualification}
+                </div>
+              )}
+            </div>
+            <div className="text-sm bg-green-50 p-2 rounded border-l-2 border-green-400">
+              {tailoredScoreExplanation}
             </div>
           </div>
         )}

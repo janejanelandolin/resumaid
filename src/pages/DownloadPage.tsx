@@ -7,7 +7,6 @@ import { ArrowLeft } from 'lucide-react';
 import PageContainer from '@/components/PageContainer';
 import DownloadButtons from '@/components/download/DownloadButtons';
 import ResumeSummary from '@/components/download/ResumeSummary';
-import OptimizedEvaluation from '@/components/download/OptimizedEvaluation';
 import RationaleSection from '@/components/download/RationaleSection';
 
 const DownloadPage = () => {
@@ -28,6 +27,10 @@ const DownloadPage = () => {
   // Get score explanation from the original score
   const originalScoreExplanation = originalScore?.explanation;
   const tailoredScoreExplanation = tailoredScore?.explanation;
+  
+  // Get qualifications
+  const originalQualification = originalScore?.consensus_qualification;
+  const tailoredQualification = tailoredScore?.consensus_qualification;
   
   useEffect(() => {
     if (!resume) {
@@ -61,15 +64,13 @@ const DownloadPage = () => {
           jobTitle={jobTitle} 
         />
         
-        {/* Resume Summary */}
+        {/* Resume Summary (now includes both evaluations) */}
         <ResumeSummary 
           resume={resume} 
-          originalScoreExplanation={originalScoreExplanation} 
-        />
-        
-        {/* Optimized Resume Evaluation */}
-        <OptimizedEvaluation 
-          tailoredScoreExplanation={tailoredScoreExplanation} 
+          originalScoreExplanation={originalScoreExplanation}
+          tailoredScoreExplanation={tailoredScoreExplanation}
+          originalQualification={originalQualification}
+          tailoredQualification={tailoredQualification}
         />
         
         {/* Rationale section */}
