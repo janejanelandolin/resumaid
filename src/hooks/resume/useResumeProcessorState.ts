@@ -18,6 +18,7 @@ export const useResumeProcessorState = (
   }, [setGlobalApiErrors]);
 
   const handleFileUpload = useCallback(async (file: File) => {
+    console.log("handleFileUpload called with file:", file.name);
     setState(prev => ({ 
       ...prev, 
       uploadedFile: file, 
@@ -28,6 +29,7 @@ export const useResumeProcessorState = (
   }, [setApiErrors]);
 
   const handleTextInput = useCallback((text: string) => {
+    console.log("handleTextInput called with text length:", text.length);
     setState(prev => ({ 
       ...prev, 
       resumeText: text, 
@@ -46,12 +48,22 @@ export const useResumeProcessorState = (
     return new File([blob], 'resume.txt', { type: 'text/plain' });
   }, []);
   
+  const reset = useCallback(() => {
+    setState({
+      isUploading: false,
+      uploadedFile: null,
+      resumeText: '',
+      apiErrors: [],
+    });
+  }, []);
+  
   return {
     state,
     setApiErrors,
     handleFileUpload,
     handleTextInput,
     setUploading,
-    createTextFile
+    createTextFile,
+    reset
   };
 };

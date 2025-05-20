@@ -1,3 +1,4 @@
+
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
@@ -33,6 +34,12 @@ export const useResumeProcessor = ({
   const { processResumeContent } = useResumeApiProcessor();
 
   const processResume = useCallback(async () => {
+    console.log("processResume called with state:", {
+      hasFile: !!state.uploadedFile,
+      hasText: !!state.resumeText,
+      isUploading: state.isUploading
+    });
+    
     const { uploadedFile, resumeText } = state;
     
     if (!uploadedFile && !resumeText) {
@@ -94,6 +101,16 @@ export const useResumeProcessor = ({
       } else if (resumeText) {
         // If we have direct text input, use it directly
         extractedContent = resumeText;
+        
+        // Create an upload data object from the text input
+        const textFile = createTextFile(resumeText);
+        const uploadData = {
+          id: Math.random().toString(36).substr(2, 9),
+          filename: 'resume.txt',
+          content: resumeText
+        };
+        setUploadData(uploadData);
+        
         setProgress(30);
       }
       
@@ -179,7 +196,8 @@ export const useResumeProcessor = ({
     showContentWarning,
     setUploadData,
     setUploading,
-    processResumeContent
+    processResumeContent,
+    createTextFile
   ]);
 
   return {

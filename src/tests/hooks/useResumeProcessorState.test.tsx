@@ -89,4 +89,33 @@ describe('useResumeProcessorState', () => {
     expect(file.name).toBe('resume.txt');
     expect(file.type).toBe('text/plain');
   });
+
+  test('reset returns the state to initial values', () => {
+    const { result } = renderHook(() => useResumeProcessorState(mockSetGlobalApiErrors));
+    
+    // First set some values
+    const mockFile = createMockFile();
+    
+    act(() => {
+      result.current.handleFileUpload(mockFile);
+      result.current.setUploading(true);
+    });
+    
+    // Verify values were set
+    expect(result.current.state.uploadedFile).toBe(mockFile);
+    expect(result.current.state.isUploading).toBe(true);
+    
+    // Reset the state
+    act(() => {
+      result.current.reset();
+    });
+    
+    // Verify state was reset
+    expect(result.current.state).toEqual({
+      isUploading: false,
+      uploadedFile: null,
+      resumeText: '',
+      apiErrors: [],
+    });
+  });
 });

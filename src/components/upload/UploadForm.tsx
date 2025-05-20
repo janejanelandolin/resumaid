@@ -8,6 +8,7 @@ import UploadProgress from '@/components/upload/UploadProgress';
 import ErrorAlert from '@/components/upload/ErrorAlert';
 import SubmitButton from '@/components/upload/SubmitButton';
 import { useResumeProcessor } from '@/hooks/useResumeProcessor';
+import { useEffect } from 'react';
 
 interface UploadFormProps {
   showErrorDialog: () => void;
@@ -42,6 +43,21 @@ const UploadForm = ({
     showContentWarning,
   });
 
+  // Log state changes for debugging
+  useEffect(() => {
+    console.log("UploadForm state updated:", {
+      hasFile: !!state.uploadedFile,
+      hasText: !!state.resumeText,
+      isUploading: state.isUploading,
+      fileName: state.uploadedFile?.name || 'No file'
+    });
+  }, [state]);
+
+  // Update API errors when state changes
+  useEffect(() => {
+    setApiErrors(state.apiErrors);
+  }, [state.apiErrors, setApiErrors]);
+
   return (
     <div className="space-y-6 py-4">
       <div className="relative">
@@ -60,7 +76,7 @@ const UploadForm = ({
         <FileUploader 
           onFileUpload={handleFileUpload} 
           onTextInput={handleTextInput}
-          isProcessing={state.isUploading} // Pass processing state
+          isProcessing={state.isUploading}
         />
       </div>
       
