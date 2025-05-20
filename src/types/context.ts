@@ -2,7 +2,6 @@
 import {
   JobPosting,
   UploadData,
-  Feedback,
   ResumeJson,
   ScoreResponse,
   EditDecision,
@@ -17,10 +16,6 @@ export interface ResumeContextType {
   setJobPosting: (jobPosting: JobPosting) => void;
   uploadData: UploadData | null;
   setUploadData: (uploadData: UploadData) => void;
-  
-  // Legacy feedback data
-  feedback: Feedback | null;
-  setFeedback: (feedback: Feedback) => void;
   
   // Error handling
   apiErrors: string[];

@@ -1,13 +1,12 @@
+
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
 import PageContainer from '@/components/PageContainer';
 import PageHeader from '@/components/analysis/PageHeader';
-import MissingKeywords from '@/components/analysis/MissingKeywords';
 import Summary from '@/components/analysis/Summary';
 import CompatibilityScore from '@/components/analysis/CompatibilityScore';
-import ImprovementSuggestions from '@/components/analysis/ImprovementSuggestions';
 import ApiErrorDisplay from '@/components/analysis/ApiErrorDisplay';
 import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
 import useAppVersion from '@/hooks/useAppVersion';
@@ -17,7 +16,6 @@ const AnalysisPage = () => {
   const { isFreeVersion } = useAppVersion();
   const { 
     jobTitle, 
-    feedback, 
     apiErrors,
     // New workflow values
     originalScore,
@@ -27,25 +25,21 @@ const AnalysisPage = () => {
   } = useResumeContext();
 
   useEffect(() => {
-    // Check if we have at least the new data or the old data
-    const hasOldData = feedback;
-    const hasNewData = originalScore && tailoredScore;
-    
-    if (!hasOldData && !hasNewData) {
+    // Check if we have the necessary data
+    if (!originalScore || !tailoredScore) {
       navigate('/upload');
     }
-  }, [feedback, originalScore, tailoredScore, navigate]);
+  }, [originalScore, tailoredScore, navigate]);
 
-  // If neither old nor new data is available, don't render
-  if (!feedback && (!originalScore || !tailoredScore)) {
+  // If no data is available, don't render
+  if (!originalScore || !tailoredScore) {
     return null;
   }
 
   // Debug the actual data we have
   console.log("Analysis Page Data:", {
     originalScore,
-    tailoredScore,
-    feedback
+    tailoredScore
   });
 
   // Handle continue button click with version check
@@ -56,18 +50,10 @@ const AnalysisPage = () => {
       navigate('/payment');
     }
   };
-
-  // Determine which data source to use
-  const useNewWorkflow = !!originalScore && !!tailoredScore;
   
-  // Get the scores based on data availability
-  const originalSimilarity = useNewWorkflow 
-    ? originalScore?.similarity || 0 
-    : 0;
-  
-  const tailoredSimilarity = useNewWorkflow
-    ? tailoredScore?.similarity || 0
-    : 0;
+  // Get the scores
+  const originalSimilarity = originalScore?.similarity || 0;
+  const tailoredSimilarity = tailoredScore?.similarity || 0;
   
   // Calculate the improvement percentage
   const improvement = tailoredSimilarity - originalSimilarity;
@@ -82,8 +68,7 @@ const AnalysisPage = () => {
     tailoredSimilarity,
     improvement,
     atsQualification,
-    feedbackQualification,
-    useNewWorkflow
+    feedbackQualification
   });
 
   return (
@@ -97,10 +82,6 @@ const AnalysisPage = () => {
             <ApiErrorDisplay errors={apiErrors} />
           )}
           
-          {originalScore && (
-            <MissingKeywords scoreResponse={originalScore} />
-          )}
-          
           <Summary />
           
           <CompatibilityScore 
@@ -109,16 +90,6 @@ const AnalysisPage = () => {
             improvement={improvement}
             atsQualification={atsQualification}
             feedbackQualification={feedbackQualification}
-          />
-          
-          <ImprovementSuggestions 
-            feedback={
-              useNewWorkflow 
-                ? { 
-                    format_issues: []
-                  }
-                : feedback
-            } 
           />
 
           <Button 

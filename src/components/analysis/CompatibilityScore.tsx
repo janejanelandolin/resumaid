@@ -1,7 +1,7 @@
+
 import React from 'react';
 import AnimatedDial from '@/components/AnimatedDial';
 import { ArrowRight, CheckCircle2, Sparkle } from 'lucide-react';
-import { Badge } from "@/components/ui/badge";
 import useAppVersion from '@/hooks/useAppVersion';
 
 interface CompatibilityScoreProps {
@@ -48,18 +48,6 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
   
   // Also normalize improvement - if it's already in percentage form (e.g., 0.18) convert it
   const normalizedImprovement = improvement <= 1 ? improvement * 100 : improvement;
-
-  // Debug log to verify we're getting the correct values
-  console.log('Compatibility Score values:', { 
-    atsSimilarity, 
-    normalizedAtsSimilarity,
-    feedbackSimilarity,
-    normalizedFeedbackSimilarity,
-    improvement,
-    normalizedImprovement,
-    atsQualification,
-    feedbackQualification 
-  });
 
   return (
     <div className="flex flex-col items-center justify-center py-6 relative">

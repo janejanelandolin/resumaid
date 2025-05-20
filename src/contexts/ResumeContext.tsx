@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext } from 'react';
 import { useResumeParser } from '../hooks/useResumeParser';
 import { useTemplateManager } from '../hooks/useTemplateManager';
@@ -5,8 +6,7 @@ import { useEditDecisions } from '../hooks/useEditDecisions';
 import { ResumeContextType } from '../types/context';
 import { 
   JobPosting, 
-  UploadData, 
-  Feedback, 
+  UploadData,
   ResumeJson, 
   ScoreResponse
 } from '../types/resume';
@@ -21,9 +21,6 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [jobTitle, setJobTitle] = useState<string>('');
   const [jobPosting, setJobPosting] = useState<JobPosting | null>(null);
   const [uploadData, setUploadData] = useState<UploadData | null>(null);
-  
-  // Legacy feedback data
-  const [feedback, setFeedback] = useState<Feedback | null>(null);
   
   // Error handling
   const [apiErrors, setApiErrors] = useState<string[]>([]);
@@ -52,10 +49,6 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setJobPosting,
     uploadData,
     setUploadData,
-    
-    // Legacy feedback data
-    feedback,
-    setFeedback,
     
     // Error handling
     apiErrors,

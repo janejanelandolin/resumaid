@@ -1,11 +1,10 @@
 import React from 'react';
 import DebugCard from './DebugCard';
-import { JobPosting, UploadData, Feedback, ResumeJson, ScoreResponse } from '../../types/resume';
+import { JobPosting, UploadData, ResumeJson, ScoreResponse } from '../../types/resume';
 
 interface ApiOutputsTabProps {
   jobPosting: JobPosting | null;
   uploadData: UploadData | null;
-  feedback: Feedback | null;
   // Keep new workflow data
   resumeJson: ResumeJson | null;
   tailoredResumeJson: ResumeJson | null;
@@ -17,7 +16,6 @@ interface ApiOutputsTabProps {
 const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
   jobPosting,
   uploadData,
-  feedback,
   // Keep new workflow props
   resumeJson,
   tailoredResumeJson,
@@ -95,14 +93,6 @@ const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
         data={tailoredScore}
         isAvailable={hasData(tailoredScore)}
         notAvailableText="No tailored score available."
-      />
-      
-      <DebugCard
-        title="Legacy Feedback Response"
-        description="Response from the /feedback API endpoint"
-        data={feedback}
-        isAvailable={hasData(feedback)}
-        notAvailableText="No feedback response available."
       />
     </div>
   );
