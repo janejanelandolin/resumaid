@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { ResumeJson } from '@/types/resume';
 import SummaryComparison from './SummaryComparison';
+import SkillsComparison from './SkillsComparison';
 
 interface ResumeSummaryProps {
   resume: ResumeJson;
@@ -50,6 +51,10 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
   // Get the original and optimized summaries
   const originalSummary = originalResume?.basics?.summary;
   const optimizedSummary = resume.basics?.summary;
+
+  // Get the original and optimized skills
+  const originalSkills = originalResume?.skills;
+  const optimizedSkills = resume.skills;
 
   return (
     <Card className="border-2 border-indigo-200 shadow-md">
@@ -105,20 +110,21 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
           </div>
         )}
         
+        {(optimizedSkills?.length > 0 || originalSkills?.length > 0) && (
+          <div>
+            <h3 className="font-medium text-sm text-indigo-600">Skills</h3>
+            <SkillsComparison
+              originalSkills={originalSkills}
+              optimizedSkills={optimizedSkills}
+            />
+          </div>
+        )}
+        
         {resume.work && resume.work.length > 0 && (
           <div>
             <h3 className="font-medium text-sm text-indigo-600">Experience</h3>
             <p className="text-sm bg-indigo-50 p-1 rounded">
-              {resume.work.length} positions including {resume.work[0].name}
-            </p>
-          </div>
-        )}
-        
-        {resume.skills && resume.skills.length > 0 && (
-          <div>
-            <h3 className="font-medium text-sm text-indigo-600">Skills</h3>
-            <p className="text-sm bg-indigo-50 p-1 rounded">
-              {resume.skills.length} skill categories
+              {resume.work.length} positions including {resume.work[0].name || resume.work[0].company}
             </p>
           </div>
         )}
