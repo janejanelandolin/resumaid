@@ -9,13 +9,7 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { 
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from '@/components/ui/accordion';
-import { FileDown, ArrowLeft, Loader2, FileJson, FileCheck } from 'lucide-react';
+import { FileDown, ArrowLeft, Loader2, FileJson } from 'lucide-react';
 import PageContainer from '@/components/PageContainer';
 import { apiService } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
@@ -31,7 +25,8 @@ const DownloadPage = () => {
     jobTitle, 
     tailoredResumeJson, 
     resumeJson,
-    originalScore
+    originalScore,
+    tailoredScore
   } = useResumeContext();
   
   // Get rationale from tailored resume if available
@@ -39,7 +34,8 @@ const DownloadPage = () => {
   const rationale = tailoredResumeJson?.rationale || [];
   
   // Get score explanation from the original score
-  const scoreExplanation = originalScore?.explanation;
+  const originalScoreExplanation = originalScore?.explanation;
+  const tailoredScoreExplanation = tailoredScore?.explanation;
   
   useEffect(() => {
     if (!resume) {
@@ -236,7 +232,7 @@ const DownloadPage = () => {
           </CardContent>
         </Card>
         
-        {/* Renamed Resume Summary with ATS explanation moved out of accordion */}
+        {/* Renamed Resume Summary with evaluation information moved out of accordion */}
         <Card className="border-2 border-indigo-200 shadow-md">
           <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
             <CardTitle className="text-indigo-800">Optimized Resume Summary</CardTitle>
@@ -257,12 +253,12 @@ const DownloadPage = () => {
               </div>
             )}
             
-            {/* Added ATS Evaluation information here */}
-            {scoreExplanation && (
+            {/* Renamed from "ATS Evaluation" to "Unoptimized Resume Evaluation" */}
+            {originalScoreExplanation && (
               <div>
-                <h3 className="font-medium text-sm text-indigo-600">ATS Evaluation</h3>
+                <h3 className="font-medium text-sm text-indigo-600">Unoptimized Resume Evaluation</h3>
                 <div className="text-sm bg-indigo-50 p-2 rounded border-l-2 border-indigo-400">
-                  {scoreExplanation}
+                  {originalScoreExplanation}
                 </div>
               </div>
             )}
@@ -287,34 +283,19 @@ const DownloadPage = () => {
           </CardContent>
         </Card>
         
-        {/* Keep the card for ATS Evaluation but rename it to Optimization Strategy */}
-        {scoreExplanation && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <FileCheck className="h-5 w-5 text-indigo-500 mr-2" />
-                Optimization Strategy
-              </CardTitle>
+        {/* NEW: Optimized Resume Evaluation section */}
+        {tailoredScoreExplanation && (
+          <Card className="border-2 border-green-200 shadow-md">
+            <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50">
+              <CardTitle className="text-green-800">Optimized Resume Evaluation</CardTitle>
               <CardDescription>
-                How we've optimized your resume for ATS systems
+                How your optimized resume performs against the job requirements
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem 
-                  value="optimization-strategy"
-                  className="border border-indigo-100 rounded-lg overflow-hidden bg-white/70 backdrop-blur-sm"
-                >
-                  <AccordionTrigger className="text-sm font-medium px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all">
-                    Optimization Strategy Details
-                  </AccordionTrigger>
-                  <AccordionContent className="text-sm px-4 py-3 bg-white/80">
-                    <div className="border-l-2 border-indigo-300 pl-3">
-                      {scoreExplanation}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+              <div className="border-l-2 border-green-400 pl-3 p-2 bg-green-50/50 rounded text-sm">
+                {tailoredScoreExplanation}
+              </div>
             </CardContent>
           </Card>
         )}
