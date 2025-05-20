@@ -8,7 +8,8 @@ export const apiServiceMock = {
   getResumeSchema: jest.fn().mockResolvedValue({ data: mockResumeJson }),
   scoreResume: jest.fn().mockResolvedValue({ data: mockScoreResponse }),
   tailorResume: jest.fn().mockResolvedValue({ data: mockTailoredResponse }),
-  downloadResumeAsDocx: jest.fn().mockResolvedValue({ data: { url: 'mock-download-url.docx' } })
+  downloadResumeAsDocx: jest.fn().mockResolvedValue({ data: { url: 'mock-download-url.docx' } }),
+  downloadResumeAsJson: jest.fn().mockResolvedValue({ data: { url: 'mock-download-url.json' } })
 };
 
 export const apiServiceWithErrors = {
@@ -17,7 +18,8 @@ export const apiServiceWithErrors = {
   getResumeSchema: jest.fn().mockResolvedValue({ error: 'Failed to get resume schema', data: mockResumeJson }),
   scoreResume: jest.fn().mockResolvedValue({ error: 'Failed to score resume', data: mockScoreResponse }),
   tailorResume: jest.fn().mockResolvedValue({ error: 'Failed to tailor resume', data: mockTailoredResponse }),
-  downloadResumeAsDocx: jest.fn().mockResolvedValue({ error: 'Failed to download resume' })
+  downloadResumeAsDocx: jest.fn().mockResolvedValue({ error: 'Failed to download resume' }),
+  downloadResumeAsJson: jest.fn().mockResolvedValue({ error: 'Failed to download resume as JSON' })
 };
 
 export const apiServiceWithoutFallbackData = {
@@ -26,5 +28,6 @@ export const apiServiceWithoutFallbackData = {
   getResumeSchema: jest.fn().mockResolvedValue({ error: 'Failed to get resume schema' }),
   scoreResume: jest.fn().mockResolvedValue({ error: 'Failed to score resume' }),
   tailorResume: jest.fn().mockResolvedValue({ error: 'Failed to tailor resume' }),
-  downloadResumeAsDocx: jest.fn().mockResolvedValue({ error: 'Failed to download resume' })
+  downloadResumeAsDocx: jest.fn().mockResolvedValue({ error: 'Failed to download resume' }),
+  downloadResumeAsJson: jest.fn().mockResolvedValue({ error: 'Failed to download resume as JSON' })
 };

@@ -5,6 +5,7 @@ import { getResumeSchema } from './resumeSchemaService';
 import { scoreResume } from './scoreResumeService';
 import { tailorResume } from './tailorResumeService';
 import { downloadResumeAsDocx } from './downloadResumeService';
+import { downloadResumeAsJson } from './downloadResumeJsonService';
 
 // Centralized API service for the application
 export const apiService = {
@@ -13,5 +14,6 @@ export const apiService = {
   getResumeSchema,
   scoreResume,
   tailorResume,
-  downloadResumeAsDocx
+  downloadResumeAsDocx,
+  downloadResumeAsJson
 };
