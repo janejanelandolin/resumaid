@@ -41,12 +41,13 @@ export const useResumeProcessor = ({
   const { processResumeContent: processWithApi } = useResumeApiOrchestrator();
 
   // Process the uploaded resume
-  const processResume = async () => {
+  const processResume = useCallback(async () => {
     try {
       // Reset progress UI
       setProgress(0);
       setApiErrors([]);
       setUploading(true);
+      setProgressText('Processing resume...');
       
       // Get the content from either file upload or text input
       let extractedContent = null;
@@ -109,7 +110,21 @@ export const useResumeProcessor = ({
         setUploading
       );
     }
-  };
+  }, [
+    state.uploadedFile, 
+    state.resumeText, 
+    state.apiErrors, 
+    setProgress, 
+    setApiErrors, 
+    setUploading, 
+    setProgressText, 
+    processResumeFile, 
+    processWithApi, 
+    createTextFile, 
+    completeProcessing, 
+    handleProcessingError, 
+    showContentWarning
+  ]);
   
   return {
     state,

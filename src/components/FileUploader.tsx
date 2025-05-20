@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, ChevronDown, ChevronUp } from 'lucide-react';
@@ -10,13 +11,13 @@ import TypewriterText from '@/components/TypewriterText';
 interface FileUploaderProps {
   onFileUpload: (file: File) => void;
   onTextInput?: (text: string) => void;
-  isProcessing?: boolean; // Add new prop to indicate processing state
+  isProcessing?: boolean;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({ 
   onFileUpload, 
   onTextInput,
-  isProcessing = false // Default to false
+  isProcessing = false
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -38,7 +39,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         }
         
         setFile(uploadedFile);
+        // Process the file immediately on drop/selection
         onFileUpload(uploadedFile);
+        
         // Clear text input when file is uploaded
         setResumeText('');
       }
@@ -54,7 +57,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       'text/plain': ['.txt'],
     },
     multiple: false,
-    disabled: isProcessing, // Disable dropzone while processing
+    disabled: isProcessing,
     onDropRejected: (fileRejections) => {
       const error = fileRejections[0]?.errors[0]?.message || 'Invalid file type';
       setFileUploadError(`Error: ${error}`);
@@ -138,7 +141,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             open={isResumeTextOpen} 
             onOpenChange={setIsResumeTextOpen}
             className="border rounded-lg"
-            disabled={isProcessing} // Disable collapsible while processing
+            disabled={isProcessing}
           >
             <CollapsibleTrigger className={`flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors ${isProcessing ? 'cursor-not-allowed opacity-70' : ''}`}>
               <div className="flex items-center">
@@ -157,7 +160,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                   className="min-h-[150px]"
                   value={resumeText}
                   onChange={(e) => setResumeText(e.target.value)}
-                  disabled={isProcessing} // Disable textarea while processing
+                  disabled={isProcessing}
                 />
                 <Button 
                   onClick={handleTextInputSubmit}
