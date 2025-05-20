@@ -65,7 +65,7 @@ const UploadPage = () => {
 
           <UploadSummary jobTitle={jobTitle} />
           
-          {/* Add the debug section */}
+          {/* Debug section */}
           <UploadDebugSection />
         </div>
       </PageContainer>

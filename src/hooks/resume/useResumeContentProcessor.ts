@@ -26,7 +26,7 @@ export const useResumeContentProcessor = () => {
     console.log("Content to process length:", extractedContent.length);
     console.log("Content preview:", extractedContent.substring(0, 100) + '...');
     
-    // Step 2: Get Resume Schema - Using the extracted text content
+    // Update progress UI
     setProgress(40);
     setProgressText('Converting resume to structured format...');
     

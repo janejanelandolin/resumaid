@@ -1,7 +1,7 @@
 
 import { renderHook } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-import { useResumeApiProcessor } from '@/hooks/resume/useResumeApiProcessor';
+import { useResumeApiOrchestrator } from '@/hooks/resume/useResumeApiOrchestrator';
 import { mockJobPosting, mockResumeJson, mockScoreResponse, mockTailoredResponse } from '../mocks/resumeTestMocks';
 import { apiServiceMock, apiServiceWithErrors } from '../mocks/apiServiceMock';
 
@@ -28,6 +28,13 @@ jest.mock('@/hooks/use-toast', () => ({
   })
 }));
 
+// Mock the job posting preparation hook
+jest.mock('@/hooks/resume/useJobPostingPreparation', () => ({
+  useJobPostingPreparation: () => ({
+    prepareJobPosting: jest.fn().mockReturnValue("Mock Job Description")
+  })
+}));
+
 // Mock the component hooks
 jest.mock('@/hooks/resume/useResumeScoring', () => ({
   useResumeScoring: () => ({
@@ -48,13 +55,13 @@ jest.mock('@/hooks/resume/useResumeContentProcessor', () => ({
   })
 }));
 
-describe('useResumeApiProcessor', () => {
+describe('useResumeApiOrchestrator', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   test('processResumeContent processes resume content successfully', async () => {
-    const { result } = renderHook(() => useResumeApiProcessor());
+    const { result } = renderHook(() => useResumeApiOrchestrator());
     
     const mockSetApiErrors = jest.fn();
     const mockSetProgress = jest.fn();
@@ -80,7 +87,7 @@ describe('useResumeApiProcessor', () => {
   });
 
   test('tailoringRationale is available from hook', async () => {
-    const { result } = renderHook(() => useResumeApiProcessor());
+    const { result } = renderHook(() => useResumeApiOrchestrator());
     
     // Check that rationale is available
     expect(result.current.tailoringRationale).toEqual(mockTailoredResponse.rationale);

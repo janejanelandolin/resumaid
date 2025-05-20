@@ -1,119 +1,83 @@
-
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
-import { useToast } from '@/hooks/use-toast';
-import { UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
-import { useResumeProcessorState } from './resume/useResumeProcessorState';
-import { useResumeApiProcessor } from './resume/useResumeApiProcessor';
+import { ResumeProcessorState, UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
+
+import { useResumeApiOrchestrator } from './resume/useResumeApiOrchestrator';
 import { useResumeFileProcessor } from './resume/useResumeFileProcessor';
 import { useResumeProcessingWorkflow } from './resume/useResumeProcessingWorkflow';
+import { useResumeProcessorState } from './resume/useResumeProcessorState';
 
-export const useResumeProcessor = ({
-  setProgress,
+export { ResumeProcessorState, UseResumeProcessorProps };
+
+export const useResumeProcessor = ({ 
+  setProgress, 
   setProgressText,
   showErrorDialog,
-  showContentWarning,
+  showContentWarning 
 }: UseResumeProcessorProps) => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const { 
-    jobPosting, 
-    setUploadData, 
-    setApiErrors: setGlobalApiErrors,
-  } = useResumeContext();
+  const { setApiErrors: setGlobalApiErrors } = useResumeContext();
   
-  // Hook compositions
+  // Resume processing states
   const { 
-    state, 
-    setApiErrors, 
-    handleFileUpload, 
-    handleTextInput, 
+    state,
+    setApiErrors,
+    handleFileUpload,
+    handleTextInput,
     setUploading,
     createTextFile,
     reset
   } = useResumeProcessorState(setGlobalApiErrors);
-  
-  const { processResumeContent } = useResumeApiProcessor();
-  const { processResumeFile } = useResumeFileProcessor();
+
+  // Resume processing workflow helpers
   const { completeProcessing, handleProcessingError } = useResumeProcessingWorkflow();
+  
+  // Resume file processor
+  const { processResumeFile } = useResumeFileProcessor();
+  
+  // API orchestrator for the resume processing workflow
+  const { processResumeContent: processWithApi } = useResumeApiOrchestrator();
 
-  const processResume = useCallback(async () => {
-    console.log("processResume called with state:", {
-      hasFile: !!state.uploadedFile,
-      hasText: !!state.resumeText,
-      isUploading: state.isUploading,
-      hasAttemptedUpload: state.hasAttemptedUpload
-    });
-    
-    // Guard against double-processing (already uploading)
-    if (state.isUploading) {
-      console.log("Already uploading, ignoring duplicate request");
-      return;
-    }
-    
-    const { uploadedFile, resumeText } = state;
-    
-    if (!uploadedFile && !resumeText) {
-      toast({
-        title: "Error",
-        description: "Please upload your resume or paste your resume text",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (!jobPosting) {
-      navigate('/');
-      return;
-    }
-
-    // Reset state
-    setUploading(true);
-    setProgress(0);
-    setProgressText('Processing resume...');
-    setApiErrors([]);
-
+  // Process the uploaded resume
+  const processResume = async () => {
     try {
-      // Different processing flow based on whether we have a file or text input
-      let extractedContent = '';
+      // Reset progress UI
+      setProgress(0);
+      setApiErrors([]);
+      setUploading(true);
       
-      // If we have a file, upload it through the /upload endpoint
-      if (uploadedFile) {
-        const fileContent = await processResumeFile(
-          uploadedFile,
+      // Get the content from either file upload or text input
+      let extractedContent = null;
+      if (state.uploadedFile) {
+        // Process the uploaded file
+        extractedContent = await processResumeFile(
+          state.uploadedFile, 
+          setProgressText, 
+          setProgress, 
+          state.apiErrors, 
+          setApiErrors,
+          showContentWarning
+        );
+      } else if (state.resumeText) {
+        // Create a file from the text input for processing
+        const textFile = createTextFile(state.resumeText);
+        extractedContent = await processResumeFile(
+          textFile,
           setProgressText,
           setProgress,
           state.apiErrors,
           setApiErrors,
           showContentWarning
         );
-        
-        if (!fileContent) {
-          setUploading(false);
-          showErrorDialog();
-          return;
-        }
-        
-        extractedContent = fileContent;
-      } else if (resumeText) {
-        // If we have direct text input, use it directly
-        extractedContent = resumeText;
-        
-        // Create an upload data object from the text input
-        const textFile = createTextFile(resumeText);
-        const uploadData = {
-          id: Math.random().toString(36).substr(2, 9),
-          filename: 'resume.txt',
-          content: resumeText
-        };
-        setUploadData(uploadData);
-        
-        setProgress(30);
+      } else {
+        throw new Error("No resume content to process");
       }
       
-      // Process the resume with the API
-      const processingResult = await processResumeContent(
+      if (!extractedContent) {
+        throw new Error("Failed to extract content from resume");
+      }
+      
+      // Process the extracted content with the API
+      const success = await processWithApi(
         extractedContent,
         setApiErrors,
         setProgress,
@@ -121,47 +85,29 @@ export const useResumeProcessor = ({
         state.apiErrors
       );
       
-      if (processingResult) {
-        completeProcessing(
+      if (success) {
+        // Complete the workflow and navigate to analysis page
+        return completeProcessing(
           setUploading,
           setProgress,
           setProgressText,
           state.apiErrors
         );
       } else {
-        showErrorDialog();
-        setUploading(false);
+        throw new Error("Resume processing failed");
       }
-      
     } catch (error) {
-      handleProcessingError(
+      // Handle any errors that occur during processing
+      return handleProcessingError(
         error,
         setProgress,
         state.apiErrors,
         setApiErrors,
         setUploading
       );
-      showErrorDialog();
     }
-  }, [
-    state,
-    toast,
-    jobPosting,
-    navigate,
-    setProgress,
-    setProgressText,
-    setApiErrors,
-    showErrorDialog,
-    showContentWarning,
-    setUploadData,
-    setUploading,
-    processResumeContent,
-    createTextFile,
-    processResumeFile,
-    completeProcessing,
-    handleProcessingError
-  ]);
-
+  };
+  
   return {
     state,
     handleFileUpload,
