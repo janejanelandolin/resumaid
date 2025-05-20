@@ -135,7 +135,7 @@ const ExperienceComparison: React.FC<ExperienceComparisonProps> = ({
   };
 
   return (
-    <Accordion type="single" collapsible defaultValue="experience" className="w-full">
+    <Accordion type="single" collapsible>
       <AccordionItem value="experience" className="border-none">
         <AccordionTrigger className="py-2 text-indigo-600 hover:text-indigo-800 hover:no-underline">
           Compare Experience

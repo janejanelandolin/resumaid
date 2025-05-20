@@ -8,6 +8,7 @@ import PageContainer from '@/components/PageContainer';
 import DownloadButtons from '@/components/download/DownloadButtons';
 import ResumeSummary from '@/components/download/ResumeSummary';
 import RationaleSection from '@/components/download/RationaleSection';
+import TypewriterText from '@/components/TypewriterText';
 
 const DownloadPage = () => {
   const navigate = useNavigate();
@@ -45,17 +46,18 @@ const DownloadPage = () => {
   return (
     <PageContainer>
       <div className="w-full max-w-4xl mx-auto space-y-8">
-        <div className="flex items-center mb-8">
+        <div className="flex justify-between items-center mb-8">
           <Button variant="ghost" onClick={() => navigate('/analysis')} className="mr-2">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Analysis
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Download Your Optimized Resume</h1>
-            <p className="text-muted-foreground">
-              Your optimized resume is ready for download
-            </p>
-          </div>
+        </div>
+        
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-purple-600">Download Your Optimized Resume</h1>
+          <p className="text-muted-foreground">
+            <TypewriterText text="Your optimized resume is ready for download" delay={100} />
+          </p>
         </div>
         
         {/* Download buttons */}

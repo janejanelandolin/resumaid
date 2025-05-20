@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Accordion, 
@@ -94,7 +93,7 @@ const SkillsComparison: React.FC<SkillsComparisonProps> = ({
   );
 
   return (
-    <Accordion type="single" collapsible defaultValue="skills" className="w-full">
+    <Accordion type="single" collapsible>
       <AccordionItem value="skills" className="border-none">
         <AccordionTrigger className="py-2 text-indigo-600 hover:text-indigo-800 hover:no-underline">
           Compare Skills

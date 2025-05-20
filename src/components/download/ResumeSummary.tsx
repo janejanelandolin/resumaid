@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Card, 
@@ -10,6 +11,13 @@ import { ResumeJson } from '@/types/resume';
 import SummaryComparison from './SummaryComparison';
 import SkillsComparison from './SkillsComparison';
 import ExperienceComparison from './ExperienceComparison';
+import { 
+  Accordion, 
+  AccordionItem, 
+  AccordionTrigger, 
+  AccordionContent 
+} from '@/components/ui/accordion';
+import TypewriterText from '@/components/TypewriterText';
 
 interface ResumeSummaryProps {
   resume: ResumeJson;
@@ -62,10 +70,13 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
 
   return (
     <Card className="border-2 border-indigo-200 shadow-md">
-      <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
-        <CardTitle className="text-indigo-800">Comprehensive Report</CardTitle>
+      <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 text-center">
+        <CardTitle className="text-purple-600">Comprehensive Report</CardTitle>
         <CardDescription>
-          A comprehensive overview of your resume before and after optimization with highlighted changes and evaluator opinions.
+          <TypewriterText 
+            text="A comprehensive overview of your resume before and after optimization with highlighted changes and evaluator opinions." 
+            delay={300}
+          />
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
@@ -74,44 +85,61 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
           <p className="bg-indigo-50 p-1 rounded">{resume.basics?.name || 'Not provided'}</p>
         </div>
         
-        <div>
-          <h3 className="font-medium text-sm text-indigo-600">Summary</h3>
-          <SummaryComparison 
-            originalSummary={originalSummary} 
-            optimizedSummary={optimizedSummary} 
-          />
-        </div>
+        <Accordion type="single" collapsible defaultValue="summary">
+          <AccordionItem value="summary" className="border-b border-indigo-100">
+            <AccordionTrigger className="py-2 text-indigo-600 hover:text-indigo-800 hover:no-underline">
+              Summary
+            </AccordionTrigger>
+            <AccordionContent>
+              <SummaryComparison 
+                originalSummary={originalSummary} 
+                optimizedSummary={optimizedSummary} 
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
         
-        {originalScoreExplanation && (
-          <div>
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium text-sm text-indigo-600">Original Resume Evaluation</h3>
-              {originalQualification && (
-                <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getQualificationColor(originalQualification)}`}>
-                  {originalQualification}
-                </div>
-              )}
-            </div>
-            <div className="text-sm bg-indigo-50 p-2 rounded border-l-2 border-indigo-400">
-              {originalScoreExplanation}
-            </div>
-          </div>
-        )}
-        
-        {tailoredScoreExplanation && (
-          <div>
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium text-sm text-indigo-600">Optimized Resume Evaluation</h3>
-              {tailoredQualification && (
-                <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getQualificationColor(tailoredQualification)}`}>
-                  {tailoredQualification}
-                </div>
-              )}
-            </div>
-            <div className="text-sm bg-green-50 p-2 rounded border-l-2 border-green-400">
-              {tailoredScoreExplanation}
-            </div>
-          </div>
+        {(originalScoreExplanation || tailoredScoreExplanation) && (
+          <Accordion type="single" collapsible>
+            <AccordionItem value="evaluation" className="border-b border-indigo-100">
+              <AccordionTrigger className="py-2 text-indigo-600 hover:text-indigo-800 hover:no-underline">
+                Resume Evaluation
+              </AccordionTrigger>
+              <AccordionContent>
+                {originalScoreExplanation && (
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-medium text-sm text-indigo-600">Original Resume Evaluation</h3>
+                      {originalQualification && (
+                        <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getQualificationColor(originalQualification)}`}>
+                          {originalQualification}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-sm bg-indigo-50 p-2 rounded border-l-2 border-indigo-400">
+                      {originalScoreExplanation}
+                    </div>
+                  </div>
+                )}
+                
+                {tailoredScoreExplanation && (
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-medium text-sm text-indigo-600">Optimized Resume Evaluation</h3>
+                      {tailoredQualification && (
+                        <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getQualificationColor(tailoredQualification)}`}>
+                          {tailoredQualification}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-sm bg-green-50 p-2 rounded border-l-2 border-green-400">
+                      {tailoredScoreExplanation}
+                    </div>
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         )}
         
         {(optimizedSkills?.length > 0 || originalSkills?.length > 0) && (
