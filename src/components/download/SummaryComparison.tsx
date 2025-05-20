@@ -75,6 +75,14 @@ const SummaryComparison: React.FC<SummaryComparisonProps> = ({
             return <span key={Math.random()} className="mx-0.5 inline-block">{word}</span>;
           })}
         </p>
+        
+        {/* Legend for deletions under Original Summary */}
+        <div className="mt-2 p-2 bg-white/50 rounded border border-gray-200">
+          <p className="text-xs text-gray-500 flex items-center">
+            <span className="inline-block line-through text-gray-400 mr-2">abc</span>
+            Strikethroughs indicate text deletions
+          </p>
+        </div>
       </div>
       
       <div className="border rounded-md p-3 bg-green-50">
@@ -85,15 +93,11 @@ const SummaryComparison: React.FC<SummaryComparisonProps> = ({
           {decoratedSummary}
         </p>
         
-        {/* Legend for the text changes */}
-        <div className="mt-2 flex flex-col gap-1 p-2 bg-white/50 rounded border border-gray-200">
+        {/* Legend for additions under Optimized Summary */}
+        <div className="mt-2 p-2 bg-white/50 rounded border border-gray-200">
           <p className="text-xs text-gray-500 flex items-center">
             <span className="inline-block w-3 h-3 bg-[#FEF7CD] rounded mr-2"></span>
             Highlights indicate text additions
-          </p>
-          <p className="text-xs text-gray-500 flex items-center">
-            <span className="inline-block line-through text-gray-400 mr-2">abc</span>
-            Strikethroughs indicate text deletions
           </p>
         </div>
       </div>
