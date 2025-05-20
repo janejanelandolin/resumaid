@@ -29,7 +29,7 @@ jest.mock('@/services/api', () => ({
   apiService: apiServiceMock
 }));
 
-// Mock sub-hooks that we're already testing separately
+// Mock sub-hooks
 jest.mock('@/hooks/resume/useResumeProcessorState', () => ({
   useResumeProcessorState: () => ({
     state: {
@@ -42,13 +42,8 @@ jest.mock('@/hooks/resume/useResumeProcessorState', () => ({
     handleFileUpload: jest.fn(),
     handleTextInput: jest.fn(),
     setUploading: jest.fn(),
-    createTextFile: jest.fn()
-  })
-}));
-
-jest.mock('@/hooks/resume/useJobPostingHandler', () => ({
-  useJobPostingHandler: () => ({
-    handleJobPostingInput: jest.fn()
+    createTextFile: jest.fn(),
+    reset: jest.fn()
   })
 }));
 
@@ -56,6 +51,19 @@ jest.mock('@/hooks/resume/useResumeApiProcessor', () => ({
   useResumeApiProcessor: () => ({
     processResumeContent: jest.fn().mockResolvedValue(true),
     tailoringRationale: []
+  })
+}));
+
+jest.mock('@/hooks/resume/useResumeFileProcessor', () => ({
+  useResumeFileProcessor: () => ({
+    processResumeFile: jest.fn().mockResolvedValue('Sample resume content')
+  })
+}));
+
+jest.mock('@/hooks/resume/useResumeProcessingWorkflow', () => ({
+  useResumeProcessingWorkflow: () => ({
+    completeProcessing: jest.fn().mockReturnValue(true),
+    handleProcessingError: jest.fn()
   })
 }));
 
@@ -79,8 +87,8 @@ describe('useResumeProcessor', () => {
     expect(result.current).toHaveProperty('state');
     expect(result.current).toHaveProperty('handleFileUpload');
     expect(result.current).toHaveProperty('handleTextInput');
-    expect(result.current).toHaveProperty('handleJobPostingInput');
     expect(result.current).toHaveProperty('processResume');
+    expect(result.current).toHaveProperty('reset');
   });
 
   test('processResume function initiates resume processing flow', async () => {
