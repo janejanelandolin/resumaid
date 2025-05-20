@@ -28,7 +28,7 @@ jest.mock('@/hooks/use-toast', () => ({
   })
 }));
 
-// Mock the other hooks we created
+// Mock the component hooks
 jest.mock('@/hooks/resume/useResumeScoring', () => ({
   useResumeScoring: () => ({
     scoreResume: jest.fn().mockResolvedValue(true)
@@ -39,6 +39,12 @@ jest.mock('@/hooks/resume/useResumeTailoring', () => ({
   useResumeTailoring: () => ({
     tailorResume: jest.fn().mockResolvedValue(true),
     tailoringRationale: mockTailoredResponse.rationale
+  })
+}));
+
+jest.mock('@/hooks/resume/useResumeContentProcessor', () => ({
+  useResumeContentProcessor: () => ({
+    processContent: jest.fn().mockResolvedValue(mockResumeJson)
   })
 }));
 
@@ -66,47 +72,11 @@ describe('useResumeApiProcessor', () => {
       );
     });
     
-    // Check that API calls were made
-    expect(apiServiceMock.getResumeSchema).toHaveBeenCalledWith(resumeText);
-    
     // Check progress updates
-    expect(mockSetProgress).toHaveBeenCalledWith(40);
-    
-    // Check progress text updates
-    expect(mockSetProgressText).toHaveBeenCalledWith('Converting resume to structured format...');
+    expect(mockSetProgress).toHaveBeenCalled();
     
     // Check that no errors were set
     expect(mockSetApiErrors).not.toHaveBeenCalled();
-  });
-
-  test('processResumeContent handles API errors', async () => {
-    // Change the mock to return errors
-    jest.resetModules();
-    jest.mock('@/services/api', () => ({
-      apiService: apiServiceWithErrors
-    }));
-    
-    const { result } = renderHook(() => useResumeApiProcessor());
-    
-    const mockSetApiErrors = jest.fn();
-    const mockSetProgress = jest.fn();
-    const mockSetProgressText = jest.fn();
-    const resumeText = 'Sample resume text';
-    const apiErrors: string[] = [];
-    
-    await act(async () => {
-      await result.current.processResumeContent(
-        resumeText,
-        mockSetApiErrors,
-        mockSetProgress,
-        mockSetProgressText,
-        apiErrors
-      );
-    });
-    
-    // Check that errors were set
-    expect(mockSetApiErrors).toHaveBeenCalled();
-    expect(mockSetApiErrors.mock.calls[0][0]).toContain('Resume Schema Error');
   });
 
   test('tailoringRationale is available from hook', async () => {

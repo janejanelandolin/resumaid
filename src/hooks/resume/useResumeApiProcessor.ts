@@ -4,21 +4,19 @@
  */
 import { useCallback } from 'react';
 import { useResumeContext } from '@/contexts/ResumeContext';
-import { apiService } from '@/services/api';
-import { useToast } from '@/hooks/use-toast';
-import { normalizeSkills, formatJobPostingAsText } from './useResumeNormalizer';
+import { formatJobPostingAsText } from './useResumeNormalizer';
 import { useResumeScoring } from './useResumeScoring';
 import { useResumeTailoring } from './useResumeTailoring';
+import { useResumeContentProcessor } from './useResumeContentProcessor';
 
 export const useResumeApiProcessor = () => {
-  const { toast } = useToast();
   const { 
     jobPosting,
-    setResumeJson,
   } = useResumeContext();
   
   const { scoreResume } = useResumeScoring();
   const { tailorResume, tailoringRationale } = useResumeTailoring();
+  const { processContent } = useResumeContentProcessor();
   
   // Process the uploaded resume with the API
   const processResumeContent = useCallback(async (
@@ -29,47 +27,34 @@ export const useResumeApiProcessor = () => {
     apiErrors: string[]
   ): Promise<boolean> => {
     let isSuccessful = true;
-    console.log("Content to process length:", extractedContent.length);
-    console.log("Content preview:", extractedContent.substring(0, 100) + '...');
     
-    // Step 2: Get Resume Schema - Using the extracted text content
-    setProgress(40);
-    setProgressText('Converting resume to structured format...');
-    
-    const resumeSchemaResponse = await apiService.getResumeSchema(extractedContent);
-    console.log("Resume schema response:", resumeSchemaResponse);
-    
-    // Normalize the skills data before processing
-    if (resumeSchemaResponse.data) {
-      resumeSchemaResponse.data = normalizeSkills(resumeSchemaResponse.data);
-    }
-    
-    if (resumeSchemaResponse.error) {
-      const newErrors = [...apiErrors, `Resume Schema Error: ${resumeSchemaResponse.error}`];
-      setApiErrors(newErrors);
-      if (resumeSchemaResponse.data) {
-        setResumeJson(resumeSchemaResponse.data);
-      } else {
-        isSuccessful = false;
-        throw new Error("Failed to process resume schema");
-      }
-    } else if (resumeSchemaResponse.data) {
-      setResumeJson(resumeSchemaResponse.data);
-    }
-    
-    // Format job posting as a simple string
-    let jobPostingText = '';
     try {
-      jobPostingText = formatJobPostingAsText(jobPosting);
-    } catch (error) {
-      isSuccessful = false;
-      throw error;
-    }
-    
-    if (resumeSchemaResponse.data) {
-      // Step 3: Score the original resume
+      // Step 1: Process the content to get structured resume data
+      const resumeData = await processContent(
+        extractedContent,
+        setProgress,
+        setProgressText,
+        apiErrors,
+        setApiErrors
+      );
+      
+      if (!resumeData) {
+        isSuccessful = false;
+        throw new Error("Failed to process resume content");
+      }
+      
+      // Format job posting as a simple string
+      let jobPostingText = '';
+      try {
+        jobPostingText = formatJobPostingAsText(jobPosting);
+      } catch (error) {
+        isSuccessful = false;
+        throw error;
+      }
+      
+      // Step 2: Score the original resume
       await scoreResume(
-        resumeSchemaResponse.data,
+        resumeData,
         jobPostingText,
         setProgress,
         setProgressText,
@@ -77,19 +62,22 @@ export const useResumeApiProcessor = () => {
         setApiErrors
       );
       
-      // Step 4: Tailor the resume and score the tailored version
+      // Step 3: Tailor the resume and score the tailored version
       await tailorResume(
-        resumeSchemaResponse.data,
+        resumeData,
         jobPostingText,
         setProgress,
         setProgressText,
         apiErrors,
         setApiErrors
       );
+      
+      return isSuccessful;
+    } catch (error) {
+      console.error("Error in resume processing workflow:", error);
+      return false;
     }
-    
-    return isSuccessful;
-  }, [jobPosting, setResumeJson, scoreResume, tailorResume]);
+  }, [jobPosting, processContent, scoreResume, tailorResume]);
 
   return {
     processResumeContent,
