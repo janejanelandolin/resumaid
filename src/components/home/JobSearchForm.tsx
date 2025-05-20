@@ -78,10 +78,13 @@ const JobSearchForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-100">
+      <div className="mb-4 text-center">
+        <p className="text-gray-700 font-medium">Choose how you want to submit your job posting</p>
+      </div>
+      
       <div className="space-y-2">
-        <label htmlFor="jobTitle" className="text-sm font-medium text-gray-700 flex items-center gap-2">
-          <Search size={16} className="text-purple-500" />
-          Dream job title
+        <label htmlFor="jobTitle" className="text-sm font-medium text-gray-700">
+          Option 1: Enter dream job title
         </label>
         <div className="relative">
           <Input
@@ -119,7 +122,7 @@ const JobSearchForm = () => {
         <CollapsibleTrigger className="flex items-center justify-between w-full p-3 font-medium text-left text-gray-700 hover:bg-purple-50 rounded-lg transition-colors">
           <div className="flex items-center gap-2">
             <FileText className="h-4 w-4 text-purple-500" />
-            <span className="text-sm">Advanced: Paste Job Posting</span>
+            <span className="text-sm">Option 2: Paste a job posting</span>
           </div>
           {isAdvancedOpen ? (
             <ChevronUp className="h-4 w-4 text-gray-500" />

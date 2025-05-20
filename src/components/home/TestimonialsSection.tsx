@@ -2,8 +2,8 @@
 import { Star } from 'lucide-react';
 
 const testimonials = [
-  { name: "Sarah J.", role: "Marketing Specialist", text: "ResumAI helped me land my dream job after 3 months of searching!" },
-  { name: "Michael T.", role: "Software Engineer", text: "My interview callbacks increased by 300% after using ResumAI." },
+  { name: "Sarah J.", role: "Marketing Specialist", text: "ResumAID helped me land my dream job after 3 months of searching!" },
+  { name: "Michael T.", role: "Software Engineer", text: "My interview callbacks increased by 300% after using ResumAID." },
   { name: "Jessica L.", role: "Project Manager", text: "The optimization suggestions were spot-on! Highly recommend!" },
 ];
 
@@ -26,7 +26,7 @@ const TestimonialsSection = () => {
         
         <div className="pt-4">
           <p className="text-sm font-semibold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-primary">
-            Join 10,000+ professionals who optimized their resumes with ResumAI
+            Join 10,000+ professionals who optimized their resumes with ResumAID
           </p>
           <div className="flex justify-center space-x-4 mt-4">
             <StatCard number="97%" label="Improved Scores" gradient="from-purple-600 to-primary" />
