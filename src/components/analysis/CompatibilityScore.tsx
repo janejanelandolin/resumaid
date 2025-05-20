@@ -1,4 +1,3 @@
-
 import React from 'react';
 import AnimatedDial from '@/components/AnimatedDial';
 import { ArrowRight, CheckCircle2, Sparkle } from 'lucide-react';
@@ -68,7 +67,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
       
       <div className="text-center mb-4">
         <h2 className="text-lg font-semibold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">
-          Analysis Scores
+          Compatibility Scores
         </h2>
       </div>
       
@@ -123,8 +122,8 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
           <Sparkle className="h-5 w-5 text-indigo-400" />
           <p className="font-bold text-md bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             {isFreeVersion 
-              ? 'See detailed analysis report' 
-              : 'See detailed analysis report'}
+              ? 'Access comprehensive report' 
+              : 'Access comprehensive report'}
           </p>
           <Sparkle className="h-5 w-5 text-purple-400" />
         </div>

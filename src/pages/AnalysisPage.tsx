@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
@@ -130,7 +129,7 @@ const AnalysisPage = () => {
           </Button>
 
           <div className="text-center text-xs text-muted-foreground pt-2">
-            <p>{isFreeVersion ? 'Get your optimized resume now' : 'Your optimized resume will be ready after the next step'}</p>
+            <p>{isFreeVersion ? 'Get your optimized resume and comprehensive report now' : 'Your optimized resume will be ready after the next step'}</p>
           </div>
           
           {/* API debug helper for errors */}

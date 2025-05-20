@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -140,7 +139,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Download Optimized Resume</CardTitle>
+        <CardTitle>Download</CardTitle>
         <CardDescription>
           Get your resume in your preferred format, ready for final adjustments
         </CardDescription>
