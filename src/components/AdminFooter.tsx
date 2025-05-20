@@ -7,7 +7,7 @@ const AdminFooter: React.FC = () => {
     <footer className="w-full border-t mt-auto py-2">
       <div className="container flex justify-between items-center">
         <div className="text-xs text-gray-500">
-          © {new Date().getFullYear()} Resume Optimizer
+          © {new Date().getFullYear()} ResumAID
         </div>
         <div>
           <Link 
