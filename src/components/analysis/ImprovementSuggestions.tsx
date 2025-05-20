@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion';
-import { Sparkle, FileCheck, RefreshCcw } from 'lucide-react';
+import { Sparkle, FileCheck } from 'lucide-react';
 import { Feedback, useResumeContext } from '@/contexts/ResumeContext';
 
 interface ImprovementSuggestionsProps {
@@ -13,13 +13,10 @@ interface ImprovementSuggestionsProps {
 }
 
 const ImprovementSuggestions: React.FC<ImprovementSuggestionsProps> = ({ feedback }) => {
-  const { tailoredResumeJson, originalScore } = useResumeContext();
+  const { tailoredResumeJson } = useResumeContext();
   
   // Get rationale from the API response or use an empty array as fallback
   const rationaleItems = tailoredResumeJson?.rationale || [];
-  
-  // Get any feedback explanation from the score response
-  const scoreExplanation = originalScore?.explanation;
   
   return (
     <div className="pt-4 relative">
@@ -34,26 +31,6 @@ const ImprovementSuggestions: React.FC<ImprovementSuggestionsProps> = ({ feedbac
       </h3>
       
       <Accordion type="single" collapsible className="w-full">
-        {/* Display score explanation if available */}
-        {scoreExplanation && (
-          <AccordionItem 
-            value="score-explanation"
-            className="border border-indigo-100 mb-2 rounded-lg overflow-hidden bg-white/70 backdrop-blur-sm"
-          >
-            <AccordionTrigger className="text-sm font-medium px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all">
-              <div className="flex items-center">
-                <RefreshCcw className="h-4 w-4 text-indigo-500 mr-2 shrink-0" />
-                ATS Evaluation Summary
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="text-sm px-4 py-3 bg-white/80">
-              <div className="border-l-2 border-indigo-300 pl-3">
-                {scoreExplanation}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        )}
-        
         {/* Display rationale items as improvement suggestions */}
         {rationaleItems.map((rationale, index) => (
           <AccordionItem 

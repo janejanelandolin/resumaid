@@ -10,7 +10,13 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { FileDown, ArrowLeft, Loader2, FileJson } from 'lucide-react';
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion';
+import { FileDown, ArrowLeft, Loader2, FileJson, FileCheck } from 'lucide-react';
 import PageContainer from '@/components/PageContainer';
 import { apiService } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
@@ -25,12 +31,16 @@ const DownloadPage = () => {
   const { 
     jobTitle, 
     tailoredResumeJson, 
-    resumeJson
+    resumeJson,
+    originalScore
   } = useResumeContext();
   
   // Get rationale from tailored resume if available
   const resume = tailoredResumeJson || resumeJson;
   const rationale = tailoredResumeJson?.rationale || [];
+  
+  // Get score explanation from the original score
+  const scoreExplanation = originalScore?.explanation;
   
   useEffect(() => {
     if (!resume) {
@@ -227,6 +237,38 @@ const DownloadPage = () => {
           </CardContent>
         </Card>
         
+        {/* ATS Evaluation Summary - moved from Analysis page */}
+        {scoreExplanation && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <FileCheck className="h-5 w-5 text-indigo-500 mr-2" />
+                ATS Evaluation Summary
+              </CardTitle>
+              <CardDescription>
+                How your resume is evaluated by Applicant Tracking Systems
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem 
+                  value="score-explanation"
+                  className="border border-indigo-100 rounded-lg overflow-hidden bg-white/70 backdrop-blur-sm"
+                >
+                  <AccordionTrigger className="text-sm font-medium px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all">
+                    View ATS Evaluation Details
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm px-4 py-3 bg-white/80">
+                    <div className="border-l-2 border-indigo-300 pl-3">
+                      {scoreExplanation}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </CardContent>
+          </Card>
+        )}
+        
         {/* Rationale section */}
         {rationale && rationale.length > 0 && (
           <Card>
@@ -246,38 +288,42 @@ const DownloadPage = () => {
           </Card>
         )}
         
-        {/* Resume preview summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Resume Summary</CardTitle>
+        {/* Renamed Resume Summary to Optimized Resume Summary with highlights */}
+        <Card className="border-2 border-indigo-200 shadow-md">
+          <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
+            <CardTitle className="text-indigo-800">Optimized Resume Summary</CardTitle>
             <CardDescription>
-              A brief overview of your optimized resume
+              A brief overview of your optimized resume with highlighted changes
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             <div>
-              <h3 className="font-medium text-sm text-gray-500">Name</h3>
-              <p>{resume.basics?.name || 'Not provided'}</p>
+              <h3 className="font-medium text-sm text-indigo-600">Name</h3>
+              <p className="bg-indigo-50 p-1 rounded">{resume.basics?.name || 'Not provided'}</p>
             </div>
             
             {resume.basics?.summary && (
               <div>
-                <h3 className="font-medium text-sm text-gray-500">Summary</h3>
-                <p className="text-sm">{resume.basics.summary}</p>
+                <h3 className="font-medium text-sm text-indigo-600">Summary</h3>
+                <p className="text-sm bg-indigo-50 p-2 rounded border-l-2 border-indigo-400">{resume.basics.summary}</p>
               </div>
             )}
             
             {resume.work && resume.work.length > 0 && (
               <div>
-                <h3 className="font-medium text-sm text-gray-500">Experience</h3>
-                <p className="text-sm">{resume.work.length} positions including {resume.work[0].name}</p>
+                <h3 className="font-medium text-sm text-indigo-600">Experience</h3>
+                <p className="text-sm bg-indigo-50 p-1 rounded">
+                  {resume.work.length} positions including {resume.work[0].name}
+                </p>
               </div>
             )}
             
             {resume.skills && resume.skills.length > 0 && (
               <div>
-                <h3 className="font-medium text-sm text-gray-500">Skills</h3>
-                <p className="text-sm">{resume.skills.length} skill categories</p>
+                <h3 className="font-medium text-sm text-indigo-600">Skills</h3>
+                <p className="text-sm bg-indigo-50 p-1 rounded">
+                  {resume.skills.length} skill categories
+                </p>
               </div>
             )}
           </CardContent>
