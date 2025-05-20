@@ -23,13 +23,6 @@ const ImprovementSuggestions: React.FC<ImprovementSuggestionsProps> = ({ feedbac
       <div className="absolute -left-3 -top-3 w-12 h-12 bg-yellow-200 rounded-full opacity-30 animate-pulse"></div>
       <div className="absolute -right-3 -bottom-3 w-8 h-8 bg-purple-300 rounded-full opacity-30 animate-pulse"></div>
       
-      <h3 className="font-semibold mb-4 flex items-center">
-        <FileCheck className="h-5 w-5 text-indigo-500 mr-2" />
-        <span className="bg-gradient-to-r from-indigo-700 to-purple-600 bg-clip-text text-transparent">
-          Suggested Improvements:
-        </span>
-      </h3>
-      
       <Accordion type="single" collapsible className="w-full">
         {/* Display rationale items as improvement suggestions */}
         {rationaleItems.map((rationale, index) => (

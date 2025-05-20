@@ -123,7 +123,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
           <Sparkle className="h-5 w-5 text-indigo-400" />
           <p className="font-bold text-md bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             {isFreeVersion 
-              ? 'Unlock premium features to optimize your resume!' 
+              ? 'Optimize your resume now' 
               : 'Optimize your resume to stand out!'}
           </p>
           <Sparkle className="h-5 w-5 text-purple-400" />
