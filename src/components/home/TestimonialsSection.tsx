@@ -1,5 +1,13 @@
 
-import { Star } from 'lucide-react';
+import { Star, User } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const testimonials = [
   { name: "Sarah J.", role: "Marketing Specialist", text: "ResumAID helped me land my dream job after 3 months of searching!" },
@@ -11,17 +19,30 @@ const TestimonialsSection = () => {
   return (
     <div className="mt-12 pt-8 border-t border-purple-100">
       <div className="text-center space-y-6">
-        <div className="relative h-24 overflow-hidden bg-white/50 backdrop-blur-sm rounded-lg p-3 shadow-inner">
-          <div className="absolute w-full animate-rotate-testimonials">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="py-2">
-                <p className="text-sm italic text-gray-600">"{testimonial.text}"</p>
-                <p className="text-xs font-medium mt-1 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
-                  {testimonial.name}, {testimonial.role}
-                </p>
-              </div>
-            ))}
-          </div>
+        <div className="relative rounded-lg">
+          <Carousel className="w-full max-w-lg mx-auto">
+            <CarouselContent>
+              {testimonials.map((testimonial, index) => (
+                <CarouselItem key={index}>
+                  <div className="p-1">
+                    <Card className="bg-white/70 backdrop-blur-sm border border-purple-100">
+                      <CardContent className="flex flex-col items-center justify-center p-6">
+                        <div className="mb-4">
+                          <User className="h-10 w-10 rounded-full bg-purple-100 p-2 text-purple-600" />
+                        </div>
+                        <p className="text-sm italic text-gray-600 mb-4">"{testimonial.text}"</p>
+                        <p className="text-xs font-medium bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+                          {testimonial.name}, {testimonial.role}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-0" />
+            <CarouselNext className="right-0" />
+          </Carousel>
         </div>
         
         <div className="pt-4">
