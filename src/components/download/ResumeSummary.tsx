@@ -10,6 +10,7 @@ import {
 import { ResumeJson } from '@/types/resume';
 import SummaryComparison from './SummaryComparison';
 import SkillsComparison from './SkillsComparison';
+import ExperienceComparison from './ExperienceComparison';
 
 interface ResumeSummaryProps {
   resume: ResumeJson;
@@ -55,6 +56,10 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
   // Get the original and optimized skills
   const originalSkills = originalResume?.skills;
   const optimizedSkills = resume.skills;
+
+  // Get the original and optimized work experience
+  const originalExperience = originalResume?.work;
+  const optimizedExperience = resume.work;
 
   return (
     <Card className="border-2 border-indigo-200 shadow-md">
@@ -120,7 +125,17 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
           </div>
         )}
         
-        {resume.work && resume.work.length > 0 && (
+        {(optimizedExperience?.length > 0 || originalExperience?.length > 0) && (
+          <div>
+            <h3 className="font-medium text-sm text-indigo-600">Experience</h3>
+            <ExperienceComparison
+              originalExperience={originalExperience}
+              optimizedExperience={optimizedExperience}
+            />
+          </div>
+        )}
+        
+        {resume.work && resume.work.length > 0 && !originalResume && (
           <div>
             <h3 className="font-medium text-sm text-indigo-600">Experience</h3>
             <p className="text-sm bg-indigo-50 p-1 rounded">
