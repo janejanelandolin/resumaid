@@ -137,7 +137,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           >
             <CollapsibleTrigger className={`flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors ${isProcessing ? 'cursor-not-allowed opacity-70' : ''}`}>
               <div className="flex items-center">
-                <span>Paste your resume content directly</span>
+                <span>Paste your resume content directly if you do not have a file to upload</span>
               </div>
               {isResumeTextOpen ? (
                 <ChevronUp className="h-5 w-5 text-gray-500" />
