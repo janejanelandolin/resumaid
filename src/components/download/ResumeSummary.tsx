@@ -76,7 +76,7 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
         {originalScoreExplanation && (
           <div>
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-sm text-indigo-600">Unoptimized Resume Evaluation</h3>
+              <h3 className="font-medium text-sm text-indigo-600">Original Resume Evaluation</h3>
               {originalQualification && (
                 <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getQualificationColor(originalQualification)}`}>
                   {originalQualification}
