@@ -49,9 +49,12 @@ export const useResumeProcessor = ({
       setUploading(true);
       setProgressText('Processing resume...');
       
+      console.log("Beginning resume processing workflow");
+      
       // Get the content from either file upload or text input
       let extractedContent = null;
       if (state.uploadedFile) {
+        console.log("Processing from file:", state.uploadedFile.name);
         // Process the uploaded file
         extractedContent = await processResumeFile(
           state.uploadedFile, 
@@ -62,6 +65,7 @@ export const useResumeProcessor = ({
           showContentWarning
         );
       } else if (state.resumeText) {
+        console.log("Processing from text input");
         // Create a file from the text input for processing
         const textFile = createTextFile(state.resumeText);
         extractedContent = await processResumeFile(
@@ -73,12 +77,16 @@ export const useResumeProcessor = ({
           showContentWarning
         );
       } else {
+        console.error("No resume content to process");
         throw new Error("No resume content to process");
       }
       
       if (!extractedContent) {
+        console.error("Failed to extract content from resume");
         throw new Error("Failed to extract content from resume");
       }
+      
+      console.log("Content extracted, processing with API");
       
       // Process the extracted content with the API
       const success = await processWithApi(
@@ -90,6 +98,7 @@ export const useResumeProcessor = ({
       );
       
       if (success) {
+        console.log("API processing successful, completing workflow");
         // Complete the workflow and navigate to analysis page
         return completeProcessing(
           setUploading,
@@ -98,9 +107,11 @@ export const useResumeProcessor = ({
           state.apiErrors
         );
       } else {
+        console.error("Resume processing failed");
         throw new Error("Resume processing failed");
       }
     } catch (error) {
+      console.error("Error in processResume:", error);
       // Handle any errors that occur during processing
       return handleProcessingError(
         error,

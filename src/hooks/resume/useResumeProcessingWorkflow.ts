@@ -37,6 +37,7 @@ export const useResumeProcessingWorkflow = () => {
         description: "We encountered some errors processing your resume. Please check the details and try again.",
         variant: "destructive",
       });
+      setUploading(false);
       return false;
     }
     
@@ -52,14 +53,12 @@ export const useResumeProcessingWorkflow = () => {
     // Store in sessionStorage that we've completed the resume upload
     sessionStorage.setItem('resumeUploaded', 'true');
     
-    // Use setTimeout to ensure state updates are completed before navigation
+    // Reset state and navigate directly, with slight delay to ensure state updates
+    console.log("Processing complete, navigating to analysis page");
     setTimeout(() => {
-      // Set isUploading to false before navigation
       setUploading(false);
-      
-      // Use navigate without reload
-      navigate('/analysis', { replace: true });
-    }, 500);
+      navigate('/analysis');
+    }, 1000);
     
     return true;
   }, [navigate, toast]);

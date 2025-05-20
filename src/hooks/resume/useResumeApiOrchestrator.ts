@@ -31,6 +31,7 @@ export const useResumeApiOrchestrator = () => {
     
     try {
       // Step 1: Process the content to get structured resume data
+      setProgressText('Analyzing resume content...');
       const resumeData = await processContent(
         extractedContent,
         setProgress,
@@ -40,14 +41,21 @@ export const useResumeApiOrchestrator = () => {
       );
       
       if (!resumeData) {
+        console.error("Failed to process resume content - no data returned");
         isSuccessful = false;
-        throw new Error("Failed to process resume content");
+        return false;
       }
       
       // Format job posting as a simple string
       const jobPostingText = prepareJobPosting(jobPosting);
+      if (!jobPostingText) {
+        console.error("Failed to prepare job posting text");
+        isSuccessful = false;
+        return false;
+      }
       
       // Step 2: Score the original resume
+      setProgressText('Evaluating resume against job posting...');
       await scoreResume(
         resumeData,
         jobPostingText,
@@ -58,6 +66,7 @@ export const useResumeApiOrchestrator = () => {
       );
       
       // Step 3: Tailor the resume and score the tailored version
+      setProgressText('Optimizing your resume...');
       await tailorResume(
         resumeData,
         jobPostingText,
@@ -67,6 +76,8 @@ export const useResumeApiOrchestrator = () => {
         setApiErrors
       );
       
+      // Ensure we tell the caller if we were successful
+      console.log("Resume processing workflow complete, success:", isSuccessful);
       return isSuccessful;
     } catch (error) {
       console.error("Error in resume processing workflow:", error);

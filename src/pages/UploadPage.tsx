@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
 import PageContainer from '@/components/PageContainer';
-import { Sparkle } from 'lucide-react';
 
 // Import our new component managers
 import UploadDialogManager from '@/components/upload/UploadDialogManager';
@@ -19,6 +18,7 @@ const UploadPage = () => {
   useEffect(() => {
     // If no job posting, redirect to home
     if (!jobTitle || !jobPosting) {
+      console.log("No job posting found, redirecting to home");
       navigate('/');
       return;
     }
@@ -26,6 +26,7 @@ const UploadPage = () => {
     // Check if resume is already processed, redirect to analysis
     const resumeUploaded = sessionStorage.getItem('resumeUploaded');
     if (resumeUploaded === 'true' && resumeJson && tailoredResumeJson) {
+      console.log("Resume already processed, redirecting to analysis");
       navigate('/analysis');
     }
   }, [jobTitle, jobPosting, navigate, resumeJson, tailoredResumeJson]);
