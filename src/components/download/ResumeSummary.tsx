@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Card, 
@@ -64,9 +63,9 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
   return (
     <Card className="border-2 border-indigo-200 shadow-md">
       <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
-        <CardTitle className="text-indigo-800">Optimized Resume Summary</CardTitle>
+        <CardTitle className="text-indigo-800">Comprehensive Report</CardTitle>
         <CardDescription>
-          A brief overview of your optimized resume with highlighted changes
+          A comprehensive overview of your resume before and after optimization with highlighted changes and evaluator opinions.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
