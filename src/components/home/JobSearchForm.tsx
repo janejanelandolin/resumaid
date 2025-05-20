@@ -78,7 +78,7 @@ const JobSearchForm = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-100">
       <div className="mb-4 text-center">
-        <p className="text-gray-700 font-medium">Choose how you want to submit your job posting</p>
+        <p className="text-muted-foreground font-medium">Choose how you want to submit your job posting...</p>
       </div>
       
       <div className="space-y-2">
