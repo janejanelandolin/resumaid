@@ -1,5 +1,6 @@
 
-export interface ResumeProcessorState {
+// Export types with the 'export type' syntax for compatibility with isolatedModules
+export type ResumeProcessorState = {
   isUploading: boolean;
   uploadedFile: File | null;
   resumeText: string;
@@ -7,7 +8,7 @@ export interface ResumeProcessorState {
   hasAttemptedUpload: boolean; // Track if an upload has been attempted
 }
 
-export interface UseResumeProcessorProps {
+export type UseResumeProcessorProps = {
   setProgress: (progress: number) => void;
   setProgressText: (text: string) => void;
   showErrorDialog: () => void;

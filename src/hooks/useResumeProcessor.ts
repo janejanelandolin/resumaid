@@ -1,13 +1,16 @@
+
 import { useCallback } from 'react';
 import { useResumeContext } from '@/contexts/ResumeContext';
-import { ResumeProcessorState, UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
+// Import types correctly with the 'type' keyword
+import type { ResumeProcessorState, UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
 
 import { useResumeApiOrchestrator } from './resume/useResumeApiOrchestrator';
 import { useResumeFileProcessor } from './resume/useResumeFileProcessor';
 import { useResumeProcessingWorkflow } from './resume/useResumeProcessingWorkflow';
 import { useResumeProcessorState } from './resume/useResumeProcessorState';
 
-export { ResumeProcessorState, UseResumeProcessorProps };
+// Re-export types with the 'type' keyword for TypeScript's isolatedModules
+export type { ResumeProcessorState, UseResumeProcessorProps };
 
 export const useResumeProcessor = ({ 
   setProgress, 
