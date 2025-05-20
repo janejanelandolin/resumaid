@@ -77,7 +77,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     <div className="space-y-6">
       {/* File Upload Section */}
       <div className="space-y-2">
-        <h3 className="text-md font-medium text-center mb-3 text-gray-700">Upload Resume File</h3>
+        <h3 className="text-md font-medium text-center mb-3 text-gray-700">Option 1: Upload Resume File</h3>
         <div
           {...getRootProps()}
           className={`border-2 border-dashed rounded-lg p-6 text-center transition-all ${isProcessing ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'} flex flex-col items-center justify-center h-full min-h-[300px] ${
@@ -121,48 +121,51 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       </div>
 
       {/* Resume Text Input as Collapsible */}
-      <Collapsible 
-        open={isResumeTextOpen} 
-        onOpenChange={setIsResumeTextOpen}
-        className="border rounded-lg"
-        disabled={isProcessing} // Disable collapsible while processing
-      >
-        <CollapsibleTrigger className={`flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors ${isProcessing ? 'cursor-not-allowed opacity-70' : ''}`}>
-          <div className="flex items-center gap-2">
-            <ClipboardPaste className="h-5 w-5 text-primary" />
-            <span>Paste Resume Text</span>
-          </div>
-          {isResumeTextOpen ? (
-            <ChevronUp className="h-5 w-5 text-gray-500" />
-          ) : (
-            <ChevronDown className="h-5 w-5 text-gray-500" />
-          )}
-        </CollapsibleTrigger>
-        <CollapsibleContent className="p-4 pt-2">
-          <div className="space-y-4">
-            <p className="text-sm text-gray-600">
-              Paste your resume content directly if you don't have a file to upload.
-            </p>
-            <Textarea 
-              placeholder="Paste the content of your resume here..." 
-              className="min-h-[150px]"
-              value={resumeText}
-              onChange={(e) => setResumeText(e.target.value)}
-              disabled={isProcessing} // Disable textarea while processing
-            />
-            <Button 
-              onClick={handleTextInputSubmit}
-              className="w-full"
-              disabled={!resumeText.trim() || isProcessing}
-              variant="outline"
-              size="sm"
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              Use This Text
-            </Button>
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+      <div className="space-y-2">
+        <h3 className="text-md font-medium mb-2 text-gray-700">Option 2: Paste your resume</h3>
+        <Collapsible 
+          open={isResumeTextOpen} 
+          onOpenChange={setIsResumeTextOpen}
+          className="border rounded-lg"
+          disabled={isProcessing} // Disable collapsible while processing
+        >
+          <CollapsibleTrigger className={`flex items-center justify-between w-full p-4 font-medium text-left text-gray-700 hover:bg-gray-50 rounded-lg transition-colors ${isProcessing ? 'cursor-not-allowed opacity-70' : ''}`}>
+            <div className="flex items-center gap-2">
+              <ClipboardPaste className="h-5 w-5 text-primary" />
+              <span>Paste your resume content directly</span>
+            </div>
+            {isResumeTextOpen ? (
+              <ChevronUp className="h-5 w-5 text-gray-500" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-gray-500" />
+            )}
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4 pt-2">
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Paste your resume content directly if you don't have a file to upload.
+              </p>
+              <Textarea 
+                placeholder="Paste the content of your resume here..." 
+                className="min-h-[150px]"
+                value={resumeText}
+                onChange={(e) => setResumeText(e.target.value)}
+                disabled={isProcessing} // Disable textarea while processing
+              />
+              <Button 
+                onClick={handleTextInputSubmit}
+                className="w-full"
+                disabled={!resumeText.trim() || isProcessing}
+                variant="outline"
+                size="sm"
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Use This Text
+              </Button>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
       
       <div className="text-center text-sm text-gray-500">
         <p>Choose upload method or paste text to submit your resume for ATS compatibility analysis</p>
