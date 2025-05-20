@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { filterJobTitles } from '../../services/jobTitles';
@@ -125,7 +124,7 @@ const JobSearchForm = () => {
         >
           <CollapsibleTrigger className="flex items-center justify-between w-full p-3 font-medium text-left text-gray-700 hover:bg-purple-50 rounded-lg transition-colors">
             <div className="flex items-center gap-2">
-              <span className="text-sm">Click here to expand</span>
+              <span className="text-sm">Paste your job posting description for more accurate resume optimization</span>
             </div>
             {isAdvancedOpen ? (
               <ChevronUp className="h-4 w-4 text-gray-500" />
@@ -135,11 +134,8 @@ const JobSearchForm = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-3">
             <div className="space-y-3">
-              <p className="text-xs text-gray-600">
-                Paste the job description for more accurate resume optimization
-              </p>
               <Textarea
-                placeholder="Paste the job posting description here..."
+                placeholder="Paste your job posting description here..."
                 className="min-h-[120px] text-sm border-purple-200"
                 value={customJobPosting}
                 onChange={(e) => setCustomJobPosting(e.target.value)}
