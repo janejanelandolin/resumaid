@@ -28,7 +28,7 @@ export const useResumeTailoring = () => {
     try {
       // Update progress UI
       setProgress(80);
-      setProgressText('Tailoring your resume to the job...');
+      setProgressText('Optimizing your resume to the job posting...');
       
       console.log("Sending tailor request with job posting length:", jobPostingText.length);
       console.log("Job posting preview:", jobPostingText.substring(0, 100) + '...');

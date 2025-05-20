@@ -66,7 +66,7 @@ export const useResumeApiOrchestrator = () => {
       );
       
       // Step 3: Tailor the resume and score the tailored version
-      setProgressText('Optimizing your resume...');
+      setProgressText('Optimizing your resume to the job posting...');
       await tailorResume(
         resumeData,
         jobPostingText,
