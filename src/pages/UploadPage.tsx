@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
 import PageContainer from '@/components/PageContainer';
-import TypewriterText from '@/components/TypewriterText';
 import { Sparkle } from 'lucide-react';
 
 // Import our new component managers
@@ -40,9 +39,6 @@ const UploadPage = () => {
             <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Your Resume
             </h1>
-            <div className="text-muted-foreground text-sm">
-              <TypewriterText text="Choose how you want to submit your resume..." />
-            </div>
           </div>
 
           <UploadDialogManager>

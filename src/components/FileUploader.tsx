@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, ChevronDown, ChevronUp } from 'lucide-react';
@@ -146,9 +147,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             </CollapsibleTrigger>
             <CollapsibleContent className="p-4 pt-2">
               <div className="space-y-4">
-                <p className="text-sm text-gray-600">
-                  Paste your resume content directly if you don't have a file to upload.
-                </p>
                 <Textarea 
                   placeholder="Paste the content of your resume here..." 
                   className="min-h-[150px]"
