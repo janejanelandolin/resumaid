@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Strikethrough } from 'lucide-react';
 
 interface SummaryComparisonProps {
   originalSummary?: string;
@@ -68,7 +67,6 @@ const SummaryComparison: React.FC<SummaryComparisonProps> = ({
           {originalWords.map(word => {
             if (removedWords.includes(word)) {
               return <span key={Math.random()} className="line-through text-gray-400 mx-0.5 inline-block">
-                <Strikethrough className="inline h-3 w-3 mr-0.5" />
                 {word}
               </span>;
             }
