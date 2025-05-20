@@ -17,18 +17,22 @@ const SummaryComparison: React.FC<SummaryComparisonProps> = ({
 
   // If only one summary exists, just display it
   if (!originalSummary) {
-    return <p className="text-sm bg-indigo-50 p-2 rounded">{optimizedSummary}</p>;
+    return <p className="text-sm bg-indigo-50 p-2 rounded break-words">
+      {optimizedSummary}
+    </p>;
   }
   
   if (!optimizedSummary) {
-    return <p className="text-sm bg-indigo-50 p-2 rounded">{originalSummary}</p>;
+    return <p className="text-sm bg-indigo-50 p-2 rounded break-words">
+      {originalSummary}
+    </p>;
   }
 
   // If they're identical, just show one
   if (originalSummary === optimizedSummary) {
     return (
       <>
-        <p className="text-sm bg-indigo-50 p-2 rounded">{originalSummary}</p>
+        <p className="text-sm bg-indigo-50 p-2 rounded break-words">{originalSummary}</p>
         <p className="text-xs text-muted-foreground mt-1 italic">
           (No changes were made to the summary)
         </p>
@@ -45,13 +49,13 @@ const SummaryComparison: React.FC<SummaryComparisonProps> = ({
   const addedWords = optimizedWords.filter(word => !originalWords.includes(word));
 
   // Create decorated HTML
-  const decoratedSummary = optimizedSummary.split(/\s+/).map(word => {
+  const decoratedSummary = optimizedWords.map(word => {
     if (addedWords.includes(word)) {
-      return <span key={Math.random()} className="bg-[#FEF7CD] px-1 rounded mx-0.5">
+      return <span key={Math.random()} className="bg-[#FEF7CD] px-1 rounded mx-0.5 inline-block">
         {word}
       </span>;
     }
-    return <span key={Math.random()} className="mx-0.5">{word}</span>;
+    return <span key={Math.random()} className="mx-0.5 inline-block">{word}</span>;
   });
 
   return (
@@ -60,15 +64,15 @@ const SummaryComparison: React.FC<SummaryComparisonProps> = ({
         <div className="flex items-center mb-1">
           <h4 className="text-xs font-medium text-gray-500">Original Summary</h4>
         </div>
-        <p className="text-sm bg-gray-50 p-2 rounded border-l-2 border-gray-300">
-          {originalSummary.split(/\s+/).map(word => {
+        <p className="text-sm bg-gray-50 p-2 rounded border-l-2 border-gray-300 break-words">
+          {originalWords.map(word => {
             if (removedWords.includes(word)) {
-              return <span key={Math.random()} className="line-through text-gray-400 mx-0.5">
+              return <span key={Math.random()} className="line-through text-gray-400 mx-0.5 inline-block">
                 <Strikethrough className="inline h-3 w-3 mr-0.5" />
                 {word}
               </span>;
             }
-            return <span key={Math.random()} className="mx-0.5">{word}</span>;
+            return <span key={Math.random()} className="mx-0.5 inline-block">{word}</span>;
           })}
         </p>
       </div>
@@ -77,7 +81,7 @@ const SummaryComparison: React.FC<SummaryComparisonProps> = ({
         <div className="flex items-center mb-1">
           <h4 className="text-xs font-medium text-green-600">Optimized Summary</h4>
         </div>
-        <p className="text-sm bg-green-50 p-2 rounded border-l-2 border-green-400">
+        <p className="text-sm bg-green-50 p-2 rounded border-l-2 border-green-400 break-words">
           {decoratedSummary}
         </p>
         
