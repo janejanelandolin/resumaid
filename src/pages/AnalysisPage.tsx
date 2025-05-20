@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
@@ -9,8 +9,8 @@ import MissingKeywords from '@/components/analysis/MissingKeywords';
 import Summary from '@/components/analysis/Summary';
 import CompatibilityScore from '@/components/analysis/CompatibilityScore';
 import ImprovementSuggestions from '@/components/analysis/ImprovementSuggestions';
-import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
 import ApiErrorDisplay from '@/components/analysis/ApiErrorDisplay';
+import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
 import useAppVersion from '@/hooks/useAppVersion';
 
 const AnalysisPage = () => {
@@ -26,7 +26,6 @@ const AnalysisPage = () => {
     resumeJson,
     tailoredResumeJson
   } = useResumeContext();
-  const [showDebug, setShowDebug] = useState(false);
 
   useEffect(() => {
     // Check if we have at least the new data or the old data
@@ -134,44 +133,7 @@ const AnalysisPage = () => {
             <p>{isFreeVersion ? 'Get your optimized resume now' : 'Your optimized resume will be ready after the next step'}</p>
           </div>
           
-          {/* Debug section */}
-          <div className="mt-8">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowDebug(!showDebug)}
-              className="w-full"
-            >
-              {showDebug ? "Hide" : "Show"} API Response Details
-            </Button>
-            
-            {showDebug && (
-              <div className="mt-4 p-4 bg-slate-800 text-slate-100 rounded-md overflow-auto max-h-[400px]">
-                {useNewWorkflow ? (
-                  <>
-                    <h3 className="font-mono text-sm mb-2">Original Score Response:</h3>
-                    <pre className="text-xs whitespace-pre-wrap">
-                      {JSON.stringify(originalScore, null, 2)}
-                    </pre>
-                    
-                    <h3 className="font-mono text-sm mt-4 mb-2">Tailored Score Response:</h3>
-                    <pre className="text-xs whitespace-pre-wrap">
-                      {JSON.stringify(tailoredScore, null, 2)}
-                    </pre>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="font-mono text-sm mb-2">Feedback Response:</h3>
-                    <pre className="text-xs whitespace-pre-wrap">
-                      {JSON.stringify(feedback, null, 2)}
-                    </pre>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-          
-          {/* Add the API debug helper */}
+          {/* API debug helper for errors */}
           {apiErrors && apiErrors.length > 0 && (
             <ApiDebugHelper 
               error="API errors occurred while processing your resume. Check details above or try the troubleshooting options."
