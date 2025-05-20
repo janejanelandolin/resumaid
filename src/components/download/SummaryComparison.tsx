@@ -59,12 +59,12 @@ const SummaryComparison: React.FC<SummaryComparisonProps> = ({
   });
 
   return (
-    <div className="space-y-4">
-      <div>
+    <div className="space-y-4 border rounded-md p-4 bg-white shadow-sm">
+      <div className="border rounded-md p-3 bg-gray-50">
         <div className="flex items-center mb-1">
           <h4 className="text-xs font-medium text-gray-500">Original Summary</h4>
         </div>
-        <p className="text-sm bg-gray-50 p-2 rounded border-l-2 border-gray-300 break-words">
+        <p className="text-sm p-2 rounded border-l-2 border-gray-300 break-words">
           {originalWords.map(word => {
             if (removedWords.includes(word)) {
               return <span key={Math.random()} className="line-through text-gray-400 mx-0.5 inline-block">
@@ -77,16 +77,16 @@ const SummaryComparison: React.FC<SummaryComparisonProps> = ({
         </p>
       </div>
       
-      <div>
+      <div className="border rounded-md p-3 bg-green-50">
         <div className="flex items-center mb-1">
           <h4 className="text-xs font-medium text-green-600">Optimized Summary</h4>
         </div>
-        <p className="text-sm bg-green-50 p-2 rounded border-l-2 border-green-400 break-words">
+        <p className="text-sm p-2 rounded border-l-2 border-green-400 break-words">
           {decoratedSummary}
         </p>
         
         {/* Legend for the text changes */}
-        <div className="mt-2 flex flex-col gap-1">
+        <div className="mt-2 flex flex-col gap-1 p-2 bg-white/50 rounded border border-gray-200">
           <p className="text-xs text-gray-500 flex items-center">
             <span className="inline-block w-3 h-3 bg-[#FEF7CD] rounded mr-2"></span>
             Highlights indicate text additions
