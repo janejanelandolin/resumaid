@@ -77,6 +77,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   return (
     <Card className="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-100">
       <CardContent className="p-0 space-y-6">
+        <div className="mb-4 text-center">
+          <p className="text-muted-foreground font-medium">Choose how you want to submit your resume...</p>
+        </div>
+        
         {/* File Upload Section */}
         <div className="space-y-2">
           <h3 className="text-md font-medium mb-3 text-gray-700">Option 1: Upload your resume file</h3>
@@ -167,10 +171,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               </div>
             </CollapsibleContent>
           </Collapsible>
-        </div>
-        
-        <div className="text-center text-sm text-gray-500">
-          <p>Choose upload method or paste text to submit your resume for ATS compatibility analysis</p>
         </div>
       </CardContent>
     </Card>
