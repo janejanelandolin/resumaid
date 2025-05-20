@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { filterJobTitles } from '../../services/jobTitles';
@@ -9,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Search, FileText, ChevronDown, ChevronUp, Rocket } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, Rocket } from 'lucide-react';
 
 const JobSearchForm = () => {
   const navigate = useNavigate();
@@ -121,7 +120,6 @@ const JobSearchForm = () => {
       >
         <CollapsibleTrigger className="flex items-center justify-between w-full p-3 font-medium text-left text-gray-700 hover:bg-purple-50 rounded-lg transition-colors">
           <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-purple-500" />
             <span className="text-sm">Option 2: Paste a job posting</span>
           </div>
           {isAdvancedOpen ? (
