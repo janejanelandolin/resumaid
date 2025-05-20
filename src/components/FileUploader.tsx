@@ -1,7 +1,6 @@
-
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, ChevronDown, ChevronUp } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -161,7 +160,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                   variant="outline"
                   size="sm"
                 >
-                  <FileText className="mr-2 h-4 w-4" />
                   Use This Text
                 </Button>
               </div>

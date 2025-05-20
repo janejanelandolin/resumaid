@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { UploadCloud } from 'lucide-react';
 
 interface SubmitButtonProps {
   onClick: () => void;
@@ -25,7 +24,6 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({ onClick, disabled, isUpload
         ) : (
           <>
             Analyze
-            <UploadCloud className="h-4 w-4 transition-transform group-hover:scale-110" />
           </>
         )}
       </span>
