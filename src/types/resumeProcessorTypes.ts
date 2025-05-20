@@ -4,6 +4,7 @@ export interface ResumeProcessorState {
   uploadedFile: File | null;
   resumeText: string;
   apiErrors: string[];
+  hasAttemptedUpload: boolean; // Track if an upload has been attempted
 }
 
 export interface UseResumeProcessorProps {

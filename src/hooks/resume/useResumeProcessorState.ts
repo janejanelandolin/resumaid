@@ -10,6 +10,7 @@ export const useResumeProcessorState = (
     uploadedFile: null,
     resumeText: '',
     apiErrors: [],
+    hasAttemptedUpload: false, // Add a flag to track upload attempts
   });
 
   const setApiErrors = useCallback((errors: string[]) => {
@@ -23,7 +24,8 @@ export const useResumeProcessorState = (
       ...prev, 
       uploadedFile: file, 
       resumeText: '',
-      apiErrors: [] 
+      apiErrors: [],
+      hasAttemptedUpload: true // Mark that we've attempted an upload
     }));
     setApiErrors([]);
   }, [setApiErrors]);
@@ -34,7 +36,8 @@ export const useResumeProcessorState = (
       ...prev, 
       resumeText: text, 
       uploadedFile: null,
-      apiErrors: [] 
+      apiErrors: [],
+      hasAttemptedUpload: true // Mark that we've attempted a text input
     }));
     setApiErrors([]);
   }, [setApiErrors]);
@@ -54,6 +57,7 @@ export const useResumeProcessorState = (
       uploadedFile: null,
       resumeText: '',
       apiErrors: [],
+      hasAttemptedUpload: false, // Reset the upload attempt flag
     });
   }, []);
   

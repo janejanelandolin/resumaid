@@ -37,8 +37,15 @@ export const useResumeProcessor = ({
     console.log("processResume called with state:", {
       hasFile: !!state.uploadedFile,
       hasText: !!state.resumeText,
-      isUploading: state.isUploading
+      isUploading: state.isUploading,
+      hasAttemptedUpload: state.hasAttemptedUpload
     });
+    
+    // Guard against double-processing (already uploading)
+    if (state.isUploading) {
+      console.log("Already uploading, ignoring duplicate request");
+      return;
+    }
     
     const { uploadedFile, resumeText } = state;
     
@@ -159,8 +166,7 @@ export const useResumeProcessor = ({
       
       // Use setTimeout to ensure state updates are completed before navigation
       setTimeout(() => {
-        // Important: Don't reset the file state here, keep the file info
-        // Only set isUploading to false for UI purposes
+        // Set isUploading to false before navigation
         setUploading(false);
         
         // Use navigate without reload

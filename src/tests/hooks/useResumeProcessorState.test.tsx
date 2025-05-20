@@ -19,6 +19,7 @@ describe('useResumeProcessorState', () => {
       uploadedFile: null,
       resumeText: '',
       apiErrors: [],
+      hasAttemptedUpload: false,
     });
   });
 
@@ -34,6 +35,7 @@ describe('useResumeProcessorState', () => {
     expect(result.current.state.uploadedFile).toBe(mockFile);
     expect(result.current.state.resumeText).toBe('');
     expect(result.current.state.apiErrors).toEqual([]);
+    expect(result.current.state.hasAttemptedUpload).toBe(true);
     expect(mockSetGlobalApiErrors).toHaveBeenCalledWith([]);
   });
 
@@ -47,6 +49,7 @@ describe('useResumeProcessorState', () => {
     expect(result.current.state.resumeText).toBe('test resume text');
     expect(result.current.state.uploadedFile).toBe(null);
     expect(result.current.state.apiErrors).toEqual([]);
+    expect(result.current.state.hasAttemptedUpload).toBe(true);
     expect(mockSetGlobalApiErrors).toHaveBeenCalledWith([]);
   });
 
@@ -104,6 +107,7 @@ describe('useResumeProcessorState', () => {
     // Verify values were set
     expect(result.current.state.uploadedFile).toBe(mockFile);
     expect(result.current.state.isUploading).toBe(true);
+    expect(result.current.state.hasAttemptedUpload).toBe(true);
     
     // Reset the state
     act(() => {
@@ -116,6 +120,7 @@ describe('useResumeProcessorState', () => {
       uploadedFile: null,
       resumeText: '',
       apiErrors: [],
+      hasAttemptedUpload: false,
     });
   });
 });

@@ -49,6 +49,7 @@ const UploadForm = ({
       hasFile: !!state.uploadedFile,
       hasText: !!state.resumeText,
       isUploading: state.isUploading,
+      hasAttemptedUpload: state.hasAttemptedUpload,
       fileName: state.uploadedFile?.name || 'No file'
     });
   }, [state]);
@@ -57,6 +58,9 @@ const UploadForm = ({
   useEffect(() => {
     setApiErrors(state.apiErrors);
   }, [state.apiErrors, setApiErrors]);
+
+  // Determine if the submit button should be disabled
+  const isSubmitDisabled = (!state.uploadedFile && !state.resumeText) || state.isUploading;
 
   return (
     <div className="space-y-6 py-4">
@@ -88,7 +92,7 @@ const UploadForm = ({
       
       <SubmitButton
         onClick={processResume}
-        disabled={(!state.uploadedFile && !state.resumeText) || state.isUploading}
+        disabled={isSubmitDisabled}
         isUploading={state.isUploading}
       />
     </div>
