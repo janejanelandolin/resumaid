@@ -2,13 +2,13 @@
 import React, { createContext, useState, useContext } from 'react';
 import { useResumeParser } from '../hooks/useResumeParser';
 import { useTemplateManager } from '../hooks/useTemplateManager';
-import { useEditDecisions } from '../hooks/useEditDecisions';
 import { ResumeContextType } from '../types/context';
 import { 
   JobPosting, 
   UploadData,
   ResumeJson, 
-  ScoreResponse
+  ScoreResponse,
+  EditDecision
 } from '../types/resume';
 
 export * from '../types/resume';
@@ -30,10 +30,20 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [tailoredResumeJson, setTailoredResumeJson] = useState<ResumeJson | null>(null);
   const [originalScore, setOriginalScore] = useState<ScoreResponse | null>(null);
   const [tailoredScore, setTailoredScore] = useState<ScoreResponse | null>(null);
+  
+  // Edit decisions
+  const [editDecisions, setEditDecisions] = useState<EditDecision[]>([]);
+  
+  const addEditDecision = (decision: EditDecision) => {
+    setEditDecisions(prev => [...prev, decision]);
+  };
+
+  const resetEditDecisions = () => {
+    setEditDecisions([]);
+  };
 
   // Custom hooks
   const { selectedTemplates, addTemplate, removeTemplate, resetTemplates } = useTemplateManager();
-  const { editDecisions, addEditDecision, resetEditDecisions } = useEditDecisions();
   const { parseResumeContent } = useResumeParser();
 
   // Function to get optimized resume for preview and download
