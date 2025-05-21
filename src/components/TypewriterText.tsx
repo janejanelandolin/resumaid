@@ -5,12 +5,14 @@ interface TypewriterTextProps {
   text: string;
   delay?: number;
   className?: string;
+  speed?: number; // Added speed prop to control typing speed
 }
 
 const TypewriterText: React.FC<TypewriterTextProps> = ({ 
   text, 
   delay = 0,
-  className = ''
+  className = '',
+  speed = 50 // Default speed is 50ms per character
 }) => {
   const [displayText, setDisplayText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -27,7 +29,7 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({
         if (index < text.length) {
           setDisplayText(text.substring(0, index + 1));
           index++;
-          timer = setTimeout(typeNextChar, 50);
+          timer = setTimeout(typeNextChar, speed);
         } else {
           setIsTyping(false);
         }
@@ -40,7 +42,7 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({
       clearTimeout(timer);
       clearTimeout(startTimer);
     };
-  }, [text, delay]);
+  }, [text, delay, speed]);
   
   return (
     <div className={`inline-block ${className}`}>

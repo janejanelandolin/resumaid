@@ -10,7 +10,6 @@ import ErrorAlert from '@/components/upload/ErrorAlert';
 import SubmitButton from '@/components/upload/SubmitButton';
 import { useResumeProcessor } from '@/hooks/useResumeProcessor';
 import { useEffect, useState } from 'react';
-import RotatingTips from './RotatingTips';
 
 interface UploadFormProps {
   showErrorDialog: () => void;
@@ -83,8 +82,27 @@ const UploadForm = ({
   // Determine if the submit button should be disabled
   const isSubmitDisabled = (!state.uploadedFile && !state.resumeText) || state.isUploading;
 
-  // ATS improvement text from Summary component
-  const atsImprovementText = `Your resume needs optimization to pass Applicant Tracking System (ATS) filters. We've identified several opportunities to highlight your relevant experience and add keywords that will help you get past automated screening systems and into the hands of a hiring manager.`;
+  // Resume tips to display
+  const resumeTips = [
+    "Use industry keywords to pass ATS filters",
+    "Quantify your achievements with numbers",
+    "Tailor your resume to each job application",
+    "Keep your formatting consistent and clean",
+    "Highlight relevant skills for the position",
+    "Use action verbs to describe your experience",
+    "Remove irrelevant experience for clarity",
+    "Include a concise professional summary",
+    "Proofread carefully for spelling and grammar",
+    "Use a clean, professional font",
+    "Include measurable results from previous roles",
+    "Customize your resume for each job application",
+    "Focus on accomplishments rather than duties",
+    "Keep your resume to 1-2 pages maximum",
+    "Use bullet points for better readability"
+  ];
+
+  // ATS improvement text with tips appended
+  const atsImprovementText = `Your resume needs optimization to pass Applicant Tracking System (ATS) filters. We've identified several opportunities to highlight your relevant experience and add keywords that will help you get past automated screening systems and into the hands of a hiring manager.\n\nHelpful tips while we process your resume:\n• ${resumeTips.join('\n• ')}`;
 
   return (
     <div className="space-y-6 py-4">
@@ -108,9 +126,6 @@ const UploadForm = ({
         />
       </div>
       
-      {/* Show rotating tips during processing */}
-      <RotatingTips isShowing={state.isUploading} />
-      
       {/* ATS Improvement Text with Typewriter effect - shows when analyze button is clicked */}
       {showTypewriter && (
         <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden animate-fade-in">
@@ -123,7 +138,8 @@ const UploadForm = ({
           </div>
           <TypewriterText
             text={atsImprovementText}
-            className="text-sm relative z-10"
+            className="text-sm relative z-10 whitespace-pre-line"
+            speed={80} // Slowed down typing speed
           />
         </div>
       )}
@@ -131,7 +147,7 @@ const UploadForm = ({
       <UploadProgress
         isUploading={state.isUploading}
         progress={progress}
-        progressText={progressText}
+        progressText=""
       />
       
       <SubmitButton
