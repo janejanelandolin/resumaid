@@ -1,10 +1,9 @@
 
 import { Sparkle } from 'lucide-react';
 import { useResumeContext } from '../../contexts/ResumeContext';
-import ImprovementSuggestions from './ImprovementSuggestions';
 
 const Summary: React.FC = () => {
-  const { jobTitle, tailoredScore } = useResumeContext();
+  const { jobTitle, uploadData } = useResumeContext();
   
   return (
     <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden">
@@ -19,14 +18,17 @@ const Summary: React.FC = () => {
         <Sparkle size={20} />
       </div>
       
-      {/* Display tailored score explanation if available, otherwise show the ImprovementSuggestions */}
-      {tailoredScore?.explanation ? (
-        <p className="text-sm relative z-10">
-          {tailoredScore.explanation}
-        </p>
-      ) : (
-        <ImprovementSuggestions />
-      )}
+      <div className="relative z-10 space-y-3">
+        <div className="flex flex-col space-y-1">
+          <span className="text-xs font-medium text-indigo-500">Resume</span>
+          <span className="font-medium">{uploadData?.filename || 'Resume'}</span>
+        </div>
+        
+        <div className="flex flex-col space-y-1">
+          <span className="text-xs font-medium text-indigo-500">Job Position</span>
+          <span className="font-medium">{jobTitle || 'Not specified'}</span>
+        </div>
+      </div>
     </div>
   );
 };
