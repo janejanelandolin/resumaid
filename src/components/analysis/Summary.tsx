@@ -1,12 +1,10 @@
 
 import { Sparkle } from 'lucide-react';
 import { useResumeContext } from '../../contexts/ResumeContext';
+import ImprovementSuggestions from './ImprovementSuggestions';
 
 const Summary: React.FC = () => {
-  const { jobTitle } = useResumeContext();
-  
-  // Hard-coded generic text about ATS improvement
-  const atsImprovementText = `Your resume needs optimization to pass Applicant Tracking System (ATS) filters. We've identified several opportunities to highlight your relevant experience and add keywords that will help you get past automated screening systems and into the hands of a hiring manager.`;
+  const { jobTitle, tailoredScore } = useResumeContext();
   
   return (
     <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden">
@@ -20,9 +18,15 @@ const Summary: React.FC = () => {
       <div className="absolute top-56 -right-6 text-yellow-400 animate-bounce">
         <Sparkle size={20} />
       </div>
-      <p className="text-sm relative z-10">
-        {atsImprovementText}
-      </p>
+      
+      {/* Display tailored score explanation if available, otherwise show the ImprovementSuggestions */}
+      {tailoredScore?.explanation ? (
+        <p className="text-sm relative z-10">
+          {tailoredScore.explanation}
+        </p>
+      ) : (
+        <ImprovementSuggestions />
+      )}
     </div>
   );
 };
