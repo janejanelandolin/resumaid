@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { EditDecision } from '@/contexts/ResumeContext';
+import { EditDecision } from '@/types/resume';
 import { CheckCircle, XCircle } from 'lucide-react';
 
 interface EditSuggestionProps {

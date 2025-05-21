@@ -1,7 +1,7 @@
 
 import React from 'react';
 import DebugCard from './DebugCard';
-import { JobPosting, UploadData } from '../../contexts/ResumeContext';
+import { JobPosting, UploadData } from '@/types/resume';
 import { formatJobPostingAsText } from '@/hooks/resume/useResumeNormalizer';
 
 interface ApiInputsTabProps {

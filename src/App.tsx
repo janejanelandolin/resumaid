@@ -13,7 +13,6 @@ import UploadPage from "./pages/UploadPage";
 import AnalysisPage from "./pages/AnalysisPage";
 import PaymentPage from "./pages/PaymentPage";
 import SuccessPage from "./pages/SuccessPage";
-import EditResumePage from "./pages/EditResumePage";
 import TemplateSelectionPage from "./pages/TemplateSelectionPage";
 import ResumePreviewPage from "./pages/ResumePreviewPage";
 import DownloadOptimizedResumePage from "./pages/DownloadOptimizedResumePage";
@@ -38,7 +37,6 @@ const App = () => (
               <Route path="/analysis" element={<AnalysisPage />} />
               <Route path="/payment" element={<PaymentPage />} />
               <Route path="/success" element={<SuccessPage />} />
-              <Route path="/edit-resume" element={<EditResumePage />} />
               <Route path="/templates" element={<TemplateSelectionPage />} />
               <Route path="/preview" element={<ResumePreviewPage />} />
               <Route path="/download" element={<DownloadPage />} /> {/* New direct download route */}
