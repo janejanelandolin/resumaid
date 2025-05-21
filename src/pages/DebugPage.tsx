@@ -30,7 +30,7 @@ const DebugPage = () => {
   const jobPostingText = jobPosting ? formatJobPostingAsText(jobPosting) : '';
   
   // Get resume content
-  const resumeContent = uploadData?.text || '';
+  const resumeContent = uploadData?.content || '';
   
   // Determine if we have data to display
   const hasJobPosting = !!jobPosting && !!jobPostingText;

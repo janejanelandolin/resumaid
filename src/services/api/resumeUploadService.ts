@@ -49,7 +49,8 @@ export const uploadResume = async (file: File): Promise<ApiResponse<UploadData>>
     const uploadData: UploadData = {
       id: Math.random().toString(36).substr(2, 9),
       filename: file.name,
-      content: responseText
+      content: responseText,
+      text: responseText // For backward compatibility
     };
     
     logApiCall('uploadResume (response)', { 
@@ -71,7 +72,8 @@ export const uploadResume = async (file: File): Promise<ApiResponse<UploadData>>
         const localResult = {
           id: Math.random().toString(36).substr(2, 9),
           filename: file.name,
-          content: content
+          content: content,
+          text: content // For backward compatibility
         };
         
         logApiCall('uploadResume (error fallback)', { 

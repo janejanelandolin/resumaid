@@ -1,26 +1,32 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 import { EditDecision } from '@/contexts/ResumeContext';
-import { ArrowUpDown, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 
 interface EditSuggestionProps {
-  edit: {
+  suggestion?: string;
+  originalText?: string;
+  improvedText?: string;
+  edit?: {
     section?: string;
     suggestion?: string;
   };
   decision?: EditDecision;
 }
 
-const EditSuggestion: React.FC<EditSuggestionProps> = ({ edit, decision }) => {
+const EditSuggestion: React.FC<EditSuggestionProps> = ({ suggestion, originalText, improvedText, edit, decision }) => {
+  // If we're passed a suggestion directly, use that, otherwise use the edit object
+  const displaySuggestion = suggestion || (edit?.suggestion);
+  const section = edit?.section;
+
   return (
     <div className="space-y-6">
       {/* Section badge */}
-      {edit.section && (
+      {section && (
         <div className="mb-4">
           <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">
-            {edit.section}
+            {section}
           </Badge>
         </div>
       )}
@@ -29,7 +35,7 @@ const EditSuggestion: React.FC<EditSuggestionProps> = ({ edit, decision }) => {
       <div className="space-y-2">
         <h3 className="text-sm font-medium">Suggestion:</h3>
         <div className="p-4 bg-blue-50 rounded-md border border-blue-100 text-sm">
-          {edit.suggestion || "No specific text change was suggested."}
+          {displaySuggestion || "No specific text change was suggested."}
         </div>
       </div>
       

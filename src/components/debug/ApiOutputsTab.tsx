@@ -2,18 +2,17 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-
-// Import types
 import { JobPosting, UploadData, ResumeJson, ScoreResponse } from '@/types/resume';
 
 interface ApiOutputsTabProps {
-  jobPosting: JobPosting | null;
-  uploadData: UploadData | null;
-  resumeJson: ResumeJson | null;
-  tailoredResumeJson: ResumeJson | null;
-  originalScore: ScoreResponse | null;
-  tailoredScore: ScoreResponse | null;
-  hasData: (obj: any) => boolean;
+  jobPosting?: JobPosting | null;
+  uploadData?: UploadData | null;
+  resumeJson?: ResumeJson | null;
+  tailoredResumeJson?: ResumeJson | null;
+  originalScore?: ScoreResponse | null;
+  tailoredScore?: ScoreResponse | null;
+  apiErrors?: string[];
+  hasData?: (obj: any) => boolean;
 }
 
 const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
@@ -23,7 +22,8 @@ const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
   tailoredResumeJson,
   originalScore,
   tailoredScore,
-  hasData
+  apiErrors = [],
+  hasData = (obj) => !!obj
 }) => {
   return (
     <div className="space-y-4">
@@ -98,6 +98,19 @@ const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
                 </pre>
               </AccordionContent>
             </AccordionItem>
+            
+            {apiErrors && apiErrors.length > 0 && (
+              <AccordionItem value="api-errors">
+                <AccordionTrigger className="text-sm font-medium">
+                  API Errors
+                </AccordionTrigger>
+                <AccordionContent>
+                  <pre className="text-xs bg-gray-50 p-4 rounded overflow-auto max-h-96">
+                    {JSON.stringify(apiErrors, null, 2)}
+                  </pre>
+                </AccordionContent>
+              </AccordionItem>
+            )}
           </Accordion>
         </CardContent>
       </Card>

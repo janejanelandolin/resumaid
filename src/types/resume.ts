@@ -1,3 +1,4 @@
+
 export interface JobPosting {
   id?: string;
   title?: string;
@@ -12,6 +13,7 @@ export interface UploadData {
   id: string;
   filename: string;
   content: string;
+  text?: string; // For backward compatibility
 }
 
 export interface Feedback {
