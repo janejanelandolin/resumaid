@@ -139,8 +139,8 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Download your optimized Resume</CardTitle>
+      <CardHeader className="text-center">
+        <CardTitle className="text-purple-600">Download your optimized resume</CardTitle>
         <CardDescription>
           Get your resume in your preferred format, ready for final adjustments
         </CardDescription>
