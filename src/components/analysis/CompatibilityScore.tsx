@@ -53,6 +53,18 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
     <div className="flex flex-col items-center justify-center py-6 relative">
       <div className="absolute inset-0 bg-gradient-to-r from-indigo-100/50 to-purple-100/50 rounded-lg -z-10"></div>
       
+      <div className="text-center py-3 px-5 mb-4 bg-gradient-to-r from-indigo-100/50 to-purple-100/50 rounded-xl">
+        <div className="flex items-center justify-center gap-2">
+          <Sparkle className="h-5 w-5 text-indigo-400" />
+          <p className="font-bold text-md bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            {isFreeVersion 
+              ? 'Job Compatibility Scores' 
+              : 'Job Compatibility Scores'}
+          </p>
+          <Sparkle className="h-5 w-5 text-purple-400" />
+        </div>
+      </div>
+      
       <div className="flex justify-center items-center space-x-4 py-4">
         <div className="flex flex-col items-center">
           <AnimatedDial 
@@ -96,18 +108,6 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
             </div>
           )}
           <span className="text-center text-xs mt-1 text-[0.8rem] w-full text-indigo-600">With optimization</span>
-        </div>
-      </div>
-      
-      <div className="text-center py-3 px-5 mt-4 bg-gradient-to-r from-indigo-100/50 to-purple-100/50 rounded-xl">
-        <div className="flex items-center justify-center gap-2">
-          <Sparkle className="h-5 w-5 text-indigo-400" />
-          <p className="font-bold text-md bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            {isFreeVersion 
-              ? 'Job Compatibility Scores' 
-              : 'Job Compatibility Scores'}
-          </p>
-          <Sparkle className="h-5 w-5 text-purple-400" />
         </div>
       </div>
     </div>

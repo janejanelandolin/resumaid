@@ -96,7 +96,7 @@ const AnalysisPage = () => {
             onClick={handleContinue} 
             className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
           >
-            {isFreeVersion ? 'Review comprehensive report' : 'Review comprehensive report'}
+            {isFreeVersion ? 'Download resume' : 'Download resume'}
           </Button>
 
           <div className="text-center text-xs text-muted-foreground pt-2">
