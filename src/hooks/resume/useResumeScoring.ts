@@ -51,15 +51,16 @@ export const useResumeScoring = () => {
       // Simulated progress during API call
       const startApiCallProgress = !isTailored ? 48 : 88;
       const endApiCallProgress = !isTailored ? 58 : 94;
+      let currentProgress = startApiCallProgress;
       
       const progressInterval = setInterval(() => {
-        setProgress((prevProgress) => {
-          if (prevProgress >= endApiCallProgress) {
-            clearInterval(progressInterval);
-            return prevProgress;
-          }
-          return prevProgress + 1;
-        });
+        if (currentProgress >= endApiCallProgress) {
+          clearInterval(progressInterval);
+          return;
+        }
+        
+        currentProgress += 1;
+        setProgress(currentProgress);
       }, 400);
       
       // Specific message halfway through scoring

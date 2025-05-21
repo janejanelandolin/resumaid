@@ -47,14 +47,17 @@ export const useResumeContentProcessor = () => {
       // Simulated progress during API call
       const startApiCallProgress = 24;
       const endApiCallProgress = 36;
+      let currentProgress = startApiCallProgress;
+      
+      // Create a progress interval that increments the number directly
       const progressInterval = setInterval(() => {
-        setProgress((prevProgress) => {
-          if (prevProgress >= endApiCallProgress) {
-            clearInterval(progressInterval);
-            return prevProgress;
-          }
-          return prevProgress + 1;
-        });
+        if (currentProgress >= endApiCallProgress) {
+          clearInterval(progressInterval);
+          return;
+        }
+        
+        currentProgress += 1;
+        setProgress(currentProgress);
       }, 400);
       
       const resumeSchemaResponse = await apiService.getResumeSchema(extractedContent);
