@@ -70,9 +70,12 @@ const UploadForm = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
-  // Show typewriter when analyze button is clicked
+  // Handle analyze button click - start both API calls and typewriter animation
   const handleAnalyzeClick = () => {
+    // Start typewriter animation
     setShowTypewriter(true);
+    
+    // Start API calls immediately (don't wait for animation)
     processResume();
   };
 
@@ -104,8 +107,8 @@ const UploadForm = ({
         />
       </div>
       
-      {/* ATS Improvement Text with Typewriter effect */}
-      {showTypewriter && state.isUploading && (
+      {/* ATS Improvement Text with Typewriter effect - shows when analyze button is clicked */}
+      {showTypewriter && (
         <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden animate-fade-in">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-bl-full"></div>
           <div className="absolute -top-4 -right-4 text-purple-300 animate-pulse">
