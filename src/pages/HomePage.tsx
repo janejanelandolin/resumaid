@@ -5,8 +5,17 @@ import RotatingText from '@/components/RotatingText';
 import JobSearchForm from '@/components/home/JobSearchForm';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import AuthButtons from '@/components/auth/AuthButtons';
+import { useResumeContext } from '@/contexts/ResumeContext';
+import { useEffect } from 'react';
 
 const HomePage = () => {
+  const { resetAllState } = useResumeContext();
+  
+  // Reset all state when the homepage is visited
+  useEffect(() => {
+    resetAllState();
+  }, [resetAllState]);
+
   return (
     <div className="bg-gradient-to-b from-white to-purple-50 min-h-screen">
       <PageContainer className="justify-start pt-8">

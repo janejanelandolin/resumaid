@@ -32,13 +32,37 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [tailoredScore, setTailoredScore] = useState<ScoreResponse | null>(null);
 
   // Custom hooks
-  const { selectedTemplates, addTemplate, removeTemplate } = useTemplateManager();
-  const { editDecisions, addEditDecision } = useEditDecisions();
+  const { selectedTemplates, addTemplate, removeTemplate, resetTemplates } = useTemplateManager();
+  const { editDecisions, addEditDecision, resetEditDecisions } = useEditDecisions();
   const { parseResumeContent } = useResumeParser();
 
   // Function to get optimized resume for preview and download
   const getOptimizedResume = () => {
     return tailoredResumeJson || resumeJson;
+  };
+
+  // Function to reset all state when returning to home page
+  const resetAllState = () => {
+    // Reset basic resume data
+    setJobTitle('');
+    setJobPosting(null);
+    setUploadData(null);
+    
+    // Reset error handling
+    setApiErrors([]);
+    
+    // Reset resume JSON and scores
+    setResumeJson(null);
+    setTailoredResumeJson(null);
+    setOriginalScore(null);
+    setTailoredScore(null);
+    
+    // Reset templates and edit decisions
+    resetTemplates();
+    resetEditDecisions();
+    
+    // Clear sessionStorage
+    sessionStorage.removeItem('resumeUploaded');
   };
 
   const value: ResumeContextType = {
@@ -68,6 +92,9 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     // Get optimized resume
     getOptimizedResume,
+    
+    // Reset function
+    resetAllState,
     
     // New workflow properties
     resumeJson,

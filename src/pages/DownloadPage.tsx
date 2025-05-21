@@ -18,7 +18,8 @@ const DownloadPage = () => {
     tailoredResumeJson, 
     resumeJson,
     originalScore,
-    tailoredScore
+    tailoredScore,
+    resetAllState
   } = useResumeContext();
   
   // Get rationale from tailored resume if available
@@ -39,6 +40,12 @@ const DownloadPage = () => {
     }
   }, [resume, navigate]);
 
+  // Handle reset and navigation to home page
+  const handleHomeClick = () => {
+    resetAllState();
+    navigate('/');
+  };
+
   if (!resume) {
     return null;
   }
@@ -53,7 +60,7 @@ const DownloadPage = () => {
           </Button>
           
           <Button 
-            onClick={() => navigate('/')} 
+            onClick={handleHomeClick} 
             variant="outline" 
             className="gap-2"
           >

@@ -5,20 +5,28 @@ import { ResumeTemplate } from '../types/resume';
 export const useTemplateManager = () => {
   const [selectedTemplates, setSelectedTemplates] = useState<ResumeTemplate[]>([]);
 
-  // Template management functions
   const addTemplate = (template: ResumeTemplate) => {
-    if (selectedTemplates.length < 5 && !selectedTemplates.some(t => t.id === template.id)) {
-      setSelectedTemplates([...selectedTemplates, template]);
-    }
+    setSelectedTemplates(prev => {
+      // Check if template is already selected
+      if (prev.some(t => t.id === template.id)) {
+        return prev;
+      }
+      return [...prev, template];
+    });
   };
 
   const removeTemplate = (templateId: string) => {
-    setSelectedTemplates(selectedTemplates.filter(t => t.id !== templateId));
+    setSelectedTemplates(prev => prev.filter(t => t.id !== templateId));
+  };
+
+  const resetTemplates = () => {
+    setSelectedTemplates([]);
   };
 
   return {
     selectedTemplates,
     addTemplate,
-    removeTemplate
+    removeTemplate,
+    resetTemplates
   };
 };

@@ -36,6 +36,9 @@ export interface ResumeContextType {
   // Get optimized resume
   getOptimizedResume: () => ResumeJson | null;
   
+  // Reset all state when returning to home
+  resetAllState: () => void;
+  
   // New workflow properties
   resumeJson: ResumeJson | null;
   setResumeJson: (resumeJson: ResumeJson | null) => void;
