@@ -54,27 +54,52 @@ export const useResumeApiOrchestrator = () => {
         return false;
       }
       
-      // Step 2: Score the original resume
-      setProgressText('Evaluating resume against job posting...');
-      await scoreResume(
-        resumeData,
-        jobPostingText,
-        setProgress,
-        setProgressText,
-        apiErrors,
-        setApiErrors
-      );
+      // Step 2 & 3: Score the original resume AND tailor the resume in parallel
+      setProgressText('Processing resume in parallel...');
       
-      // Step 3: Tailor the resume and score the tailored version
-      setProgressText('Optimizing your resume to the job posting...');
-      await tailorResume(
-        resumeData,
-        jobPostingText,
-        setProgress,
-        setProgressText,
-        apiErrors,
-        setApiErrors
-      );
+      console.log("Starting parallel processing of scoring and tailoring");
+      
+      // Run both API calls in parallel
+      const [scoreResult, tailorResult] = await Promise.all([
+        // Score original resume
+        scoreResume(
+          resumeData,
+          jobPostingText,
+          (progress) => setProgress(40 + progress * 0.2), // Scale to 40-60% range
+          setProgressText,
+          apiErrors,
+          setApiErrors
+        ),
+        
+        // Tailor resume simultaneously
+        tailorResume(
+          resumeData,
+          jobPostingText,
+          (progress) => setProgress(60 + progress * 0.3), // Scale to 60-90% range
+          setProgressText,
+          apiErrors,
+          setApiErrors,
+          false // Don't auto-score the tailored resume here
+        )
+      ]);
+      
+      // Check if both operations succeeded
+      isSuccessful = scoreResult && tailorResult.success;
+      
+      // If we successfully tailored the resume, score the tailored version
+      if (tailorResult.success && tailorResult.tailoredResume) {
+        // Step 4: Score the tailored resume
+        setProgressText('Evaluating optimized resume...');
+        await scoreResume(
+          tailorResult.tailoredResume,
+          jobPostingText,
+          (progress) => setProgress(90 + progress * 0.1), // Scale to 90-100% range
+          setProgressText,
+          apiErrors,
+          setApiErrors,
+          true // This is the tailored version
+        );
+      }
       
       // Ensure we tell the caller if we were successful
       console.log("Resume processing workflow complete, success:", isSuccessful);

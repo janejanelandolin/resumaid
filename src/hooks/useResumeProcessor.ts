@@ -111,7 +111,7 @@ export const useResumeProcessor = ({
       
       console.log("Content extracted, processing with API");
       
-      // Process the extracted content with the API
+      // Process the extracted content with the API - now with parallel processing
       const success = await processWithApi(
         extractedContent,
         setApiErrors,
