@@ -47,10 +47,9 @@ const EditResumePage = () => {
               </div>
               
               <div className="space-y-4">
-                {tailoredResumeJson?.rationale?.map((rationale, index) => (
+                {tailoredResumeJson?.rationale?.map((rationale, idx) => (
                   <EditSuggestion 
-                    key={index}
-                    index={index}
+                    key={idx}
                     suggestion={rationale}
                     originalText=""
                     improvedText=""

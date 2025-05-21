@@ -18,8 +18,9 @@ export const useResumeProcessingWorkflow = () => {
     setProgress: (progress: number) => void,
     setProgressText: (text: string) => void,
     apiErrors: string[],
+    tailoredScoreReceived: boolean
   ) => {
-    // Update UI to show completion
+    // Update progress UI
     setProgress(100);
     setProgressText('Analysis complete!');
     
@@ -48,18 +49,22 @@ export const useResumeProcessingWorkflow = () => {
         variant: "destructive",
       });
     }
+
+    // Check if the tailored resume score has been received
+    if (!tailoredScoreReceived) {
+      console.log("Tailored resume score not yet received, waiting for score before navigation");
+      // Don't navigate yet, but don't return false either as processing isn't failed
+      return true;
+    }
     
     // Store in sessionStorage that we've completed the resume upload
     sessionStorage.setItem('resumeUploaded', 'true');
     
-    // Reset state and navigate with a longer delay to ensure state updates are complete
-    console.log("Processing complete, navigating to analysis page");
+    // Reset state and navigate now that we have the tailored score
+    console.log("Processing complete with tailored score available, navigating to analysis page");
     
-    // Increase the timeout to give time for all state updates to complete
-    setTimeout(() => {
-      setUploading(false);
-      navigate('/analysis');
-    }, 2500); // Increased from 1000ms to 2500ms
+    setUploading(false);
+    navigate('/analysis');
     
     return true;
   }, [navigate, toast]);

@@ -1,5 +1,5 @@
 
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useResumeContext } from '@/contexts/ResumeContext';
 // Import types correctly with the 'type' keyword
 import type { ResumeProcessorState, UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
@@ -18,7 +18,9 @@ export const useResumeProcessor = ({
   showErrorDialog,
   showContentWarning 
 }: UseResumeProcessorProps) => {
-  const { setApiErrors: setGlobalApiErrors } = useResumeContext();
+  const { setApiErrors: setGlobalApiErrors, tailoredScore } = useResumeContext();
+  // Add state to track if the tailored score has been received
+  const [tailoredScoreReceived, setTailoredScoreReceived] = useState(false);
   
   // Resume processing states
   const { 
@@ -40,14 +42,35 @@ export const useResumeProcessor = ({
   // API orchestrator for the resume processing workflow
   const { processResumeContent: processWithApi } = useResumeApiOrchestrator();
 
+  // Monitor the tailoredScore and set the flag when it's received
+  useEffect(() => {
+    if (tailoredScore) {
+      console.log("Tailored score received, ready for navigation", tailoredScore);
+      setTailoredScoreReceived(true);
+      
+      // If we're still uploading and have received the tailored score, complete the process
+      if (state.isUploading) {
+        console.log("Auto-completing workflow since tailored score is now available");
+        completeProcessing(
+          setUploading,
+          setProgress,
+          setProgressText,
+          state.apiErrors,
+          true // tailoredScoreReceived is true
+        );
+      }
+    }
+  }, [tailoredScore, state.isUploading, state.apiErrors, setUploading, setProgress, setProgressText, completeProcessing]);
+
   // Process the uploaded resume
   const processResume = useCallback(async () => {
     try {
-      // Reset progress UI
+      // Reset progress UI and tailored score received state
       setProgress(0);
       setApiErrors([]);
       setUploading(true);
       setProgressText('Processing resume...');
+      setTailoredScoreReceived(false);
       
       console.log("Beginning resume processing workflow");
       
@@ -98,13 +121,14 @@ export const useResumeProcessor = ({
       );
       
       if (success) {
-        console.log("API processing successful, completing workflow");
-        // Complete the workflow and navigate to analysis page
+        console.log("API processing successful, checking tailored score status");
+        // Complete the workflow but only navigate if we have the tailored score
         return completeProcessing(
           setUploading,
           setProgress,
           setProgressText,
-          state.apiErrors
+          state.apiErrors,
+          tailoredScoreReceived
         );
       } else {
         console.error("Resume processing failed");
@@ -134,7 +158,8 @@ export const useResumeProcessor = ({
     createTextFile, 
     completeProcessing, 
     handleProcessingError, 
-    showContentWarning
+    showContentWarning,
+    tailoredScoreReceived
   ]);
   
   return {
@@ -142,6 +167,7 @@ export const useResumeProcessor = ({
     handleFileUpload,
     handleTextInput,
     processResume,
-    reset
+    reset,
+    tailoredScoreReceived
   };
 };
