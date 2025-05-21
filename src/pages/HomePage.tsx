@@ -11,19 +11,16 @@ import { useEffect } from 'react';
 const HomePage = () => {
   const { resetAllState } = useResumeContext();
   
-  // Reset all state when the homepage is first visited, but not during re-renders
+  // Reset all state only when the component is first mounted
   useEffect(() => {
-    // Use sessionStorage to track if we've already reset the state
-    const hasReset = sessionStorage.getItem('homePageReset');
-    if (!hasReset) {
-      resetAllState();
-      sessionStorage.setItem('homePageReset', 'true');
-    }
+    // We'll use a ref-like approach with sessionStorage, but more targeted
+    const shouldResetState = sessionStorage.getItem('resumeWorkflowComplete') === 'true';
     
-    // Cleanup function to remove the flag when leaving the page
-    return () => {
-      sessionStorage.removeItem('homePageReset');
-    };
+    if (shouldResetState) {
+      resetAllState();
+      // Clear the flag after resetting
+      sessionStorage.removeItem('resumeWorkflowComplete');
+    }
   }, [resetAllState]);
 
   return (

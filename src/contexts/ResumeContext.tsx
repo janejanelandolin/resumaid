@@ -70,9 +70,11 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Reset templates and edit decisions
     resetTemplates();
     resetEditDecisions();
-    
-    // Clear sessionStorage
-    sessionStorage.removeItem('resumeUploaded');
+  };
+
+  // Function to mark workflow as complete when reaching the final page
+  const markWorkflowComplete = () => {
+    sessionStorage.setItem('resumeWorkflowComplete', 'true');
   };
 
   const value: ResumeContextType = {
@@ -105,6 +107,7 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     // Reset function
     resetAllState,
+    markWorkflowComplete,
     
     // New workflow properties
     resumeJson,
