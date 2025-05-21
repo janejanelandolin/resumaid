@@ -10,6 +10,7 @@ import ErrorAlert from '@/components/upload/ErrorAlert';
 import SubmitButton from '@/components/upload/SubmitButton';
 import { useResumeProcessor } from '@/hooks/useResumeProcessor';
 import { useEffect, useState } from 'react';
+import RotatingTips from './RotatingTips';
 
 interface UploadFormProps {
   showErrorDialog: () => void;
@@ -107,6 +108,9 @@ const UploadForm = ({
         />
       </div>
       
+      {/* Show rotating tips during processing */}
+      <RotatingTips isShowing={state.isUploading} />
+      
       {/* ATS Improvement Text with Typewriter effect - shows when analyze button is clicked */}
       {showTypewriter && (
         <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden animate-fade-in">
@@ -135,6 +139,15 @@ const UploadForm = ({
         disabled={isSubmitDisabled}
         isUploading={state.isUploading}
       />
+      
+      {/* Additional animated elements during processing */}
+      {state.isUploading && (
+        <div className="fixed bottom-4 right-4 flex space-x-2 animate-fade-in">
+          <div className="w-3 h-3 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-3 h-3 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: '150ms' }}></div>
+          <div className="w-3 h-3 rounded-full bg-pink-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        </div>
+      )}
     </div>
   );
 };
