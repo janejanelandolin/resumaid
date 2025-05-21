@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
@@ -8,12 +8,10 @@ import PageContainer from '@/components/PageContainer';
 import DownloadButtons from '@/components/download/DownloadButtons';
 import ResumeSummary from '@/components/download/ResumeSummary';
 import RationaleSection from '@/components/download/RationaleSection';
-import TypewriterText from '@/components/TypewriterText';
 
 const DownloadPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showTypewriter, setShowTypewriter] = useState(false);
   
   const { 
     jobTitle, 
@@ -39,15 +37,7 @@ const DownloadPage = () => {
     if (!resume) {
       navigate('/upload');
     }
-    
-    // Check if we came from the analysis page to trigger typewriter
-    if (location.state?.fromAnalysis) {
-      setShowTypewriter(true);
-    } else {
-      // If directly navigated to this page, show typewriter right away
-      setShowTypewriter(true);
-    }
-  }, [resume, navigate, location]);
+  }, [resume, navigate]);
 
   if (!resume) {
     return null;
@@ -74,16 +64,7 @@ const DownloadPage = () => {
         
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-purple-600">Resume and Report</h1>
-          <p className="text-muted-foreground">
-            {showTypewriter ? (
-              <TypewriterText 
-                text="Your optimized resume is ready for download" 
-                delay={100} 
-              />
-            ) : (
-              "Your optimized resume is ready for download"
-            )}
-          </p>
+          <p className="text-muted-foreground">Your optimized resume is ready for download</p>
         </div>
         
         {/* Download buttons */}
