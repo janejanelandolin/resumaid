@@ -19,7 +19,8 @@ const DownloadPage = () => {
     resumeJson,
     originalScore,
     tailoredScore,
-    resetAllState
+    resetAllState,
+    markWorkflowComplete
   } = useResumeContext();
   
   // Get rationale from tailored resume if available
@@ -42,6 +43,7 @@ const DownloadPage = () => {
 
   // Handle reset and navigation to home page
   const handleHomeClick = () => {
+    markWorkflowComplete(); // Mark workflow as complete before resetting
     resetAllState();
     navigate('/');
   };

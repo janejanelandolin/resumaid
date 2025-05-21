@@ -38,7 +38,7 @@ const PageHeader: React.FC = () => {
       
       <div className="text-center">
         <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-          Resume Analysis for {jobTitle}
+          Resume Analysis for {jobTitle || "Your Position"}
         </h1>
       </div>
       

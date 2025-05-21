@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { filterJobTitles } from '../../services/jobTitles';
@@ -21,7 +22,10 @@ const JobSearchForm = () => {
   const [customJobPosting, setCustomJobPosting] = useState('');
 
   useEffect(() => {
-    setSuggestions(filterJobTitles(jobTitle));
+    // Only update suggestions when jobTitle changes and is not empty
+    if (jobTitle) {
+      setSuggestions(filterJobTitles(jobTitle));
+    }
   }, [jobTitle]);
 
   const handleJobTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,6 +78,9 @@ const JobSearchForm = () => {
     setJobTitle(suggestion);
     setSuggestions([]);
   };
+
+  // Log job title to debug
+  console.log("Current job title:", jobTitle);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-100">

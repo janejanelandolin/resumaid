@@ -21,7 +21,8 @@ const AnalysisPage = () => {
     originalScore,
     tailoredScore,
     resumeJson,
-    tailoredResumeJson
+    tailoredResumeJson,
+    markWorkflowComplete
   } = useResumeContext();
 
   useEffect(() => {
@@ -38,12 +39,15 @@ const AnalysisPage = () => {
 
   // Debug the actual data we have
   console.log("Analysis Page Data:", {
+    jobTitle,
     originalScore,
     tailoredScore
   });
 
   // Handle continue button click with version check and pass state
   const handleContinue = () => {
+    markWorkflowComplete(); // Mark workflow as complete before navigating
+    
     if (isFreeVersion) {
       navigate('/download', { state: { fromAnalysis: true } });
     } else {
