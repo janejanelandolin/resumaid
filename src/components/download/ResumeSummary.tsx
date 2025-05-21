@@ -26,6 +26,7 @@ interface ResumeSummaryProps {
   originalQualification?: string;
   tailoredQualification?: string;
   originalResume?: ResumeJson | null;
+  tailoredResume?: ResumeJson | null;
 }
 
 const ResumeSummary: React.FC<ResumeSummaryProps> = ({ 
@@ -34,7 +35,8 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
   tailoredScoreExplanation,
   originalQualification,
   tailoredQualification,
-  originalResume
+  originalResume,
+  tailoredResume
 }) => {
   // Helper function to determine qualification badge color
   const getQualificationColor = (qualification: string) => {
@@ -56,17 +58,15 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
     return 'bg-yellow-100 text-yellow-800';
   };
 
-  // Get the original and optimized summaries
+  // Get the original resume data
   const originalSummary = originalResume?.basics?.summary;
-  const optimizedSummary = resume.basics?.summary;
-
-  // Get the original and optimized skills
   const originalSkills = originalResume?.skills;
-  const optimizedSkills = resume.skills;
-
-  // Get the original and optimized work experience
   const originalExperience = originalResume?.work;
-  const optimizedExperience = resume.work;
+
+  // Get the tailored/optimized resume data - make sure to use tailoredResume instead of resume
+  const optimizedSummary = tailoredResume?.basics?.summary;
+  const optimizedSkills = tailoredResume?.skills;
+  const optimizedExperience = tailoredResume?.work;
 
   return (
     <Card className="border-2 border-indigo-200 shadow-md">
@@ -162,7 +162,7 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
           </div>
         )}
         
-        {resume.work && resume.work.length > 0 && !originalResume && (
+        {resume.work && resume.work.length > 0 && !originalResume && !tailoredResume && (
           <div>
             <h3 className="font-medium text-sm text-indigo-600">Experience</h3>
             <p className="text-sm bg-indigo-50 p-1 rounded">

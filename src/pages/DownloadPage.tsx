@@ -77,6 +77,7 @@ const DownloadPage = () => {
         <ResumeSummary 
           resume={resume}
           originalResume={resumeJson}
+          tailoredResume={tailoredResumeJson}
           originalScoreExplanation={originalScoreExplanation}
           tailoredScoreExplanation={tailoredScoreExplanation}
           originalQualification={originalQualification}
