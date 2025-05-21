@@ -30,11 +30,18 @@ export const useResumeApiOrchestrator = () => {
     let isSuccessful = true;
     
     try {
-      // Step 1: Process the content to get structured resume data
-      setProgressText('Analyzing resume content...');
+      // Initial setup - 0-5%
+      setProgress(5);
+      setProgressText('Analyzing document structure...');
+      
+      // Step 1: Process the content to get structured resume data - 5-40%
+      // Set progress to 12% to show we're starting content extraction
+      setProgress(12);
+      setProgressText('Extracting resume information...');
+      
       const resumeData = await processContent(
         extractedContent,
-        setProgress,
+        (p) => setProgress(12 + Math.floor(p * 0.28)), // Scale to 12-40% range
         setProgressText,
         apiErrors,
         setApiErrors
@@ -46,7 +53,10 @@ export const useResumeApiOrchestrator = () => {
         return false;
       }
       
-      // Format job posting as a simple string
+      // Format job posting as a simple string - 40-44%
+      setProgress(40);
+      setProgressText('Preparing job description for analysis...');
+      
       const jobPostingText = prepareJobPosting(jobPosting);
       if (!jobPostingText) {
         console.error("Failed to prepare job posting text");
@@ -54,29 +64,32 @@ export const useResumeApiOrchestrator = () => {
         return false;
       }
       
-      // Step 2 & 3: Score the original resume AND tailor the resume in parallel
-      setProgressText('Processing resume in parallel...');
+      // Move to 44% after job posting preparation
+      setProgress(44);
+      
+      // Step 2 & 3: Score the original resume AND tailor the resume in parallel - 44-88%
+      setProgressText('Processing resume in parallel operations...');
       
       console.log("Starting parallel processing of scoring and tailoring");
       
       // Run both API calls in parallel
       const [scoreResult, tailorResult] = await Promise.all([
-        // Score original resume
+        // Score original resume - 44-60% range
         scoreResume(
           resumeData,
           jobPostingText,
-          (progress) => setProgress(40 + progress * 0.2), // Scale to 40-60% range
-          setProgressText,
+          (p) => setProgress(44 + Math.floor(p * 0.16)), // Scale to 44-60% range
+          (text) => setProgressText(`Scoring original resume: ${text}`),
           apiErrors,
           setApiErrors
         ),
         
-        // Tailor resume simultaneously
+        // Tailor resume simultaneously - 60-84% range
         tailorResume(
           resumeData,
           jobPostingText,
-          (progress) => setProgress(60 + progress * 0.3), // Scale to 60-90% range
-          setProgressText,
+          (p) => setProgress(60 + Math.floor(p * 0.24)), // Scale to 60-84% range
+          (text) => setProgressText(`Optimizing resume: ${text}`),
           apiErrors,
           setApiErrors,
           false // Don't auto-score the tailored resume here
@@ -86,20 +99,32 @@ export const useResumeApiOrchestrator = () => {
       // Check if both operations succeeded
       isSuccessful = scoreResult && tailorResult.success;
       
-      // If we successfully tailored the resume, score the tailored version
+      // If we successfully tailored the resume, score the tailored version - 84-96%
       if (tailorResult.success && tailorResult.tailoredResume) {
         // Step 4: Score the tailored resume
+        setProgress(84);
         setProgressText('Evaluating optimized resume...');
         await scoreResume(
           tailorResult.tailoredResume,
           jobPostingText,
-          (progress) => setProgress(90 + progress * 0.1), // Scale to 90-100% range
-          setProgressText,
+          (p) => setProgress(84 + Math.floor(p * 0.12)), // Scale to 84-96% range
+          (text) => setProgressText(`Evaluating optimized resume: ${text}`),
           apiErrors,
           setApiErrors,
           true // This is the tailored version
         );
       }
+      
+      // Final wrap-up - 96-100%
+      setProgress(96);
+      setProgressText('Finalizing analysis and preparing results...');
+      
+      // Small delay to ensure UI feedback
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Complete
+      setProgress(100);
+      setProgressText('Analysis complete!');
       
       // Ensure we tell the caller if we were successful
       console.log("Resume processing workflow complete, success:", isSuccessful);

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, Sparkle } from 'lucide-react';
+import { CheckCircle2, Sparkle, LoaderCircle } from 'lucide-react';
 import EncouragingMessages from './EncouragingMessages';
 
 interface UploadProgressProps {
@@ -18,9 +18,13 @@ const UploadProgress: React.FC<UploadProgressProps> = ({ isUploading, progress }
       <div className="flex justify-between text-sm items-center">
         <div className="flex items-center space-x-2">
           <span className="flex items-center">
+            {progress < 100 ? (
+              <LoaderCircle className="mr-2 h-4 w-4 text-indigo-500 animate-spin" />
+            ) : (
+              <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" />
+            )}
             {/* Encouraging message */}
             <EncouragingMessages progress={progress} />
-            {progress === 100 && <CheckCircle2 className="ml-2 h-4 w-4 text-green-500" />}
           </span>
         </div>
         <span className="font-medium text-indigo-600 flex items-center">

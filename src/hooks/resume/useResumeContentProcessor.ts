@@ -26,18 +26,53 @@ export const useResumeContentProcessor = () => {
     console.log("Content to process length:", extractedContent.length);
     console.log("Content preview:", extractedContent.substring(0, 100) + '...');
     
-    // Update progress UI
-    setProgress(40);
-    setProgressText('Converting resume to structured format...');
+    // Set progress at the beginning of processing
+    setProgress(16);
+    setProgressText('Extracting your professional information...');
+    
+    // Brief pause to show progress
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Update progress as we prepare to send to API
+    setProgress(20);
+    setProgressText('Analyzing document structure...');
     
     try {
+      // Brief pause to show progress
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      setProgress(24);
+      setProgressText('Identifying skills and experience...');
+      
+      // Simulated progress during API call
+      const startApiCallProgress = 24;
+      const endApiCallProgress = 36;
+      const progressInterval = setInterval(() => {
+        setProgress((prevProgress) => {
+          if (prevProgress >= endApiCallProgress) {
+            clearInterval(progressInterval);
+            return prevProgress;
+          }
+          return prevProgress + 1;
+        });
+      }, 400);
+      
       const resumeSchemaResponse = await apiService.getResumeSchema(extractedContent);
+      
+      // Clear the progress interval
+      clearInterval(progressInterval);
+      setProgress(36);
+      
       if (isDebugMode) {
         console.log("Resume schema response:", resumeSchemaResponse);
       }
       
       // Normalize the skills data before processing
       let normalizedData = null;
+      
+      setProgress(38);
+      setProgressText('Processing and normalizing resume data...');
+      
       if (resumeSchemaResponse.data) {
         normalizedData = normalizeSkills(resumeSchemaResponse.data);
       }
@@ -53,6 +88,10 @@ export const useResumeContentProcessor = () => {
       } else if (normalizedData) {
         setResumeJson(normalizedData);
       }
+      
+      // Finalize content processing
+      setProgress(40);
+      setProgressText('Resume content processing complete...');
       
       return normalizedData;
     } catch (error) {
