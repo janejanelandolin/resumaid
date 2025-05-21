@@ -1,11 +1,14 @@
+
 import React from 'react';
-import DebugCard from './DebugCard';
-import { JobPosting, UploadData, ResumeJson, ScoreResponse } from '../../types/resume';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+
+// Import types
+import { JobPosting, UploadData, ResumeJson, ScoreResponse } from '@/types/resume';
 
 interface ApiOutputsTabProps {
   jobPosting: JobPosting | null;
   uploadData: UploadData | null;
-  // Keep new workflow data
   resumeJson: ResumeJson | null;
   tailoredResumeJson: ResumeJson | null;
   originalScore: ScoreResponse | null;
@@ -16,7 +19,6 @@ interface ApiOutputsTabProps {
 const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
   jobPosting,
   uploadData,
-  // Keep new workflow props
   resumeJson,
   tailoredResumeJson,
   originalScore,
@@ -24,76 +26,81 @@ const ApiOutputsTab: React.FC<ApiOutputsTabProps> = ({
   hasData
 }) => {
   return (
-    <div className="mt-4 space-y-4">
-      <DebugCard
-        title="Job Posting API Response"
-        description="Response from the job posting API endpoint"
-        data={jobPosting}
-        isAvailable={hasData(jobPosting)}
-        notAvailableText="No job posting API response available."
-      />
-
-      <DebugCard
-        title="Resume Upload API Response"
-        description="Response from the resume upload API endpoint"
-        data={uploadData}
-        isAvailable={hasData(uploadData)}
-        notAvailableText="No resume upload API response available."
-        renderContent={(data) => {
-          if (!data) return '';
-          return JSON.stringify({
-            id: data.id,
-            filename: data.filename,
-            content_excerpt: data.content ? data.content.substring(0, 200) + '...' : ''
-          }, null, 2);
-        }}
-      />
-
-      {/* New workflow responses - rearranged to match API workflow */}
-      <DebugCard
-        title="Resume Schema Response"
-        description="Response from the /resume_schema API endpoint"
-        data={resumeJson}
-        isAvailable={hasData(resumeJson)}
-        notAvailableText="No resume schema available."
-      />
-
-      <DebugCard
-        title="Original Score Response (Unoptimized)"
-        description="Response from the /score_resume API for original resume"
-        data={originalScore}
-        isAvailable={hasData(originalScore)}
-        notAvailableText="No original score available."
-      />
-
-      <DebugCard
-        title="Tailored Resume Response"
-        description="Response from the /tailor_resume API endpoint"
-        data={tailoredResumeJson}
-        isAvailable={hasData(tailoredResumeJson)}
-        notAvailableText="No tailored resume available."
-        renderContent={(data) => {
-          if (!data) return '';
-          
-          // Include rationale in debug display if available
-          const rationale = data.rationale ? 
-            { 
-              ...data,
-              rationale: data.rationale 
-            } : 
-            data;
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">API Response Data</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="job-posting">
+              <AccordionTrigger className="text-sm font-medium">
+                Job Posting Data
+              </AccordionTrigger>
+              <AccordionContent>
+                <pre className="text-xs bg-gray-50 p-4 rounded overflow-auto max-h-96">
+                  {JSON.stringify(jobPosting, null, 2)}
+                </pre>
+              </AccordionContent>
+            </AccordionItem>
             
-          return JSON.stringify(rationale, null, 2);
-        }}
-      />
-
-      <DebugCard
-        title="Optimized Score Response"
-        description="Response from the /score_resume API for tailored resume"
-        data={tailoredScore}
-        isAvailable={hasData(tailoredScore)}
-        notAvailableText="No tailored score available."
-      />
+            <AccordionItem value="upload-data">
+              <AccordionTrigger className="text-sm font-medium">
+                Upload Data (Raw File Response)
+              </AccordionTrigger>
+              <AccordionContent>
+                <pre className="text-xs bg-gray-50 p-4 rounded overflow-auto max-h-96">
+                  {JSON.stringify(uploadData, null, 2)}
+                </pre>
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="resume-json">
+              <AccordionTrigger className="text-sm font-medium">
+                Resume Schema JSON (Original)
+              </AccordionTrigger>
+              <AccordionContent>
+                <pre className="text-xs bg-gray-50 p-4 rounded overflow-auto max-h-96">
+                  {JSON.stringify(resumeJson, null, 2)}
+                </pre>
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="tailored-json">
+              <AccordionTrigger className="text-sm font-medium">
+                Tailored Resume JSON
+              </AccordionTrigger>
+              <AccordionContent>
+                <pre className="text-xs bg-gray-50 p-4 rounded overflow-auto max-h-96">
+                  {JSON.stringify(tailoredResumeJson, null, 2)}
+                </pre>
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="score-response">
+              <AccordionTrigger className="text-sm font-medium">
+                Original Score Response
+              </AccordionTrigger>
+              <AccordionContent>
+                <pre className="text-xs bg-gray-50 p-4 rounded overflow-auto max-h-96">
+                  {JSON.stringify(originalScore, null, 2)}
+                </pre>
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="tailored-score">
+              <AccordionTrigger className="text-sm font-medium">
+                Tailored Score Response
+              </AccordionTrigger>
+              <AccordionContent>
+                <pre className="text-xs bg-gray-50 p-4 rounded overflow-auto max-h-96">
+                  {JSON.stringify(tailoredScore, null, 2)}
+                </pre>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      </Card>
     </div>
   );
 };

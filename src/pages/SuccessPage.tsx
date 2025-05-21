@@ -1,100 +1,68 @@
 
-import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useResumeContext } from '@/contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
-import { useResumeContext } from '../contexts/ResumeContext';
 import PageContainer from '@/components/PageContainer';
-import { CheckCircle, ArrowRight } from 'lucide-react';
 
 const SuccessPage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { jobTitle, feedback } = useResumeContext();
-  
-  // Get transaction details from location state
-  const transactionDetails = location.state || {};
-  
+  const { 
+    jobTitle, 
+    resumeJson, 
+    tailoredResumeJson
+  } = useResumeContext();
+
   useEffect(() => {
-    // If no transaction details exist, redirect to homepage
-    if (!transactionDetails.transactionId) {
+    // If no resume data, redirect to home
+    if (!resumeJson || !tailoredResumeJson) {
       navigate('/');
     }
-  }, [transactionDetails, navigate]);
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
+  }, [navigate, resumeJson, tailoredResumeJson]);
 
   return (
-    <PageContainer>
-      <div className="w-full max-w-4xl mx-auto space-y-8">
-        <div className="text-center space-y-6">
-          <div className="flex justify-center">
-            <div className="bg-green-100 p-3 rounded-full">
-              <CheckCircle className="h-12 w-12 text-green-600" />
-            </div>
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-emerald-50">
+      <PageContainer>
+        <div className="flex flex-col items-center justify-center space-y-6 py-10">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-8 h-8 text-green-600"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
           </div>
+
+          <h1 className="text-2xl font-bold text-center">Payment Successful!</h1>
           
-          <h1 className="text-2xl font-bold">Payment Successful!</h1>
-          
-          <p className="text-muted-foreground">
-            Your optimized resume for <span className="font-medium">{jobTitle}</span> is ready.
-          </p>
-          
-          {transactionDetails.transactionId && (
-            <div className="bg-gray-50 rounded-lg p-4 text-left space-y-3 max-w-md mx-auto">
-              <h3 className="font-medium">Transaction Details</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Transaction ID:</span>
-                  <span className="font-mono">{transactionDetails.transactionId.substring(0, 12)}...</span>
-                </div>
-                {transactionDetails.amount && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Amount:</span>
-                    <span>${transactionDetails.amount.toFixed(2)}</span>
-                  </div>
-                )}
-                {transactionDetails.date && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Date:</span>
-                    <span>{formatDate(transactionDetails.date)}</span>
-                  </div>
-                )}
-                {transactionDetails.email && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Email:</span>
-                    <span>{transactionDetails.email}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          <div className="text-center max-w-md">
+            <p className="text-gray-600 mb-4">
+              Thank you for your purchase. Your optimized resume for the "{jobTitle}" position is ready to download.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/analysis')}
+            >
+              View Analysis
+            </Button>
+            <Button onClick={() => navigate('/download')}>
+              Download Resume
+            </Button>
+          </div>
         </div>
-        
-        <div className="space-y-4">
-          <Button 
-            onClick={() => navigate('/edit-resume')} 
-            className="w-full"
-          >
-            <ArrowRight className="mr-2 h-4 w-4" />
-            Review and Edit Your Resume
-          </Button>
-          
-          <Button variant="outline" onClick={() => navigate('/')} className="w-full">
-            Return to Homepage
-          </Button>
-        </div>
-      </div>
-    </PageContainer>
+      </PageContainer>
+    </div>
   );
 };
 

@@ -1,135 +1,69 @@
 
-import React, { useState, useEffect } from 'react';
-import { useResumeContext } from '../contexts/ResumeContext';
-import { useNavigate } from 'react-router-dom';
-import PageContainer from '@/components/PageContainer';
+// Update only the parts that reference 'feedback'
+import React, { useState } from 'react';
+import { useResumeContext } from '@/contexts/ResumeContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { FileJson, Webhook } from 'lucide-react';
+import PageContainer from '@/components/PageContainer';
+import AdminFooter from '@/components/AdminFooter';
+import DebugCard from '@/components/debug/DebugCard';
+import { formatJobPostingAsText } from '@/hooks/resume/useResumeNormalizer';
+import ApiEndpointInfo from '@/components/debug/ApiEndpointInfo';
 import ApiInputsTab from '@/components/debug/ApiInputsTab';
 import ApiOutputsTab from '@/components/debug/ApiOutputsTab';
-import ApiEndpointInfo from '@/components/debug/ApiEndpointInfo';
-import useAppVersion from '@/hooks/useAppVersion';
+import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
 
 const DebugPage = () => {
+  const [selectedTab, setSelectedTab] = useState('endpoints');
   const { 
-    jobPosting, 
-    uploadData, 
-    feedback,
-    // Add new workflow state values
+    jobPosting,
+    uploadData,
     resumeJson,
     tailoredResumeJson,
     originalScore,
     tailoredScore
   } = useResumeContext();
-  const [activeTab, setActiveTab] = useState('inputs');
-  const { isDebugMode } = useAppVersion();
-  const navigate = useNavigate();
-  
-  // Redirect if debug mode is disabled
-  useEffect(() => {
-    if (!isDebugMode) {
-      navigate('/');
-    }
-  }, [isDebugMode, navigate]);
 
-  // If debug mode is disabled, show a loading state while redirect happens
-  if (!isDebugMode) {
-    return (
-      <PageContainer>
-        <div className="flex items-center justify-center h-[50vh]">
-          <p>Redirecting...</p>
-        </div>
-      </PageContainer>
-    );
-  }
-
-  // Format JSON for display with proper indentation
-  const formatJSON = (data: any) => {
-    try {
-      return JSON.stringify(data, null, 2);
-    } catch (e) {
-      return 'Error formatting data';
-    }
-  };
-
-  // Helper to check if an object has data
+  // Helper function to determine if an object has data
   const hasData = (obj: any) => obj && Object.keys(obj).length > 0;
 
-  // Prepare API input previews for ATS and Feedback calls
-  const getATSApiInput = () => {
-    if (!jobPosting || !uploadData?.content) return "Job posting or resume not available";
-    
-    // Create a preview of what's sent to the API with query parameters
-    // Important: Using exactly 'resume' and 'job_posting' as parameter names
-    const apiInput = {
-      parameters: {
-        resume: uploadData.content.substring(0, 200) + '...',
-        job_posting: jobPosting // Send the full job posting object
-      },
-      method: 'POST'
-    };
-    
-    return formatJSON(apiInput);
-  };
-
-  const getFeedbackApiInput = () => {
-    if (!jobPosting || !uploadData?.content) return "Job posting or resume not available";
-    
-    // Create a preview of what's sent to the API with query parameters
-    // Important: Using exactly 'resume' and 'job_posting' as parameter names
-    const apiInput = {
-      parameters: {
-        resume: uploadData.content.substring(0, 200) + '...',
-        job_posting: jobPosting // Send the full job posting object
-      },
-      method: 'POST'
-    };
-    
-    return formatJSON(apiInput);
-  };
+  // Format job posting as text for display
+  const jobPostingText = jobPosting ? formatJobPostingAsText(jobPosting) : '';
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       <PageContainer>
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">API Debug</h1>
-              <p className="text-muted-foreground">Inspect API inputs and outputs</p>
-            </div>
-            <Button variant="outline" onClick={() => window.history.back()}>
-              Back
-            </Button>
+            <h1 className="text-2xl font-bold">Debug Console</h1>
           </div>
 
-          <Tabs defaultValue="inputs" onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full md:w-[400px] grid-cols-2">
-              <TabsTrigger value="inputs" className="flex items-center gap-2">
-                <FileJson className="h-4 w-4" />
-                <span>API Inputs</span>
-              </TabsTrigger>
-              <TabsTrigger value="outputs" className="flex items-center gap-2">
-                <Webhook className="h-4 w-4" />
-                <span>API Outputs</span>
-              </TabsTrigger>
-            </TabsList>
+          <DebugCard />
 
-            <TabsContent value="inputs">
+          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+            <TabsList className="grid grid-cols-3">
+              <TabsTrigger value="endpoints">API Endpoints</TabsTrigger>
+              <TabsTrigger value="inputs">API Inputs</TabsTrigger>
+              <TabsTrigger value="outputs">API Outputs</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="endpoints" className="py-4">
+              <ApiEndpointInfo />
+            </TabsContent>
+            
+            <TabsContent value="inputs" className="py-4">
               <ApiInputsTab 
-                jobPosting={jobPosting}
-                uploadData={uploadData}
-                getATSApiInput={getATSApiInput}
-                getFeedbackApiInput={getFeedbackApiInput}
+                jobTitle={jobPosting?.jobTitle || ''}
+                jobPostingText={jobPostingText}
+                resumeContent={uploadData?.content || ''}
+                hasJobPosting={hasData(jobPosting)}
+                hasResumeContent={Boolean(uploadData?.content)}
               />
             </TabsContent>
-
-            <TabsContent value="outputs">
+            
+            <TabsContent value="outputs" className="py-4">
               <ApiOutputsTab 
                 jobPosting={jobPosting}
                 uploadData={uploadData}
-                feedback={feedback}
                 resumeJson={resumeJson}
                 tailoredResumeJson={tailoredResumeJson}
                 originalScore={originalScore}
@@ -139,9 +73,11 @@ const DebugPage = () => {
             </TabsContent>
           </Tabs>
 
-          <Separator />
+          <div className="pt-4">
+            <ApiDebugHelper />
+          </div>
 
-          <ApiEndpointInfo />
+          <AdminFooter />
         </div>
       </PageContainer>
     </div>

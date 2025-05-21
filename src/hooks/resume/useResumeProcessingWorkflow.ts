@@ -1,7 +1,6 @@
 
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useResumeContext } from '@/contexts/ResumeContext';
 import { useToast } from '@/hooks/use-toast';
 
 /**
@@ -53,12 +52,14 @@ export const useResumeProcessingWorkflow = () => {
     // Store in sessionStorage that we've completed the resume upload
     sessionStorage.setItem('resumeUploaded', 'true');
     
-    // Reset state and navigate directly, with slight delay to ensure state updates
+    // Reset state and navigate with a longer delay to ensure state updates are complete
     console.log("Processing complete, navigating to analysis page");
+    
+    // Increase the timeout to give time for all state updates to complete
     setTimeout(() => {
       setUploading(false);
       navigate('/analysis');
-    }, 1000);
+    }, 2500); // Increased from 1000ms to 2500ms
     
     return true;
   }, [navigate, toast]);
