@@ -1,5 +1,4 @@
 
-import TypewriterText from '@/components/TypewriterText';
 import { Sparkle } from 'lucide-react';
 import { useResumeContext } from '../../contexts/ResumeContext';
 
@@ -21,10 +20,9 @@ const Summary: React.FC = () => {
       <div className="absolute top-56 -right-6 text-yellow-400 animate-bounce">
         <Sparkle size={20} />
       </div>
-      <TypewriterText
-        text={atsImprovementText}
-        className="text-sm relative z-10"
-      />
+      <p className="text-sm relative z-10">
+        {atsImprovementText}
+      </p>
     </div>
   );
 };

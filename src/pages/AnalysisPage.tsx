@@ -42,12 +42,12 @@ const AnalysisPage = () => {
     tailoredScore
   });
 
-  // Handle continue button click with version check
+  // Handle continue button click with version check and pass state
   const handleContinue = () => {
     if (isFreeVersion) {
-      navigate('/download');
+      navigate('/download', { state: { fromAnalysis: true } });
     } else {
-      navigate('/payment');
+      navigate('/payment', { state: { fromAnalysis: true } });
     }
   };
   
