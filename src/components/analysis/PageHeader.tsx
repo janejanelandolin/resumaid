@@ -1,14 +1,13 @@
 
 import React from 'react';
 import { useResumeContext } from '../../contexts/ResumeContext';
-import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bug } from 'lucide-react';
 import useAppVersion from '@/hooks/useAppVersion';
 
 const PageHeader: React.FC = () => {
-  const { jobTitle, uploadData } = useResumeContext();
+  const { jobTitle } = useResumeContext();
   const navigate = useNavigate();
   const { isDebugMode, isFreeVersion, isFeatureEnabled } = useAppVersion();
 
@@ -38,9 +37,6 @@ const PageHeader: React.FC = () => {
       </div>
       
       <div className="text-center">
-        <Badge variant="outline" className="mb-2">
-          {uploadData?.filename || 'resume'}
-        </Badge>
         <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
           Resume Analysis for {jobTitle}
         </h1>
