@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
 import PageContainer from '@/components/PageContainer';
@@ -14,6 +14,8 @@ import UploadDebugSection from '@/components/upload/UploadDebugSection';
 const UploadPage = () => {
   const navigate = useNavigate();
   const { jobTitle, jobPosting, resumeJson, tailoredResumeJson } = useResumeContext();
+  // Add state to track if we're currently processing a resume
+  const [isProcessing, setIsProcessing] = useState(false);
   
   useEffect(() => {
     // If no job posting, redirect to home
@@ -24,12 +26,13 @@ const UploadPage = () => {
     }
 
     // Check if resume is already processed, redirect to analysis
+    // But only if we're not currently processing a new resume
     const resumeUploaded = sessionStorage.getItem('resumeUploaded');
-    if (resumeUploaded === 'true' && resumeJson && tailoredResumeJson) {
+    if (!isProcessing && resumeUploaded === 'true' && resumeJson && tailoredResumeJson) {
       console.log("Resume already processed, redirecting to analysis");
       navigate('/analysis');
     }
-  }, [jobTitle, jobPosting, navigate, resumeJson, tailoredResumeJson]);
+  }, [jobTitle, jobPosting, navigate, resumeJson, tailoredResumeJson, isProcessing]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
@@ -54,6 +57,7 @@ const UploadPage = () => {
                     setProgressText={setProgressText}
                     progress={progress}
                     progressText={progressText}
+                    setIsProcessing={setIsProcessing}
                   />
                 )}
               </UploadStateManager>

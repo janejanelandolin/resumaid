@@ -19,6 +19,7 @@ interface UploadFormProps {
   setProgressText: (text: string) => void;
   progress: number;
   progressText: string;
+  setIsProcessing: (isProcessing: boolean) => void;
 }
 
 const UploadForm = ({
@@ -29,6 +30,7 @@ const UploadForm = ({
   setProgressText,
   progress,
   progressText,
+  setIsProcessing,
 }: UploadFormProps) => {
   const { jobPosting } = useResumeContext();
   const [showTypewriter, setShowTypewriter] = useState(false);
@@ -55,7 +57,10 @@ const UploadForm = ({
       hasAttemptedUpload: state.hasAttemptedUpload,
       fileName: state.uploadedFile?.name || 'No file'
     });
-  }, [state]);
+    
+    // Update the parent's isProcessing state
+    setIsProcessing(state.isUploading);
+  }, [state, setIsProcessing]);
 
   // Update API errors when state changes
   useEffect(() => {
