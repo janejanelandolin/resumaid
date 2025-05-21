@@ -1,9 +1,9 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Confetti, Home } from 'lucide-react';
+import { ArrowLeft, Home } from 'lucide-react';
 import PageContainer from '@/components/PageContainer';
 import DownloadButtons from '@/components/download/DownloadButtons';
 import ResumeSummary from '@/components/download/ResumeSummary';
@@ -12,7 +12,6 @@ import TypewriterText from '@/components/TypewriterText';
 
 const DownloadPage = () => {
   const navigate = useNavigate();
-  const [showConfetti, setShowConfetti] = useState(true);
   
   const { 
     jobTitle, 
@@ -38,13 +37,6 @@ const DownloadPage = () => {
     if (!resume) {
       navigate('/upload');
     }
-    
-    // Hide confetti after 5 seconds
-    const timer = setTimeout(() => {
-      setShowConfetti(false);
-    }, 5000);
-    
-    return () => clearTimeout(timer);
   }, [resume, navigate]);
 
   if (!resume) {
@@ -70,16 +62,7 @@ const DownloadPage = () => {
           </Button>
         </div>
         
-        <div className="text-center mb-6 relative">
-          {showConfetti && (
-            <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-              <Confetti className="h-6 w-6 text-yellow-500 absolute top-0 left-1/4 animate-bounce" />
-              <Confetti className="h-6 w-6 text-indigo-500 absolute top-5 right-1/4 animate-bounce delay-75" />
-              <Confetti className="h-6 w-6 text-green-500 absolute top-10 left-1/3 animate-bounce delay-150" />
-              <Confetti className="h-6 w-6 text-red-500 absolute top-2 right-1/3 animate-bounce delay-300" />
-              <Confetti className="h-6 w-6 text-purple-500 absolute top-8 left-1/2 animate-bounce delay-200" />
-            </div>
-          )}
+        <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-purple-600">Resume and Report</h1>
           <p className="text-muted-foreground">
             <TypewriterText text="Your optimized resume is ready for download" delay={100} />
