@@ -11,9 +11,19 @@ import { useEffect } from 'react';
 const HomePage = () => {
   const { resetAllState } = useResumeContext();
   
-  // Reset all state when the homepage is visited
+  // Reset all state when the homepage is first visited, but not during re-renders
   useEffect(() => {
-    resetAllState();
+    // Use sessionStorage to track if we've already reset the state
+    const hasReset = sessionStorage.getItem('homePageReset');
+    if (!hasReset) {
+      resetAllState();
+      sessionStorage.setItem('homePageReset', 'true');
+    }
+    
+    // Cleanup function to remove the flag when leaving the page
+    return () => {
+      sessionStorage.removeItem('homePageReset');
+    };
   }, [resetAllState]);
 
   return (
