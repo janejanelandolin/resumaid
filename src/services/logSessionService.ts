@@ -203,10 +203,10 @@ export const downloadAllSessionLogs = (): void => {
     // Create header row
     const headers = [
       'Date', 'Time', 'Job Title', 'Name', 'Email', 
-      'Phone', 'Location', 'IP Address', 
-      'Unoptimized Score', 'Unoptimized Qualification',
+      'Phone', 'Address', 'IP Address', 
+      'Original Score', 'Original Qualification',
       'Optimized Score', 'Optimized Qualification',
-      'Recommendation', 'Feedback'
+      'Promoter Score', 'Feedback Text'
     ].join('\t');
     
     // Create content with header and log entries

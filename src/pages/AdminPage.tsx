@@ -7,7 +7,6 @@ import ApiEndpointInfo from '@/components/debug/ApiEndpointInfo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DebugCard from '@/components/debug/DebugCard';
 import { formatJobPostingAsText } from '@/hooks/resume/useResumeNormalizer';
-import AdminFooter from '@/components/AdminFooter';
 import PageContainer from '@/components/PageContainer';
 import SessionLogsSection from '@/components/admin/SessionLogsSection';
 import AdminPasswordDialog from '@/components/admin/AdminPasswordDialog';
@@ -53,7 +52,7 @@ const AdminPage = () => {
   
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <PageContainer className="py-8" centerX={false}>
+      <PageContainer className="py-8" centerX={false} showFooter={false}>
         <div className="space-y-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">

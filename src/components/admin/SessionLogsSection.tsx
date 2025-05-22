@@ -43,7 +43,7 @@ const SessionLogsSection = () => {
     // Create header row
     const headers = [
       'Date', 'Time', 'Job Title', 'Name', 'Email', 
-      'Phone', 'Location', 'IP Address', 
+      'Phone', 'Address', 'IP Address', 
       'Original Score', 'Original Qualification',
       'Optimized Score', 'Optimized Qualification',
       'Promoter Score', 'Feedback Text'
@@ -101,6 +101,9 @@ const SessionLogsSection = () => {
                   <TableHead>Time</TableHead>
                   <TableHead>Job Title</TableHead>
                   <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Address</TableHead>
+                  <TableHead>IP Address</TableHead>
                   <TableHead>Original Score</TableHead>
                   <TableHead>Optimized Score</TableHead>
                   <TableHead>Original Qualification</TableHead>
@@ -116,6 +119,11 @@ const SessionLogsSection = () => {
                     <TableCell>{log.time}</TableCell>
                     <TableCell>{log.jobTitle}</TableCell>
                     <TableCell>{log.name}</TableCell>
+                    <TableCell>{log.email}</TableCell>
+                    <TableCell className="max-w-[200px] truncate" title={log.location || ''}>
+                      {log.location || 'N/A'}
+                    </TableCell>
+                    <TableCell>{log.ipAddress || 'N/A'}</TableCell>
                     <TableCell>{log.unoptimizedScore}</TableCell>
                     <TableCell>{log.optimizedScore}</TableCell>
                     <TableCell>{log.unoptimizedQualification}</TableCell>
