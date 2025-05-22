@@ -13,7 +13,14 @@ const SessionLogsSection = () => {
   
   // Get logs from localStorage on component mount
   useEffect(() => {
-    setSessionLogs(getLogsFromStorage());
+    try {
+      console.log('Loading session logs from storage');
+      const logs = getLogsFromStorage();
+      console.log('Retrieved logs:', logs);
+      setSessionLogs(logs);
+    } catch (error) {
+      console.error('Error loading session logs:', error);
+    }
   }, []);
 
   const downloadLogs = () => {
