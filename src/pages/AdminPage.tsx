@@ -9,6 +9,10 @@ import DebugCard from '@/components/debug/DebugCard';
 import { formatJobPostingAsText } from '@/hooks/resume/useResumeNormalizer';
 import AdminFooter from '@/components/AdminFooter';
 import PageContainer from '@/components/PageContainer';
+import SessionLogsSection from '@/components/admin/SessionLogsSection';
+import { downloadAllSessionLogs } from '@/services/logSessionService';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('inputs');
@@ -42,6 +46,9 @@ const AdminPage = () => {
             <h1 className="text-2xl font-bold">Admin Dashboard</h1>
             <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Admin Only</span>
           </div>
+          
+          {/* Session Logs Section */}
+          <SessionLogsSection />
           
           <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid grid-cols-2">

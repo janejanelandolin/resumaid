@@ -4,7 +4,7 @@ import { ResumeJson, ScoreResponse } from '@/types/resume';
 /**
  * Interface for session log data
  */
-interface SessionLogData {
+export interface SessionLogData {
   date: string;
   time: string;
   jobTitle: string;
@@ -72,6 +72,25 @@ const getLocationString = (resume: ResumeJson | null): string => {
 };
 
 /**
+ * Save session log entry to localStorage
+ */
+const saveToLocalStorage = (logData: SessionLogData): void => {
+  try {
+    // Get existing logs
+    const existingLogsStr = localStorage.getItem('sessionLogs');
+    const existingLogs: SessionLogData[] = existingLogsStr ? JSON.parse(existingLogsStr) : [];
+    
+    // Add new log
+    existingLogs.push(logData);
+    
+    // Save back to localStorage
+    localStorage.setItem('sessionLogs', JSON.stringify(existingLogs));
+  } catch (error) {
+    console.error('Failed to save session log to localStorage:', error);
+  }
+};
+
+/**
  * Log session data to SessionsLog.txt
  */
 export const logSessionData = async (
@@ -110,9 +129,8 @@ export const logSessionData = async (
     
     console.log('Session data logged:', logEntry);
     
-    // Since we can't directly write to a file in the browser,
-    // we'll log to the console for now. In a real implementation,
-    // this would call a server endpoint to save the data.
+    // Save to localStorage for admin access
+    saveToLocalStorage(logData);
     
     // Create a downloadable version of the log entry
     const blob = new Blob([logEntry + '\n'], { type: 'text/plain' });
@@ -133,5 +151,52 @@ export const logSessionData = async (
     a.remove();
   } catch (error) {
     console.error('Failed to log session data:', error);
+  }
+};
+
+/**
+ * Download all session logs as a single file
+ */
+export const downloadAllSessionLogs = (): void => {
+  try {
+    const storedLogs = localStorage.getItem('sessionLogs');
+    if (!storedLogs) {
+      console.log('No session logs found');
+      return;
+    }
+
+    const logs: SessionLogData[] = JSON.parse(storedLogs);
+    
+    // Create header row
+    const headers = [
+      'Date', 'Time', 'Job Title', 'Name', 'Email', 
+      'Phone', 'Location', 'IP Address', 
+      'Unoptimized Score', 'Unoptimized Qualification',
+      'Optimized Score', 'Optimized Qualification'
+    ].join('\t');
+    
+    // Create content with header and log entries
+    const content = [
+      headers,
+      ...logs.map(log => formatLogEntry(log))
+    ].join('\n');
+    
+    // Create and trigger download
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'AllSessionsLog.txt';
+    
+    // Append to body, click and remove
+    document.body.appendChild(a);
+    a.click();
+    
+    // Cleanup
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  } catch (error) {
+    console.error('Failed to download all session logs:', error);
   }
 };
