@@ -1,12 +1,11 @@
 
-import { Sparkle, Rocket, Star, MessageSquare } from 'lucide-react';
+import { Sparkle, Rocket, Star } from 'lucide-react';
 import PageContainer from '@/components/PageContainer';
 import RotatingText from '@/components/RotatingText';
 import JobSearchForm from '@/components/home/JobSearchForm';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { useEffect } from 'react';
-import FeedbackDialog from '@/components/feedback/FeedbackDialog';
 
 const HomePage = () => {
   const { resetAllState } = useResumeContext();
@@ -27,11 +26,6 @@ const HomePage = () => {
     <div className="bg-gradient-to-b from-white to-purple-50 min-h-screen">
       <PageContainer className="justify-start pt-8">
         <div className="w-full space-y-8 relative">
-          {/* Feedback button in top-right */}
-          <div className="absolute top-0 right-0 flex items-center gap-2">
-            <FeedbackDialog variant="outline" />
-          </div>
-          
           {/* Decorative elements */}
           <div className="absolute -top-4 -right-4 text-purple-300 animate-pulse">
             <Sparkle size={24} />
