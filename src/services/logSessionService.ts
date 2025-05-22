@@ -17,6 +17,8 @@ export interface SessionLogData {
   unoptimizedQualification: string;
   optimizedScore: number;
   optimizedQualification: string;
+  recommendation?: number; // New field for feedback score
+  feedback?: string; // New field for feedback comments
 }
 
 /**
@@ -35,7 +37,9 @@ const formatLogEntry = (data: SessionLogData): string => {
     data.unoptimizedScore,
     data.unoptimizedQualification,
     data.optimizedScore,
-    data.optimizedQualification
+    data.optimizedQualification,
+    data.recommendation !== undefined ? data.recommendation : '',
+    data.feedback || ''
   ].join('\t');
 };
 
@@ -87,6 +91,52 @@ const saveToLocalStorage = (logData: SessionLogData): void => {
     localStorage.setItem('sessionLogs', JSON.stringify(existingLogs));
   } catch (error) {
     console.error('Failed to save session log to localStorage:', error);
+  }
+};
+
+/**
+ * Save feedback to localStorage by updating the most recent log entry
+ */
+export const saveFeedbackToLocalStorage = (recommendation: number, feedback: string): void => {
+  try {
+    // Get existing logs
+    const existingLogsStr = localStorage.getItem('sessionLogs');
+    if (!existingLogsStr) {
+      // If no logs exist, create a new minimal entry
+      const now = new Date();
+      const newLog: SessionLogData = {
+        date: now.toISOString().split('T')[0],
+        time: now.toTimeString().split(' ')[0],
+        jobTitle: 'unknown',
+        name: 'unknown',
+        email: 'unknown',
+        phone: 'unknown',
+        location: 'unknown',
+        ipAddress: 'unknown',
+        unoptimizedScore: 0,
+        unoptimizedQualification: 'unknown',
+        optimizedScore: 0,
+        optimizedQualification: 'unknown',
+        recommendation,
+        feedback
+      };
+      localStorage.setItem('sessionLogs', JSON.stringify([newLog]));
+      return;
+    }
+    
+    const existingLogs: SessionLogData[] = JSON.parse(existingLogsStr);
+    
+    if (existingLogs.length > 0) {
+      // Update the most recent log
+      const lastLog = existingLogs[existingLogs.length - 1];
+      lastLog.recommendation = recommendation;
+      lastLog.feedback = feedback;
+      
+      // Save back to localStorage
+      localStorage.setItem('sessionLogs', JSON.stringify(existingLogs));
+    }
+  } catch (error) {
+    console.error('Failed to save feedback to localStorage:', error);
   }
 };
 
@@ -172,7 +222,8 @@ export const downloadAllSessionLogs = (): void => {
       'Date', 'Time', 'Job Title', 'Name', 'Email', 
       'Phone', 'Location', 'IP Address', 
       'Unoptimized Score', 'Unoptimized Qualification',
-      'Optimized Score', 'Optimized Qualification'
+      'Optimized Score', 'Optimized Qualification',
+      'Recommendation', 'Feedback'
     ].join('\t');
     
     // Create content with header and log entries

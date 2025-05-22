@@ -8,6 +8,7 @@ import PageContainer from '@/components/PageContainer';
 import DownloadButtons from '@/components/download/DownloadButtons';
 import ResumeSummary from '@/components/download/ResumeSummary';
 import RationaleSection from '@/components/download/RationaleSection';
+import FeedbackDialog from '@/components/feedback/FeedbackDialog';
 
 const DownloadPage = () => {
   const navigate = useNavigate();
@@ -61,14 +62,17 @@ const DownloadPage = () => {
             Back to Analysis
           </Button>
           
-          <Button 
-            onClick={handleHomeClick} 
-            variant="outline" 
-            className="gap-2"
-          >
-            <Home className="h-4 w-4" />
-            Try another Job
-          </Button>
+          <div className="flex items-center gap-2">
+            <FeedbackDialog />
+            <Button 
+              onClick={handleHomeClick} 
+              variant="outline" 
+              className="gap-2"
+            >
+              <Home className="h-4 w-4" />
+              Try another Job
+            </Button>
+          </div>
         </div>
         
         <div className="text-center mb-6">

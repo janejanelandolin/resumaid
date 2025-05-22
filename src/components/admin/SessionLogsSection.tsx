@@ -18,6 +18,8 @@ interface SessionLogData {
   unoptimizedQualification: string;
   optimizedScore: number;
   optimizedQualification: string;
+  recommendation?: number;
+  feedback?: string;
 }
 
 const SessionLogsSection = () => {
@@ -43,7 +45,8 @@ const SessionLogsSection = () => {
       'Date', 'Time', 'Job Title', 'Name', 'Email', 
       'Phone', 'Location', 'IP Address', 
       'Unoptimized Score', 'Unoptimized Qualification',
-      'Optimized Score', 'Optimized Qualification'
+      'Optimized Score', 'Optimized Qualification',
+      'Recommendation', 'Feedback'
     ];
 
     // Create content with headers and data rows
@@ -61,7 +64,9 @@ const SessionLogsSection = () => {
         log.unoptimizedScore,
         log.unoptimizedQualification,
         log.optimizedScore,
-        log.optimizedQualification
+        log.optimizedQualification,
+        log.recommendation !== undefined ? log.recommendation : '',
+        log.feedback || ''
       ].join('\t'))
     ].join('\n');
 
@@ -98,6 +103,7 @@ const SessionLogsSection = () => {
                   <TableHead>Name</TableHead>
                   <TableHead>Score Change</TableHead>
                   <TableHead>Qualification</TableHead>
+                  <TableHead>Feedback</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -109,6 +115,7 @@ const SessionLogsSection = () => {
                     <TableCell>{log.name}</TableCell>
                     <TableCell>{`${log.unoptimizedScore} → ${log.optimizedScore}`}</TableCell>
                     <TableCell>{`${log.unoptimizedQualification} → ${log.optimizedQualification}`}</TableCell>
+                    <TableCell>{log.recommendation !== undefined ? `${log.recommendation}/10` : 'No feedback'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
