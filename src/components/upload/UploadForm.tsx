@@ -3,6 +3,7 @@ import { useResumeContext } from '@/contexts/ResumeContext';
 import FileUploader from '@/components/FileUploader';
 import { Sparkle } from 'lucide-react';
 import TypewriterText from '@/components/TypewriterText';
+import { extractKeywords } from '@/utils/keywordExtractor';
 
 // Import our components
 import UploadProgress from '@/components/upload/UploadProgress';
@@ -34,6 +35,7 @@ const UploadForm = ({
 }: UploadFormProps) => {
   const { jobPosting } = useResumeContext();
   const [showTypewriter, setShowTypewriter] = useState(false);
+  const [jobKeywords, setJobKeywords] = useState<string[]>([]);
   
   const { 
     state,
@@ -47,6 +49,14 @@ const UploadForm = ({
     showErrorDialog,
     showContentWarning,
   });
+
+  // Extract keywords from job posting when available
+  useEffect(() => {
+    if (jobPosting?.description) {
+      const keywords = extractKeywords(jobPosting.description);
+      setJobKeywords(keywords);
+    }
+  }, [jobPosting]);
 
   // Log state changes for debugging
   useEffect(() => {
@@ -87,27 +97,30 @@ const UploadForm = ({
   // Determine if the submit button should be disabled
   const isSubmitDisabled = (!state.uploadedFile && !state.resumeText) || state.isUploading;
 
-  // Resume tips to display
+  // Reduced list of resume tips (only 8 instead of 15)
   const resumeTips = [
     "Use industry keywords to pass ATS filters",
     "Quantify your achievements with numbers",
     "Tailor your resume to each job application",
     "Keep your formatting consistent and clean",
-    "Highlight relevant skills for the position",
     "Use action verbs to describe your experience",
-    "Remove irrelevant experience for clarity",
-    "Include a concise professional summary",
-    "Proofread carefully for spelling and grammar",
-    "Use a clean, professional font",
     "Include measurable results from previous roles",
-    "Customize your resume for each job application",
     "Focus on accomplishments rather than duties",
-    "Keep your resume to 1-2 pages maximum",
-    "Use bullet points for better readability"
+    "Proofread carefully for spelling and grammar"
   ];
 
-  // ATS improvement text with tips appended
-  const atsImprovementText = `Your resume needs optimization to pass Applicant Tracking System (ATS) filters. We've identified several opportunities to highlight your relevant experience and add keywords that will help you get past automated screening systems and into the hands of a hiring manager.\n\nHelpful tips while we process your resume:\n• ${resumeTips.join('\n• ')}`;
+  // Create enhanced ATS improvement text with extracted keywords
+  const getAtsImprovementText = () => {
+    let text = `Your resume needs optimization to pass Applicant Tracking System (ATS) filters. We've identified opportunities to highlight your relevant experience and add keywords that will help you get past automated screening.`;
+    
+    // Add keyword section if we have keywords
+    if (jobKeywords && jobKeywords.length > 0) {
+      text += `\n\nKeywords detected in this job posting:\n• ${jobKeywords.join('\n• ')}`;
+    }
+    
+    text += `\n\nHelpful tips while we process your resume:\n• ${resumeTips.join('\n• ')}`;
+    return text;
+  };
 
   return (
     <div className="space-y-6 py-4">
@@ -142,9 +155,9 @@ const UploadForm = ({
             <Sparkle size={16} />
           </div>
           <TypewriterText
-            text={atsImprovementText}
+            text={getAtsImprovementText()}
             className="text-sm relative z-10 whitespace-pre-line"
-            speed={80} // Slowed down typing speed
+            speed={20} // Faster typing speed (20ms per character)
           />
         </div>
       )}

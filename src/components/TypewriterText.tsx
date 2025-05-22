@@ -12,7 +12,7 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({
   text, 
   delay = 0,
   className = '',
-  speed = 50 // Default speed is 50ms per character
+  speed = 25 // Default speed changed from 50ms to 25ms per character for faster typing
 }) => {
   const [displayText, setDisplayText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
