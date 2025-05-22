@@ -149,7 +149,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
         <Button 
           onClick={handleDownloadDocx}
           disabled={isDownloadingDocx || isDownloadingJson} 
-          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
         >
           {isDownloadingDocx ? (
             <>
@@ -159,7 +159,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
           ) : (
             <>
               <FileDown className="mr-2 h-4 w-4" />
-              Download Resume (.docx)
+              Download as Word (.docx)
             </>
           )}
         </Button>
@@ -168,7 +168,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
           onClick={handleDownloadJson}
           disabled={isDownloadingDocx || isDownloadingJson} 
           variant="outline"
-          className="w-full"
+          className="w-full hover:bg-gradient-to-r hover:from-indigo-100 hover:to-purple-100 transition-colors duration-300"
         >
           {isDownloadingJson ? (
             <>
@@ -178,7 +178,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
           ) : (
             <>
               <FileJson className="mr-2 h-4 w-4" />
-              Download Resume (.json)
+              Download as JSON (.json)
             </>
           )}
         </Button>
