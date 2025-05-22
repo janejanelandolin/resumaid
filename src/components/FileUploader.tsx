@@ -85,6 +85,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             text="Choose how you want to submit your resume..." 
             className="text-muted-foreground font-medium"
             delay={300}
+            speed={35}
           />
         </div>
         

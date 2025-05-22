@@ -1,4 +1,3 @@
-
 import { useResumeContext } from '@/contexts/ResumeContext';
 import FileUploader from '@/components/FileUploader';
 import { Sparkle } from 'lucide-react';
@@ -157,7 +156,7 @@ const UploadForm = ({
           <TypewriterText
             text={getAtsImprovementText()}
             className="text-sm relative z-10 whitespace-pre-line"
-            speed={20} // Faster typing speed (20ms per character)
+            speed={35}
           />
         </div>
       )}
