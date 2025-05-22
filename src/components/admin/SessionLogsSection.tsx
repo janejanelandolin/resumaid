@@ -1,86 +1,22 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Download } from 'lucide-react';
-
-interface SessionLogData {
-  date: string;
-  time: string;
-  jobTitle: string;
-  name: string;
-  email: string;
-  phone: string;
-  location: string;
-  ipAddress: string;
-  unoptimizedScore: number;
-  unoptimizedQualification: string;
-  optimizedScore: number;
-  optimizedQualification: string;
-  recommendation?: number;
-  feedback?: string;
-}
+import { SessionLogData } from '@/services/logs/sessionLogTypes';
+import { downloadAllSessionLogs } from '@/services/logs/sessionLogDownloader';
+import { getLogsFromStorage } from '@/services/logs/sessionLogStorage';
 
 const SessionLogsSection = () => {
   const [sessionLogs, setSessionLogs] = useState<SessionLogData[]>([]);
   
   // Get logs from localStorage on component mount
   useEffect(() => {
-    const storedLogs = localStorage.getItem('sessionLogs');
-    if (storedLogs) {
-      try {
-        setSessionLogs(JSON.parse(storedLogs));
-      } catch (error) {
-        console.error('Failed to parse session logs:', error);
-      }
-    }
+    setSessionLogs(getLogsFromStorage());
   }, []);
 
   const downloadLogs = () => {
-    if (!sessionLogs.length) return;
-
-    // Create header row
-    const headers = [
-      'Date', 'Time', 'Job Title', 'Name', 'Email', 
-      'Phone', 'Address', 'IP Address', 
-      'Original Score', 'Original Qualification',
-      'Optimized Score', 'Optimized Qualification',
-      'Promoter Score', 'Feedback Text'
-    ];
-
-    // Create content with headers and data rows
-    const content = [
-      headers.join('\t'),
-      ...sessionLogs.map(log => [
-        log.date,
-        log.time,
-        log.jobTitle,
-        log.name,
-        log.email,
-        log.phone,
-        log.location,
-        log.ipAddress,
-        log.unoptimizedScore,
-        log.unoptimizedQualification,
-        log.optimizedScore,
-        log.optimizedQualification,
-        log.recommendation !== undefined ? log.recommendation : '',
-        log.feedback || ''
-      ].join('\t'))
-    ].join('\n');
-
-    // Create and trigger download
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = 'SessionsLog.txt';
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
+    downloadAllSessionLogs();
   };
 
   return (
