@@ -12,11 +12,13 @@ import PageContainer from '@/components/PageContainer';
 import SessionLogsSection from '@/components/admin/SessionLogsSection';
 import AdminPasswordDialog from '@/components/admin/AdminPasswordDialog';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { ArrowLeft, Download } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('inputs');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
   
   const { 
     jobPosting, 
@@ -51,10 +53,21 @@ const AdminPage = () => {
   
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
-      <PageContainer className="py-8">
+      <PageContainer className="py-8" centerX={false}>
         <div className="space-y-8">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/')}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to App
+              </Button>
+              <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+            </div>
             <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Admin Only</span>
           </div>
           
@@ -99,8 +112,6 @@ const AdminPage = () => {
           />
         </div>
       </PageContainer>
-      
-      <AdminFooter />
     </div>
   );
 };

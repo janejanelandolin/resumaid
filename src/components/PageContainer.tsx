@@ -7,13 +7,15 @@ interface PageContainerProps {
   centerX?: boolean; // Center horizontally
   centerY?: boolean; // Center vertically
   className?: string; // Additional classes
+  showFooter?: boolean; // Whether to show the footer
 }
 
 const PageContainer: React.FC<PageContainerProps> = ({ 
   children, 
   centerX = true, 
   centerY = false, 
-  className = '' 
+  className = '',
+  showFooter = true
 }) => {
   return (
     <div className="min-h-screen flex flex-col">
@@ -28,7 +30,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
           {children}
         </div>
       </div>
-      <AdminFooter />
+      {showFooter && <AdminFooter />}
     </div>
   );
 };
