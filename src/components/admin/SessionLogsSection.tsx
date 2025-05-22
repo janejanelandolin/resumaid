@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Download } from 'lucide-react';
 import { SessionLogData } from '@/services/logs/sessionLogTypes';
-import { downloadAllSessionLogs } from '@/services/logSessionService';
+import { downloadAllSessionLogs } from '@/services/logs/sessionLogDownloader';
 import { getLogsFromStorage } from '@/services/logs/sessionLogStorage';
 
 const SessionLogsSection = () => {
