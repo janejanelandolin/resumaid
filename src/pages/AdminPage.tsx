@@ -10,12 +10,13 @@ import { formatJobPostingAsText } from '@/hooks/resume/useResumeNormalizer';
 import AdminFooter from '@/components/AdminFooter';
 import PageContainer from '@/components/PageContainer';
 import SessionLogsSection from '@/components/admin/SessionLogsSection';
-import { downloadAllSessionLogs } from '@/services/logSessionService';
+import AdminPasswordDialog from '@/components/admin/AdminPasswordDialog';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('inputs');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   const { 
     jobPosting, 
@@ -37,6 +38,16 @@ const AdminPage = () => {
   // Determine if we have data to display
   const hasJobPosting = !!jobPosting && !!jobPostingText;
   const hasResumeContent = !!resumeContent;
+
+  // Handle authentication success
+  const handleAuthenticated = () => {
+    setIsAuthenticated(true);
+  };
+  
+  // If not authenticated, show only the password dialog
+  if (!isAuthenticated) {
+    return <AdminPasswordDialog onAuthenticated={handleAuthenticated} />;
+  }
   
   return (
     <div className="bg-gray-50 min-h-screen pb-20">

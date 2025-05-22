@@ -44,9 +44,9 @@ const SessionLogsSection = () => {
     const headers = [
       'Date', 'Time', 'Job Title', 'Name', 'Email', 
       'Phone', 'Location', 'IP Address', 
-      'Unoptimized Score', 'Unoptimized Qualification',
+      'Original Score', 'Original Qualification',
       'Optimized Score', 'Optimized Qualification',
-      'Recommendation', 'Feedback'
+      'Promoter Score', 'Feedback Text'
     ];
 
     // Create content with headers and data rows
@@ -101,9 +101,12 @@ const SessionLogsSection = () => {
                   <TableHead>Time</TableHead>
                   <TableHead>Job Title</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Score Change</TableHead>
-                  <TableHead>Qualification</TableHead>
-                  <TableHead>Feedback</TableHead>
+                  <TableHead>Original Score</TableHead>
+                  <TableHead>Optimized Score</TableHead>
+                  <TableHead>Original Qualification</TableHead>
+                  <TableHead>Optimized Qualification</TableHead>
+                  <TableHead>Promoter Score</TableHead>
+                  <TableHead>Feedback Text</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -113,9 +116,14 @@ const SessionLogsSection = () => {
                     <TableCell>{log.time}</TableCell>
                     <TableCell>{log.jobTitle}</TableCell>
                     <TableCell>{log.name}</TableCell>
-                    <TableCell>{`${log.unoptimizedScore} → ${log.optimizedScore}`}</TableCell>
-                    <TableCell>{`${log.unoptimizedQualification} → ${log.optimizedQualification}`}</TableCell>
-                    <TableCell>{log.recommendation !== undefined ? `${log.recommendation}/10` : 'No feedback'}</TableCell>
+                    <TableCell>{log.unoptimizedScore}</TableCell>
+                    <TableCell>{log.optimizedScore}</TableCell>
+                    <TableCell>{log.unoptimizedQualification}</TableCell>
+                    <TableCell>{log.optimizedQualification}</TableCell>
+                    <TableCell>{log.recommendation !== undefined ? `${log.recommendation}/10` : 'No data'}</TableCell>
+                    <TableCell className="max-w-[200px] truncate" title={log.feedback || ''}>
+                      {log.feedback || 'No feedback'}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
