@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home } from 'lucide-react';
+import { ArrowLeft, Home, MessageSquare } from 'lucide-react';
 import PageContainer from '@/components/PageContainer';
 import DownloadButtons from '@/components/download/DownloadButtons';
 import ResumeSummary from '@/components/download/ResumeSummary';

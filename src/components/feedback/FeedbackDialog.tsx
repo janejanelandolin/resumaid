@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { saveFeedbackToLocalStorage } from '@/services/logSessionService';
+import { MessageSquare } from 'lucide-react';
 
 interface FeedbackDialogProps {
   variant?: 'primary' | 'outline';
@@ -59,6 +60,7 @@ const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ variant = 'primary' }) 
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={variant === 'outline' ? 'outline' : 'default'}>
+          <MessageSquare className="mr-2 h-4 w-4" />
           Leave Feedback
         </Button>
       </DialogTrigger>

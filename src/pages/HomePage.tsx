@@ -1,10 +1,9 @@
 
-import { Sparkle, Rocket, Star } from 'lucide-react';
+import { Sparkle, Rocket, Star, MessageSquare } from 'lucide-react';
 import PageContainer from '@/components/PageContainer';
 import RotatingText from '@/components/RotatingText';
 import JobSearchForm from '@/components/home/JobSearchForm';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
-import AuthButtons from '@/components/auth/AuthButtons';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { useEffect } from 'react';
 import FeedbackDialog from '@/components/feedback/FeedbackDialog';
@@ -28,10 +27,9 @@ const HomePage = () => {
     <div className="bg-gradient-to-b from-white to-purple-50 min-h-screen">
       <PageContainer className="justify-start pt-8">
         <div className="w-full space-y-8 relative">
-          {/* Auth button in top-right */}
+          {/* Feedback button in top-right */}
           <div className="absolute top-0 right-0 flex items-center gap-2">
             <FeedbackDialog variant="outline" />
-            <AuthButtons />
           </div>
           
           {/* Decorative elements */}
