@@ -141,7 +141,7 @@ export const saveFeedbackToLocalStorage = (recommendation: number, feedback: str
 };
 
 /**
- * Log session data to SessionsLog.txt
+ * Log session data to localStorage only (no download)
  */
 export const logSessionData = async (
   jobTitle: string,
@@ -174,31 +174,14 @@ export const logSessionData = async (
       optimizedQualification: tailoredScore?.consensus_qualification || 'unknown'
     };
     
-    // Format the log entry
+    // Format the log entry for debugging
     const logEntry = formatLogEntry(logData);
-    
     console.log('Session data logged:', logEntry);
     
     // Save to localStorage for admin access
     saveToLocalStorage(logData);
     
-    // Create a downloadable version of the log entry
-    const blob = new Blob([logEntry + '\n'], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    
-    // Create a hidden link to download the file
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = 'SessionsLog.txt';
-    
-    // Append to body, click and remove
-    document.body.appendChild(a);
-    a.click();
-    
-    // Cleanup
-    window.URL.revokeObjectURL(url);
-    a.remove();
+    // No longer automatically downloading the file
   } catch (error) {
     console.error('Failed to log session data:', error);
   }
