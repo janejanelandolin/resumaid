@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Download } from 'lucide-react';
 import { SessionLogData } from '@/services/logs/sessionLogTypes';
-import { downloadAllSessionLogs } from '@/services/logs/sessionLogDownloader';
+import { downloadAllSessionLogs } from '@/services/logSessionService';
 import { getLogsFromStorage } from '@/services/logs/sessionLogStorage';
 
 const SessionLogsSection = () => {
