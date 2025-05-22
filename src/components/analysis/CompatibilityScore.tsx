@@ -1,4 +1,3 @@
-
 import React from 'react';
 import AnimatedDial from '@/components/AnimatedDial';
 import { ArrowRight, CheckCircle2, Sparkle } from 'lucide-react';
@@ -16,31 +15,12 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
   atsSimilarity,
   feedbackSimilarity,
   improvement,
+  // Keeping the props in the interface but not using them in the component
   atsQualification,
   feedbackQualification
 }) => {
   const { isFreeVersion } = useAppVersion();
   
-  // Helper function to determine qualification badge color
-  const getQualificationColor = (qualification: string) => {
-    if (!qualification || qualification === 'Not Available') return 'bg-gray-100 text-gray-800';
-    
-    // Updated color logic based on qualification text
-    if (qualification.toLowerCase().includes('irrelevant')) return 'bg-red-100 text-red-800';
-    if (qualification.toLowerCase().includes('qualified')) {
-      // Check for underqualified or overqualified (yellow)
-      if (qualification.toLowerCase().includes('under') || 
-          qualification.toLowerCase().includes('over')) {
-        return 'bg-yellow-100 text-yellow-800';
-      }
-      // Regular qualified (green)
-      return 'bg-green-100 text-green-800';
-    }
-    
-    // Default to yellow for all other cases
-    return 'bg-yellow-100 text-yellow-800';
-  };
-
   // Ensure that similarity values are treated as percentages
   // Convert decimal values (0-1) to percentages (0-100)
   const normalizedAtsSimilarity = atsSimilarity <= 1 ? atsSimilarity * 100 : atsSimilarity;
@@ -73,13 +53,6 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
             color="text-orange-500" 
             label="Without optimization" 
           />
-          {atsQualification && (
-            <div className={`mt-2 px-3 py-1 rounded-full ${getQualificationColor(atsQualification)}`}>
-              <span className="text-xs font-semibold">
-                {atsQualification}
-              </span>
-            </div>
-          )}
           <span className="text-center text-xs mt-1 text-[0.8rem] w-full text-orange-500">Without optimization</span>
         </div>
         
@@ -100,13 +73,6 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
             color="text-indigo-600" 
             label="With optimization" 
           />
-          {feedbackQualification && (
-            <div className={`mt-2 px-3 py-1 rounded-full ${getQualificationColor(feedbackQualification)}`}>
-              <span className="text-xs font-semibold">
-                {feedbackQualification}
-              </span>
-            </div>
-          )}
           <span className="text-center text-xs mt-1 text-[0.8rem] w-full text-indigo-600">With optimization</span>
         </div>
       </div>
