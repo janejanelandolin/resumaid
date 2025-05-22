@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,14 +12,7 @@ const SessionLogsSection = () => {
   
   // Get logs from localStorage on component mount
   useEffect(() => {
-    try {
-      console.log('Loading session logs from storage');
-      const logs = getLogsFromStorage();
-      console.log('Retrieved logs:', logs);
-      setSessionLogs(logs);
-    } catch (error) {
-      console.error('Error loading session logs:', error);
-    }
+    setSessionLogs(getLogsFromStorage());
   }, []);
 
   const downloadLogs = () => {

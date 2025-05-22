@@ -1,9 +1,9 @@
 
 import { ResumeJson, ScoreResponse } from '@/types/resume';
-import { SessionLogData } from '@/services/logs/sessionLogTypes';
-import { getIpAddress, getCurrentDateTime, extractResumeData } from '@/services/logs/logSessionUtils';
-import { saveToLocalStorage, updateLastLogWithFeedback } from '@/services/logs/sessionLogStorage';
-import { downloadAllSessionLogs } from '@/services/logs/sessionLogDownloader';
+import { SessionLogData } from './logs/sessionLogTypes';
+import { getIpAddress, getCurrentDateTime, extractResumeData } from './logs/logSessionUtils';
+import { saveToLocalStorage, updateLastLogWithFeedback } from './logs/sessionLogStorage';
+import { downloadAllSessionLogs } from './logs/sessionLogDownloader';
 
 /**
  * Save feedback to localStorage by updating the most recent log entry
