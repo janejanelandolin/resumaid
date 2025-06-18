@@ -172,7 +172,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        paymentLink="https://buy.stripe.com/6oU7sMb8ccqJf2ee5pew801"
+        paymentLink="https://buy.stripe.com/test_00wcN72JHdPKf0Pdlvgbm01"
       />
     </>
   );
