@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   Card, 
@@ -12,6 +11,7 @@ import { FileDown, FileJson, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiService } from '@/services/api';
 import { ResumeJson } from '@/types/resume';
+import PaymentModal from '@/components/payments/PaymentModal';
 
 interface DownloadButtonsProps {
   resume: ResumeJson;
@@ -20,15 +20,16 @@ interface DownloadButtonsProps {
 
 const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [isDownloadingDocx, setIsDownloadingDocx] = useState(false);
   const [isDownloadingJson, setIsDownloadingJson] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // Listen for Stripe payment success
   useEffect(() => {
     const handleStripePaymentSuccess = () => {
       console.log('Stripe payment successful, triggering DOCX download');
+      setShowPaymentModal(false); // Close the modal
       handleActualDocxDownload();
     };
 
@@ -41,8 +42,8 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
   }, [resume, jobTitle]);
 
   const handleDownloadDocx = async () => {
-    // Navigate to the payment popup page
-    navigate('/paypopup');
+    // Open payment modal instead of navigating to a new page
+    setShowPaymentModal(true);
   };
 
   const handleActualDocxDownload = async () => {
@@ -150,60 +151,68 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
   };
 
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <CardTitle className="text-purple-600">Download your optimized resume</CardTitle>
-        <CardDescription>
-          Get your resume in your preferred format, ready for final adjustments
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Button 
-          onClick={handleDownloadDocx}
-          disabled={isDownloadingDocx || isDownloadingJson} 
-          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
-        >
-          {isDownloadingDocx ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Preparing Word document...
-            </>
-          ) : (
-            <>
-              <FileDown className="mr-2 h-4 w-4" />
-              Download as Word (.docx)
-            </>
+    <>
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle className="text-purple-600">Download your optimized resume</CardTitle>
+          <CardDescription>
+            Get your resume in your preferred format, ready for final adjustments
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Button 
+            onClick={handleDownloadDocx}
+            disabled={isDownloadingDocx || isDownloadingJson} 
+            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
+          >
+            {isDownloadingDocx ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Preparing Word document...
+              </>
+            ) : (
+              <>
+                <FileDown className="mr-2 h-4 w-4" />
+                Download as Word (.docx)
+              </>
+            )}
+          </Button>
+          
+          <Button 
+            onClick={handleDownloadJson}
+            disabled={isDownloadingDocx || isDownloadingJson} 
+            variant="outline"
+            className="w-full hover:bg-gradient-to-r hover:from-indigo-100 hover:to-purple-100 transition-colors duration-300"
+          >
+            {isDownloadingJson ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Preparing JSON file...
+              </>
+            ) : (
+              <>
+                <FileJson className="mr-2 h-4 w-4" />
+                Download as JSON (.json)
+              </>
+            )}
+          </Button>
+          
+          {error && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-800 text-sm">
+              <p className="font-medium">Error: Unable to download resume</p>
+              <p className="mt-1">{error}</p>
+              <p className="mt-2">Please try again or contact support if the issue persists.</p>
+            </div>
           )}
-        </Button>
-        
-        <Button 
-          onClick={handleDownloadJson}
-          disabled={isDownloadingDocx || isDownloadingJson} 
-          variant="outline"
-          className="w-full hover:bg-gradient-to-r hover:from-indigo-100 hover:to-purple-100 transition-colors duration-300"
-        >
-          {isDownloadingJson ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Preparing JSON file...
-            </>
-          ) : (
-            <>
-              <FileJson className="mr-2 h-4 w-4" />
-              Download as JSON (.json)
-            </>
-          )}
-        </Button>
-        
-        {error && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-800 text-sm">
-            <p className="font-medium">Error: Unable to download resume</p>
-            <p className="mt-1">{error}</p>
-            <p className="mt-2">Please try again or contact support if the issue persists.</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        paymentLink="https://buy.stripe.com/6oU7sMb8ccqJf2ee5pew801"
+      />
+    </>
   );
 };
 
