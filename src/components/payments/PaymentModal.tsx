@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Dialog,
@@ -44,7 +45,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, paymentLin
               size="lg"
             >
               <CreditCard className="mr-2 h-4 w-4" />
-              Pay Now - $49.99
+              One Optimized Resume $4.99
             </Button>
           </div>
           
