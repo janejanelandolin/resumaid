@@ -1,5 +1,5 @@
+
 import React, { useState } from 'react';
-import { paymentService, type PaymentConfig as PaymentConfigType, PaymentMethod } from '../services/paymentService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,9 +11,25 @@ interface PaymentConfigProps {
   onClose: () => void;
 }
 
+type PaymentMethod = 'card' | 'apple' | 'google';
+
+interface PaymentConfig {
+  apiKey: string;
+  supportedMethods: PaymentMethod[];
+  processingFee: number;
+  taxRate: number;
+  testMode: boolean;
+}
+
 const PaymentConfig: React.FC<PaymentConfigProps> = ({ onClose }) => {
   const { toast } = useToast();
-  const [config, setConfig] = useState<PaymentConfigType>(paymentService.getConfig());
+  const [config, setConfig] = useState<PaymentConfig>({
+    apiKey: '',
+    supportedMethods: ['card'],
+    processingFee: 0,
+    taxRate: 0,
+    testMode: true
+  });
   
   const handleMethodToggle = (method: PaymentMethod) => {
     const newMethods = config.supportedMethods.includes(method)
@@ -27,7 +43,8 @@ const PaymentConfig: React.FC<PaymentConfigProps> = ({ onClose }) => {
   };
 
   const handleSave = () => {
-    paymentService.updateConfig(config);
+    // Save config to localStorage for now
+    localStorage.setItem('paymentConfig', JSON.stringify(config));
     toast({
       title: "Configuration Updated",
       description: "Payment settings have been saved successfully.",
@@ -36,7 +53,13 @@ const PaymentConfig: React.FC<PaymentConfigProps> = ({ onClose }) => {
   };
 
   const handleReset = () => {
-    const defaultConfig = paymentService.resetConfig();
+    const defaultConfig: PaymentConfig = {
+      apiKey: '',
+      supportedMethods: ['card'],
+      processingFee: 0,
+      taxRate: 0,
+      testMode: true
+    };
     setConfig(defaultConfig);
     toast({
       title: "Configuration Reset",

@@ -1,7 +1,6 @@
 
 import React, { createContext, useState, useContext } from 'react';
 import { useResumeParser } from '../hooks/useResumeParser';
-import { useTemplateManager } from '../hooks/useTemplateManager';
 import { ResumeContextType } from '../types/context';
 import { 
   JobPosting, 
@@ -34,6 +33,9 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Edit decisions
   const [editDecisions, setEditDecisions] = useState<EditDecision[]>([]);
   
+  // Template management (simplified without external hook)
+  const [selectedTemplates, setSelectedTemplates] = useState<any[]>([]);
+  
   const addEditDecision = (decision: EditDecision) => {
     setEditDecisions(prev => [...prev, decision]);
   };
@@ -42,8 +44,19 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setEditDecisions([]);
   };
 
+  const addTemplate = (template: any) => {
+    setSelectedTemplates(prev => [...prev, template]);
+  };
+
+  const removeTemplate = (templateId: string) => {
+    setSelectedTemplates(prev => prev.filter(t => t.id !== templateId));
+  };
+
+  const resetTemplates = () => {
+    setSelectedTemplates([]);
+  };
+
   // Custom hooks
-  const { selectedTemplates, addTemplate, removeTemplate, resetTemplates } = useTemplateManager();
   const { parseResumeContent } = useResumeParser();
 
   // Function to get optimized resume for preview and download
