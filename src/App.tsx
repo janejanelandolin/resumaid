@@ -12,8 +12,6 @@ import StripePaymentListener from "./components/payments/StripePaymentListener";
 import HomePage from "./pages/HomePage";
 import UploadPage from "./pages/UploadPage";
 import AnalysisPage from "./pages/AnalysisPage";
-import TemplateSelectionPage from "./pages/TemplateSelectionPage";
-import ResumePreviewPage from "./pages/ResumePreviewPage";
 import DownloadOptimizedResumePage from "./pages/DownloadOptimizedResumePage";
 import DownloadPage from "./pages/DownloadPage";
 import AdminPage from "./pages/AdminPage";
@@ -35,8 +33,6 @@ const App = () => (
               <Route path="/" element={<HomePage />} />
               <Route path="/upload" element={<UploadPage />} />
               <Route path="/analysis" element={<AnalysisPage />} />
-              <Route path="/templates" element={<TemplateSelectionPage />} />
-              <Route path="/preview" element={<ResumePreviewPage />} />
               <Route path="/download" element={<DownloadPage />} />
               <Route path="/download-templates" element={<DownloadOptimizedResumePage />} />
               <Route path="/admin" element={<AdminPage />} />
