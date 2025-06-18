@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,19 +8,59 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { CreditCard, X } from 'lucide-react';
+import { CreditCard, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  paymentLink: string;
 }
 
-const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, paymentLink }) => {
-  const handlePayment = () => {
-    // Open Stripe payment link in a new tab
-    window.open(paymentLink, '_blank');
-    // Keep modal open so user can return after payment
+const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handlePayment = async () => {
+    setIsLoading(true);
+    
+    try {
+      console.log('Creating checkout session...');
+      
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          amount: 499, // $4.99 in cents
+          currency: 'usd',
+          successUrl: `${window.location.origin}/download?payment=success`,
+          cancelUrl: `${window.location.origin}/download?payment=cancelled`
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.url) {
+        console.log('Redirecting to checkout:', data.url);
+        // Store session ID for later verification
+        if (data.sessionId) {
+          localStorage.setItem('stripe-session-id', data.sessionId);
+        }
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast({
+        title: "Payment Error",
+        description: error.message || "Failed to create checkout session",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -40,16 +81,26 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, paymentLin
             
             <Button 
               onClick={handlePayment}
+              disabled={isLoading}
               className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
               size="lg"
             >
-              <CreditCard className="mr-2 h-4 w-4" />
-              One Optimized Resume $4.99
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating checkout...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  One Optimized Resume $4.99
+                </>
+              )}
             </Button>
           </div>
           
           <div className="text-xs text-center text-muted-foreground">
-            <p>After payment, return to this page and your download will begin automatically.</p>
+            <p>After payment, you'll be redirected back to download your resume.</p>
           </div>
         </div>
       </DialogContent>

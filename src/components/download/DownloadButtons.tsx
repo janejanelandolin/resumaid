@@ -25,23 +25,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
   const [isDownloadingDocx, setIsDownloadingDocx] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const { hasPaid } = usePaymentStatus();
-
-  // Listen for Stripe payment success
-  useEffect(() => {
-    const handleStripePaymentSuccess = () => {
-      console.log('Stripe payment successful, triggering DOCX download');
-      setShowPaymentModal(false); // Close the modal
-      handleActualDocxDownload();
-    };
-
-    // Listen for the custom event that Stripe buy button fires on success
-    window.addEventListener('stripe-payment-success', handleStripePaymentSuccess);
-    
-    return () => {
-      window.removeEventListener('stripe-payment-success', handleStripePaymentSuccess);
-    };
-  }, [resume, jobTitle]);
+  const { hasPaid, isVerifying } = usePaymentStatus();
 
   const handlePaymentClick = () => {
     setShowPaymentModal(true);
@@ -126,11 +110,20 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
                 </p>
                 <Button 
                   onClick={handlePaymentClick}
-                  disabled={isDownloadingDocx} 
+                  disabled={isDownloadingDocx || isVerifying} 
                   className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
                 >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Pay $4.99
+                  {isVerifying ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Verifying payment...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Pay $4.99
+                    </>
+                  )}
                 </Button>
               </>
             ) : (
@@ -172,7 +165,6 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        paymentLink="https://buy.stripe.com/test_00wcN72JHdPKf0Pdlvgbm01"
       />
     </>
   );
