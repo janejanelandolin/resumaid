@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
@@ -9,6 +8,7 @@ import DownloadButtons from '@/components/download/DownloadButtons';
 import ResumeSummary from '@/components/download/ResumeSummary';
 import RationaleSection from '@/components/download/RationaleSection';
 import FeedbackDialog from '@/components/feedback/FeedbackDialog';
+import StripePaymentListener from '@/components/payments/StripePaymentListener';
 
 const DownloadPage = () => {
   const navigate = useNavigate();
@@ -55,6 +55,7 @@ const DownloadPage = () => {
 
   return (
     <PageContainer>
+      <StripePaymentListener />
       <div className="w-full max-w-4xl mx-auto space-y-8">
         <div className="flex justify-between items-center mb-8">
           <Button variant="ghost" onClick={() => navigate('/analysis')} className="mr-2">
