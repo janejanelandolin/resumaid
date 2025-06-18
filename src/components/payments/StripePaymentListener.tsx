@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 
 const StripePaymentListener = () => {
@@ -9,22 +8,30 @@ const StripePaymentListener = () => {
         const urlParams = new URLSearchParams(window.location.search);
         
         // Check for various Stripe success parameters
+        const sessionId = urlParams.get('session_id');
         const paymentIntent = urlParams.get('payment_intent');
         const paymentIntentStatus = urlParams.get('payment_intent_client_secret');
-        const sessionId = urlParams.get('session_id');
         
         // Check if any payment success indicator is present
-        if (paymentIntent || paymentIntentStatus || sessionId) {
+        if (sessionId || paymentIntent || paymentIntentStatus) {
           console.log('Stripe payment success detected via URL parameters:', {
+            sessionId,
             paymentIntent,
-            paymentIntentStatus,
-            sessionId
+            paymentIntentStatus
           });
           
-          // Dispatch custom event for payment success
-          window.dispatchEvent(new CustomEvent('stripe-payment-success'));
+          // Store the session ID for potential future use
+          if (sessionId) {
+            localStorage.setItem('stripe-session-id', sessionId);
+            console.log('Stored Stripe session ID:', sessionId);
+          }
           
-          // Clean up URL parameters
+          // Dispatch custom event for payment success
+          window.dispatchEvent(new CustomEvent('stripe-payment-success', {
+            detail: { sessionId }
+          }));
+          
+          // Clean up URL parameters to keep the URL clean
           const newUrl = window.location.pathname;
           window.history.replaceState({}, document.title, newUrl);
         }
@@ -47,7 +54,9 @@ const StripePaymentListener = () => {
           if (event.data?.type === 'stripe_checkout_session_complete' || 
               event.data?.type === 'stripe_checkout_session_succeeded') {
             console.log('Stripe checkout session complete via postMessage');
-            window.dispatchEvent(new CustomEvent('stripe-payment-success'));
+            window.dispatchEvent(new CustomEvent('stripe-payment-success', {
+              detail: { sessionId: event.data?.sessionId }
+            }));
           }
         }
       };
