@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   Card, 
@@ -19,10 +20,10 @@ interface DownloadButtonsProps {
 
 const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isDownloadingDocx, setIsDownloadingDocx] = useState(false);
   const [isDownloadingJson, setIsDownloadingJson] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showStripeButton, setShowStripeButton] = useState(false);
 
   // Listen for Stripe payment success
   useEffect(() => {
@@ -40,8 +41,8 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
   }, [resume, jobTitle]);
 
   const handleDownloadDocx = async () => {
-    // Show the Stripe buy button instead of directly downloading
-    setShowStripeButton(true);
+    // Navigate to the payment popup page
+    navigate('/paypopup');
   };
 
   const handleActualDocxDownload = async () => {
@@ -81,9 +82,6 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
           title: "Download successful",
           description: "Your optimized resume has been downloaded as a Word document.",
         });
-        
-        // Hide the Stripe button after successful download
-        setShowStripeButton(false);
       }
     } catch (error) {
       console.error("DOCX download failed:", error);
@@ -160,49 +158,23 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {showStripeButton ? (
-          <div className="text-center space-y-4">
-            <p className="text-sm text-gray-600 mb-4">
-              Complete your payment to download the Word document:
-            </p>
-            <div 
-              dangerouslySetInnerHTML={{
-                __html: `
-                  <script async src="https://js.stripe.com/v3/buy-button.js"></script>
-                  <stripe-buy-button
-                    buy-button-id="buy_btn_1RbQMwQOfmy5vWZJTsFkcxKA"
-                    publishable-key="pk_test_51RbPMLQOfmy5vWZJAHdDadRVDL0dYOA7J6QuvvPX8nONpeOn7Dw9ZTDItMGhs1qloBVHUNmGruxGLKqdlZNNBEpg00TAYRO9Sg"
-                  >
-                  </stripe-buy-button>
-                `
-              }}
-            />
-            {isDownloadingDocx && (
-              <div className="flex items-center justify-center mt-4">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Preparing your download...</span>
-              </div>
-            )}
-          </div>
-        ) : (
-          <Button 
-            onClick={handleDownloadDocx}
-            disabled={isDownloadingDocx || isDownloadingJson} 
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
-          >
-            {isDownloadingDocx ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Preparing Word document...
-              </>
-            ) : (
-              <>
-                <FileDown className="mr-2 h-4 w-4" />
-                Download as Word (.docx)
-              </>
-            )}
-          </Button>
-        )}
+        <Button 
+          onClick={handleDownloadDocx}
+          disabled={isDownloadingDocx || isDownloadingJson} 
+          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
+        >
+          {isDownloadingDocx ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Preparing Word document...
+            </>
+          ) : (
+            <>
+              <FileDown className="mr-2 h-4 w-4" />
+              Download as Word (.docx)
+            </>
+          )}
+        </Button>
         
         <Button 
           onClick={handleDownloadJson}
