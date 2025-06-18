@@ -7,15 +7,20 @@ export const usePaymentStatus = () => {
   const [isVerifying, setIsVerifying] = useState(false);
 
   const verifyPayment = async (sessionId: string) => {
-    if (!sessionId) return false;
+    if (!sessionId) {
+      console.log('No session ID provided for verification');
+      return false;
+    }
     
     try {
       setIsVerifying(true);
-      console.log('Verifying payment for session:', sessionId);
+      console.log('Starting payment verification for session:', sessionId);
       
       const { data, error } = await supabase.functions.invoke('verify-payment', {
         body: { sessionId }
       });
+
+      console.log('Payment verification response:', { data, error });
 
       if (error) {
         console.error('Payment verification error:', error);
@@ -23,11 +28,19 @@ export const usePaymentStatus = () => {
       }
 
       if (data?.paid) {
-        console.log('Payment verified successfully');
+        console.log('Payment verified successfully:', data);
         setHasPaid(true);
         localStorage.setItem('stripe-payment-completed', 'true');
         localStorage.setItem('verified-session-id', sessionId);
+        
+        // Dispatch a success event for other components
+        window.dispatchEvent(new CustomEvent('payment-verified', {
+          detail: { sessionId, paymentData: data }
+        }));
+        
         return true;
+      } else {
+        console.log('Payment not verified:', data);
       }
 
       return false;
@@ -40,24 +53,37 @@ export const usePaymentStatus = () => {
   };
 
   useEffect(() => {
+    console.log('usePaymentStatus hook initialized');
+    
     // Check if payment was already completed
     const paymentStatus = localStorage.getItem('stripe-payment-completed');
     if (paymentStatus === 'true') {
+      console.log('Payment already completed (from localStorage)');
       setHasPaid(true);
     }
 
-    // Check URL parameters for successful payment
+    // Check URL parameters for successful payment - be more thorough
     const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus2 = urlParams.get('payment');
+    const paymentParam = urlParams.get('payment');
     const sessionId = urlParams.get('session_id');
+    
+    console.log('URL params check:', { 
+      paymentParam, 
+      sessionId, 
+      fullUrl: window.location.href,
+      search: window.location.search 
+    });
 
-    if (paymentStatus2 === 'success' && sessionId) {
-      console.log('Payment success detected from URL, verifying...');
+    if (paymentParam === 'success' && sessionId) {
+      console.log('Payment success detected from URL, verifying session:', sessionId);
       verifyPayment(sessionId);
       
-      // Clean up URL parameters
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
+      // Clean up URL parameters after a short delay
+      setTimeout(() => {
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        console.log('URL parameters cleaned up');
+      }, 1000);
     }
 
     // Listen for payment success events from other components
@@ -65,18 +91,30 @@ export const usePaymentStatus = () => {
       console.log('Payment success event received:', event.detail);
       const sessionId = event.detail?.sessionId || localStorage.getItem('stripe-session-id');
       if (sessionId) {
+        console.log('Verifying payment from event with session:', sessionId);
         verifyPayment(sessionId);
       }
     };
 
+    // Listen for direct verification requests
+    const handleVerifyRequest = (event: CustomEvent) => {
+      console.log('Payment verify request received:', event.detail);
+      if (event.detail?.sessionId) {
+        verifyPayment(event.detail.sessionId);
+      }
+    };
+
     window.addEventListener('stripe-payment-success', handlePaymentSuccess as EventListener);
+    window.addEventListener('verify-payment-request', handleVerifyRequest as EventListener);
 
     return () => {
       window.removeEventListener('stripe-payment-success', handlePaymentSuccess as EventListener);
+      window.removeEventListener('verify-payment-request', handleVerifyRequest as EventListener);
     };
   }, []);
 
   const resetPaymentStatus = () => {
+    console.log('Resetting payment status');
     setHasPaid(false);
     localStorage.removeItem('stripe-payment-completed');
     localStorage.removeItem('stripe-session-id');

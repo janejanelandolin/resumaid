@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ResumeProvider } from "./contexts/ResumeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import StripePaymentListener from "./components/payments/StripePaymentListener";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -32,6 +33,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <StripePaymentListener />
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/upload" element={<UploadPage />} />

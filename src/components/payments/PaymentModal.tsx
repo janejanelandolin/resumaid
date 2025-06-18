@@ -25,6 +25,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose }) => {
     setIsLoading(true);
     
     try {
+      console.log('Starting payment process...');
       console.log('Creating checkout session...');
       
       const { data, error } = await supabase.functions.invoke('create-checkout', {
@@ -36,19 +37,34 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose }) => {
         }
       });
 
+      console.log('Checkout session response:', { data, error });
+
       if (error) {
+        console.error('Checkout session error:', error);
         throw error;
       }
 
-      if (data?.url) {
+      if (data?.url && data?.sessionId) {
         console.log('Redirecting to checkout:', data.url);
+        console.log('Session ID:', data.sessionId);
+        
         // Store session ID for later verification
-        if (data.sessionId) {
-          localStorage.setItem('stripe-session-id', data.sessionId);
-        }
+        localStorage.setItem('stripe-session-id', data.sessionId);
+        localStorage.setItem('stripe-checkout-initiated', 'true');
+        localStorage.setItem('stripe-checkout-timestamp', Date.now().toString());
+        
+        console.log('Stored session data:', {
+          sessionId: data.sessionId,
+          timestamp: Date.now()
+        });
+        
+        // Close modal before redirect
+        onClose();
+        
         // Redirect to Stripe checkout
         window.location.href = data.url;
       } else {
+        console.error('Invalid response from create-checkout:', data);
         throw new Error('No checkout URL received');
       }
     } catch (error) {
