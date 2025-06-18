@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -31,8 +32,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose }) => {
         body: {
           amount: 499, // $4.99 in cents
           currency: 'usd',
-          successUrl: `${window.location.origin}/success?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-          cancelUrl: `${window.location.origin}/download?payment=cancelled`
+          successUrl: `${window.location.origin}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${window.location.origin}?payment=cancelled`
         }
       });
 
