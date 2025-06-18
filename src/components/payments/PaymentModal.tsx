@@ -31,9 +31,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose }) => {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
           amount: 499, // $4.99 in cents
-          currency: 'usd',
-          successUrl: `${window.location.origin}/download?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-          cancelUrl: `${window.location.origin}/download?payment=cancelled`
+          currency: 'usd'
+          // Remove successUrl and cancelUrl - let Stripe dashboard handle redirects
         }
       });
 
