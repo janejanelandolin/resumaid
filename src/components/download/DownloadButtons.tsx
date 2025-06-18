@@ -7,11 +7,12 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { FileDown, FileJson, Loader2 } from 'lucide-react';
+import { FileDown, FileJson, Loader2, CreditCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiService } from '@/services/api';
 import { ResumeJson } from '@/types/resume';
 import PaymentModal from '@/components/payments/PaymentModal';
+import { usePaymentStatus } from '@/hooks/usePaymentStatus';
 
 interface DownloadButtonsProps {
   resume: ResumeJson;
@@ -24,6 +25,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
   const [isDownloadingJson, setIsDownloadingJson] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const { hasPaid } = usePaymentStatus();
 
   // Listen for Stripe payment success
   useEffect(() => {
@@ -41,9 +43,16 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
     };
   }, [resume, jobTitle]);
 
-  const handleDownloadDocx = async () => {
-    // Open payment modal instead of navigating to a new page
+  const handlePaymentClick = () => {
     setShowPaymentModal(true);
+  };
+
+  const handleDownloadDocx = async () => {
+    if (hasPaid) {
+      await handleActualDocxDownload();
+    } else {
+      setShowPaymentModal(true);
+    }
   };
 
   const handleActualDocxDownload = async () => {
@@ -160,24 +169,49 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button 
-            onClick={handleDownloadDocx}
-            disabled={isDownloadingDocx || isDownloadingJson} 
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
-          >
-            {isDownloadingDocx ? (
+          {/* Word Document Download Section */}
+          <div className="space-y-2">
+            {!hasPaid ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Preparing Word document...
+                <p className="text-sm text-gray-500 text-center">
+                  Please pay to download optimized resume in Word format (.docx)
+                </p>
+                <Button 
+                  onClick={handlePaymentClick}
+                  disabled={isDownloadingDocx || isDownloadingJson} 
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
+                >
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Pay - One Optimized Resume $4.99
+                </Button>
               </>
             ) : (
               <>
-                <FileDown className="mr-2 h-4 w-4" />
-                Download as Word (.docx)
+                <p className="text-sm text-gray-500 text-center">
+                  Thank you for payment
+                </p>
+                <Button 
+                  onClick={handleDownloadDocx}
+                  disabled={isDownloadingDocx || isDownloadingJson} 
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
+                >
+                  {isDownloadingDocx ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Preparing Word document...
+                    </>
+                  ) : (
+                    <>
+                      <FileDown className="mr-2 h-4 w-4" />
+                      Download in Word (.docx)
+                    </>
+                  )}
+                </Button>
               </>
             )}
-          </Button>
+          </div>
           
+          {/* JSON Download - Always Available */}
           <Button 
             onClick={handleDownloadJson}
             disabled={isDownloadingDocx || isDownloadingJson} 
