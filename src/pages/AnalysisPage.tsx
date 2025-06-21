@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
@@ -54,7 +53,7 @@ const AnalysisPage = () => {
     markWorkflowComplete(); // Mark workflow as complete before navigating
     
     if (isFreeVersion) {
-      navigate('/download', { state: { fromAnalysis: true } });
+      navigate('/results', { state: { fromAnalysis: true } });
     } else {
       navigate('/payment', { state: { fromAnalysis: true } });
     }

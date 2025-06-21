@@ -13,7 +13,7 @@ import HomePage from "./pages/HomePage";
 import UploadPage from "./pages/UploadPage";
 import AnalysisPage from "./pages/AnalysisPage";
 import DownloadOptimizedResumePage from "./pages/DownloadOptimizedResumePage";
-import DownloadPage from "./pages/DownloadPage";
+import ResultsPage from "./pages/ResultsPage";
 import AdminPage from "./pages/AdminPage";
 import DebugPage from "./pages/DebugPage";
 import NotFound from "./pages/NotFound";
@@ -33,7 +33,7 @@ const App = () => (
               <Route path="/" element={<HomePage />} />
               <Route path="/upload" element={<UploadPage />} />
               <Route path="/analysis" element={<AnalysisPage />} />
-              <Route path="/download" element={<DownloadPage />} />
+              <Route path="/results" element={<ResultsPage />} />
               <Route path="/download-templates" element={<DownloadOptimizedResumePage />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/debug" element={<DebugPage />} />

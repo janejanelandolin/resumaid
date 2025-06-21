@@ -10,7 +10,7 @@ import RationaleSection from '@/components/download/RationaleSection';
 import FeedbackDialog from '@/components/feedback/FeedbackDialog';
 import StripePaymentListener from '@/components/payments/StripePaymentListener';
 
-const DownloadPage = () => {
+const ResultsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -105,4 +105,4 @@ const DownloadPage = () => {
   );
 };
 
-export default DownloadPage;
+export default ResultsPage;
