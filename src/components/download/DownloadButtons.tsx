@@ -105,9 +105,6 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
           <div className="space-y-2">
             {!hasPaid ? (
               <>
-                <p className="text-sm text-gray-500 text-center">
-                  Please pay to download optimized resume in Word format (.docx)
-                </p>
                 <Button 
                   onClick={handlePaymentClick}
                   disabled={isDownloadingDocx || isVerifying} 
