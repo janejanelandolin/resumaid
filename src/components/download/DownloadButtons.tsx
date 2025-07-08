@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiService } from '@/services/api';
 import { ResumeJson } from '@/types/resume';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
 interface DownloadButtonsProps {
@@ -22,6 +23,7 @@ interface DownloadButtonsProps {
 
 const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isDownloadingDocx, setIsDownloadingDocx] = useState(false);
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -140,12 +142,12 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
                 ) : (
                   <>
                     <CreditCard className="mr-2 h-4 w-4" />
-                    Subscribe for $14.99/month
+                    {user ? 'Subscribe for $14.99/month' : 'Sign in to Subscribe'}
                   </>
                 )}
               </Button>
               <p className="text-xs text-center text-muted-foreground">
-                Subscription required for downloads
+                {user ? 'Subscription required for downloads' : 'Please sign in first to subscribe'}
               </p>
             </>
           ) : (

@@ -24,9 +24,11 @@ export const SubscriptionButton = () => {
     try {
       await createSubscription();
     } catch (error) {
+      console.error("Subscription error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
       toast({
         title: "Subscription Error",
-        description: "Failed to create subscription. Please try again.",
+        description: `Failed to create subscription: ${errorMessage}`,
         variant: "destructive",
       });
     }
