@@ -64,17 +64,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'ResumAID Premium Subscription',
-              description: 'Unlimited resume optimizations and downloads',
-            },
-            unit_amount: 1499, // $14.99 in cents
-            recurring: {
-              interval: 'month',
-            },
-          },
+          price: 'price_1RbPgNQOfmy5vWZJ54yaKLjZ',
           quantity: 1,
         },
       ],
