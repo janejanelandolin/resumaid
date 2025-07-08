@@ -4,6 +4,7 @@ import PageContainer from '@/components/PageContainer';
 import RotatingText from '@/components/RotatingText';
 import JobSearchForm from '@/components/home/JobSearchForm';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
+import AuthButtons from '@/components/auth/AuthButtons';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { useEffect } from 'react';
 
@@ -26,6 +27,10 @@ const HomePage = () => {
     <div className="bg-gradient-to-b from-white to-purple-50 min-h-screen">
       <PageContainer className="justify-start pt-8">
         <div className="w-full space-y-8 relative">
+          {/* Header with Sign In button */}
+          <div className="absolute top-0 right-0 z-10">
+            <AuthButtons />
+          </div>
           {/* Decorative elements */}
           <div className="absolute -top-4 -right-4 text-purple-300 animate-pulse">
             <Sparkle size={24} />
