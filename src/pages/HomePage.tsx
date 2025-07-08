@@ -5,11 +5,14 @@ import RotatingText from '@/components/RotatingText';
 import JobSearchForm from '@/components/home/JobSearchForm';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import AuthButtons from '@/components/auth/AuthButtons';
+import { SubscriptionButton } from '@/components/subscription/SubscriptionButton';
 import { useResumeContext } from '@/contexts/ResumeContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
 
 const HomePage = () => {
   const { resetAllState } = useResumeContext();
+  const { user } = useAuth();
   
   // Reset all state only when the component is first mounted
   useEffect(() => {
@@ -60,6 +63,14 @@ const HomePage = () => {
           </div>
 
           <JobSearchForm />
+          
+          {/* Show subscription card if user is logged in */}
+          {user && (
+            <div className="max-w-md mx-auto">
+              <SubscriptionButton />
+            </div>
+          )}
+          
           <TestimonialsSection />
         </div>
       </PageContainer>

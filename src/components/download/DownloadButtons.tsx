@@ -12,7 +12,7 @@ import { FileDown, Loader2, CreditCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiService } from '@/services/api';
 import { ResumeJson } from '@/types/resume';
-import { usePaymentStatus } from '@/hooks/usePaymentStatus';
+import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
 
 interface DownloadButtonsProps {
@@ -25,66 +25,27 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
   const [isDownloadingDocx, setIsDownloadingDocx] = useState(false);
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { hasPaid, isVerifying } = usePaymentStatus();
-
-  const handlePaymentClick = async () => {
-    setIsCreatingCheckout(true);
-    
-    try {
-      console.log('Starting payment process...');
-      console.log('Creating checkout session...');
-      
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: {
-          amount: 499, // $4.99 in cents
-          currency: 'usd'
-        }
-      });
-
-      console.log('Checkout session response:', { data, error });
-
-      if (error) {
-        console.error('Checkout session error:', error);
-        throw error;
-      }
-
-      if (data?.url && data?.sessionId) {
-        console.log('Redirecting to checkout:', data.url);
-        console.log('Session ID:', data.sessionId);
-        
-        // Store session ID for later verification
-        localStorage.setItem('stripe-session-id', data.sessionId);
-        localStorage.setItem('stripe-checkout-initiated', 'true');
-        localStorage.setItem('stripe-checkout-timestamp', Date.now().toString());
-        
-        console.log('Stored session data:', {
-          sessionId: data.sessionId,
-          timestamp: Date.now()
-        });
-        
-        // Redirect directly to Stripe checkout
-        window.location.href = data.url;
-      } else {
-        console.error('Invalid response from create-checkout:', data);
-        throw new Error('No checkout URL received');
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      toast({
-        title: "Payment Error",
-        description: error.message || "Failed to create checkout session",
-        variant: "destructive",
-      });
-    } finally {
-      setIsCreatingCheckout(false);
-    }
-  };
+  const { subscribed, createSubscription, isLoading: subLoading } = useSubscription();
 
   const handleDownloadDocx = async () => {
-    if (hasPaid) {
+    if (subscribed) {
       await handleActualDocxDownload();
     } else {
-      await handlePaymentClick();
+      // Prompt for subscription
+      toast({
+        title: "Premium Feature",
+        description: "Subscribe to download unlimited optimized resumes.",
+        variant: "default",
+      });
+      try {
+        await createSubscription();
+      } catch (error) {
+        toast({
+          title: "Subscription Error",
+          description: "Failed to start subscription process.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -151,35 +112,33 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
       <CardContent className="space-y-4">
         {/* Word Document Download Section */}
         <div className="space-y-2">
-          {!hasPaid ? (
+          {!subscribed ? (
             <>
               <Button 
-                onClick={handlePaymentClick}
-                disabled={isCreatingCheckout || isVerifying} 
+                onClick={handleDownloadDocx}
+                disabled={subLoading} 
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
               >
-                {isVerifying ? (
+                {subLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Verifying payment...
-                  </>
-                ) : isCreatingCheckout ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating checkout...
+                    Starting subscription...
                   </>
                 ) : (
                   <>
                     <CreditCard className="mr-2 h-4 w-4" />
-                    Pay $4.99
+                    Subscribe for $14.99/month
                   </>
                 )}
               </Button>
+              <p className="text-xs text-center text-muted-foreground">
+                Subscription required for downloads
+              </p>
             </>
           ) : (
             <>
-              <p className="text-sm text-gray-500 text-center">
-                Thank you for payment
+              <p className="text-sm text-green-600 text-center font-medium">
+                Premium Member - Unlimited Downloads
               </p>
               <Button 
                 onClick={handleDownloadDocx}
