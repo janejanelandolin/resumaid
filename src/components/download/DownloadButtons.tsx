@@ -31,6 +31,17 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
     if (subscribed) {
       await handleActualDocxDownload();
     } else {
+      // Check if user is authenticated first
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to subscribe to our premium service.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Prompt for subscription
       toast({
         title: "Premium Feature",
@@ -40,9 +51,11 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
       try {
         await createSubscription();
       } catch (error) {
+        console.error("Subscription error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
         toast({
           title: "Subscription Error",
-          description: "Failed to start subscription process.",
+          description: `Failed to start subscription process: ${errorMessage}`,
           variant: "destructive",
         });
       }
