@@ -15,6 +15,7 @@ import { ResumeJson } from '@/types/resume';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import AuthModal from '@/components/auth/AuthModal';
 
 interface DownloadButtonsProps {
   resume: ResumeJson;
@@ -129,23 +130,46 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
         <div className="space-y-2">
           {!subscribed ? (
             <>
-              <Button 
-                onClick={handleDownloadDocx}
-                disabled={subLoading} 
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
-              >
-                {subLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Starting subscription...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    {user ? 'Subscribe for $14.99/month' : 'Sign in to Subscribe'}
-                  </>
-                )}
-              </Button>
+              {!user ? (
+                <AuthModal 
+                  trigger={
+                    <Button 
+                      disabled={subLoading} 
+                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
+                    >
+                      {subLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Starting subscription...
+                        </>
+                      ) : (
+                        <>
+                          <CreditCard className="mr-2 h-4 w-4" />
+                          Sign in to Subscribe
+                        </>
+                      )}
+                    </Button>
+                  }
+                />
+              ) : (
+                <Button 
+                  onClick={handleDownloadDocx}
+                  disabled={subLoading} 
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
+                >
+                  {subLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Starting subscription...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Subscribe for $14.99/month
+                    </>
+                  )}
+                </Button>
+              )}
               <p className="text-xs text-center text-muted-foreground">
                 {user ? 'Subscription required for downloads' : 'Please sign in first to subscribe'}
               </p>

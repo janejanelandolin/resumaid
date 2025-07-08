@@ -5,6 +5,7 @@ import { CreditCard, Crown, Settings } from 'lucide-react';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import AuthModal from '@/components/auth/AuthModal';
 
 export const SubscriptionButton = () => {
   const { user } = useAuth();
@@ -46,7 +47,7 @@ export const SubscriptionButton = () => {
     }
   };
 
-  if (!user) return null;
+  
 
   if (subscribed) {
     return (
@@ -94,14 +95,28 @@ export const SubscriptionButton = () => {
           <div>✅ Unlimited downloads</div>
           <div>✅ Priority support</div>
         </div>
-        <Button 
-          onClick={handleSubscribe}
-          disabled={isLoading}
-          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-        >
-          <CreditCard className="mr-2 h-4 w-4" />
-          Subscribe for $14.99/month
-        </Button>
+        {!user ? (
+          <AuthModal 
+            trigger={
+              <Button 
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                disabled={isLoading}
+              >
+                <CreditCard className="mr-2 h-4 w-4" />
+                Sign in to Subscribe
+              </Button>
+            }
+          />
+        ) : (
+          <Button 
+            onClick={handleSubscribe}
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+          >
+            <CreditCard className="mr-2 h-4 w-4" />
+            Subscribe for $14.99/month
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
