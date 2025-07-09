@@ -35,16 +35,8 @@ export const SubscriptionButton = () => {
     }
   };
 
-  const handleManageSubscription = async () => {
-    try {
-      await openCustomerPortal();
-    } catch (error) {
-      toast({
-        title: "Portal Error",
-        description: "Failed to open customer portal. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const handleManageSubscription = () => {
+    window.open('https://billing.stripe.com/p/login/fZudRa2BG1M58DQ4uPew800', '_blank');
   };
 
   

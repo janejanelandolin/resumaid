@@ -39,11 +39,7 @@ const UserMenu = () => {
     }
   };
 
-  const handleManageSubscription = async () => {
-    console.log('handleManageSubscription called');
-    console.log('user:', user);
-    console.log('subscribed:', subscribed);
-    
+  const handleManageSubscription = () => {
     if (!subscribed) {
       toast({
         title: "Not Subscribed",
@@ -53,16 +49,7 @@ const UserMenu = () => {
       return;
     }
 
-    try {
-      await openCustomerPortal();
-    } catch (error) {
-      console.error('Customer portal error:', error);
-      toast({
-        title: "Portal Error",
-        description: "Failed to open customer portal. Please try again.",
-        variant: "destructive",
-      });
-    }
+    window.open('https://billing.stripe.com/p/login/fZudRa2BG1M58DQ4uPew800', '_blank');
   };
 
   if (!user) return null;
