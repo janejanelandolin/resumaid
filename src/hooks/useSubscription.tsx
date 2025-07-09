@@ -77,6 +77,10 @@ export const useSubscription = () => {
   };
 
   const openCustomerPortal = async () => {
+    console.log('openCustomerPortal called');
+    console.log('user:', user);
+    console.log('session:', session);
+    
     if (!user || !session) {
       throw new Error('User must be logged in to manage subscription');
     }

@@ -40,9 +40,23 @@ const UserMenu = () => {
   };
 
   const handleManageSubscription = async () => {
+    console.log('handleManageSubscription called');
+    console.log('user:', user);
+    console.log('subscribed:', subscribed);
+    
+    if (!subscribed) {
+      toast({
+        title: "Not Subscribed",
+        description: "You need an active subscription to access the customer portal.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       await openCustomerPortal();
     } catch (error) {
+      console.error('Customer portal error:', error);
       toast({
         title: "Portal Error",
         description: "Failed to open customer portal. Please try again.",
