@@ -71,7 +71,7 @@ serve(async (req) => {
       mode: 'subscription',
       success_url: `${req.headers.get('origin')}/?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/?payment=cancelled`,
-      payment_intent_data: {
+      subscription_data: {
         metadata: {
           service: 'resume_optimization_subscription',
         },
