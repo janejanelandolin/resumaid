@@ -9,7 +9,7 @@ import CompatibilityScore from '@/components/analysis/CompatibilityScore';
 import ApiErrorDisplay from '@/components/analysis/ApiErrorDisplay';
 import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
 import useAppVersion from '@/hooks/useAppVersion';
-import { logSessionData } from '@/services/logSessionService';
+import { updateSessionCompletion } from '@/services/logSessionService';
 
 const AnalysisPage = () => {
   const navigate = useNavigate();
@@ -30,9 +30,9 @@ const AnalysisPage = () => {
     if (!originalScore || !tailoredScore) {
       navigate('/upload');
     } else {
-      // Log session data once we have all necessary information
-      logSessionData(jobTitle, resumeJson, originalScore, tailoredScore)
-        .catch(err => console.error('Error logging session data:', err));
+      // Update session completion with final scores
+      updateSessionCompletion(originalScore, tailoredScore)
+        .catch(err => console.error('Error updating session completion:', err));
     }
   }, [originalScore, tailoredScore, navigate, jobTitle, resumeJson]);
 

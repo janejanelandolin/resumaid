@@ -3,6 +3,7 @@ import { useCallback, useState, useEffect } from 'react';
 import { useResumeContext } from '@/contexts/ResumeContext';
 // Import types correctly with the 'type' keyword
 import type { ResumeProcessorState, UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
+import { logAnalysisAttempt } from '@/services/logSessionService';
 
 import { useResumeApiOrchestrator } from './resume/useResumeApiOrchestrator';
 import { useResumeFileProcessor } from './resume/useResumeFileProcessor';
@@ -18,7 +19,7 @@ export const useResumeProcessor = ({
   showErrorDialog,
   showContentWarning 
 }: UseResumeProcessorProps) => {
-  const { setApiErrors: setGlobalApiErrors, tailoredScore } = useResumeContext();
+  const { setApiErrors: setGlobalApiErrors, tailoredScore, jobTitle, resumeJson } = useResumeContext();
   // Add state to track if the tailored score has been received
   const [tailoredScoreReceived, setTailoredScoreReceived] = useState(false);
   
@@ -73,6 +74,9 @@ export const useResumeProcessor = ({
       setTailoredScoreReceived(false);
       
       console.log("Beginning resume processing workflow");
+      
+      // Log analysis attempt immediately when processing starts
+      await logAnalysisAttempt(jobTitle, resumeJson);
       
       // Get the content from either file upload or text input
       let extractedContent = null;
@@ -159,7 +163,9 @@ export const useResumeProcessor = ({
     completeProcessing, 
     handleProcessingError, 
     showContentWarning,
-    tailoredScoreReceived
+    tailoredScoreReceived,
+    jobTitle,
+    resumeJson
   ]);
   
   return {

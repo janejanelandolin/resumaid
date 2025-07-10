@@ -141,7 +141,82 @@ export const saveFeedbackToLocalStorage = (recommendation: number, feedback: str
 };
 
 /**
- * Log session data to localStorage only (no download)
+ * Log analysis attempt when processing starts (captures all attempts)
+ */
+export const logAnalysisAttempt = async (
+  jobTitle: string,
+  resumeJson: ResumeJson | null
+): Promise<void> => {
+  try {
+    // Get current date and time
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const timeStr = now.toTimeString().split(' ')[0]; // HH:MM:SS
+    
+    // Get IP address
+    const ipAddress = await getIpAddress();
+    
+    // Create log data object for analysis attempt
+    const logData: SessionLogData = {
+      date: dateStr,
+      time: timeStr,
+      jobTitle: jobTitle || 'unknown',
+      name: resumeJson?.basics?.name || 'unknown',
+      email: resumeJson?.basics?.email || 'unknown',
+      phone: resumeJson?.basics?.phone || 'unknown',
+      location: getLocationString(resumeJson),
+      ipAddress,
+      unoptimizedScore: 0, // Will be updated if analysis completes
+      unoptimizedQualification: 'Analysis started',
+      optimizedScore: 0, // Will be updated if analysis completes
+      optimizedQualification: 'Analysis in progress'
+    };
+    
+    // Format the log entry for debugging
+    const logEntry = formatLogEntry(logData);
+    console.log('Analysis attempt logged:', logEntry);
+    
+    // Save to localStorage for admin access
+    saveToLocalStorage(logData);
+    
+  } catch (error) {
+    console.error('Failed to log analysis attempt:', error);
+  }
+};
+
+/**
+ * Update the most recent log entry with completion data
+ */
+export const updateSessionCompletion = async (
+  originalScore: ScoreResponse | null,
+  tailoredScore: ScoreResponse | null
+): Promise<void> => {
+  try {
+    const existingLogsStr = localStorage.getItem('sessionLogs');
+    if (!existingLogsStr) return;
+    
+    const existingLogs: SessionLogData[] = JSON.parse(existingLogsStr);
+    if (existingLogs.length === 0) return;
+    
+    // Update the most recent log entry with completion data
+    const lastLog = existingLogs[existingLogs.length - 1];
+    lastLog.unoptimizedScore = originalScore?.similarity || 0;
+    lastLog.unoptimizedQualification = originalScore?.consensus_qualification || 'Analysis failed';
+    lastLog.optimizedScore = tailoredScore?.similarity || 0;
+    lastLog.optimizedQualification = tailoredScore?.consensus_qualification || 'Analysis failed';
+    
+    // Save back to localStorage
+    localStorage.setItem('sessionLogs', JSON.stringify(existingLogs));
+    
+    console.log('Session completion updated:', formatLogEntry(lastLog));
+  } catch (error) {
+    console.error('Failed to update session completion:', error);
+  }
+};
+
+/**
+ * Log session data to localStorage only (no download) - DEPRECATED
+ * Use logAnalysisAttempt + updateSessionCompletion instead
  */
 export const logSessionData = async (
   jobTitle: string,
