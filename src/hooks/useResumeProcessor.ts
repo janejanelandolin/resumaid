@@ -75,9 +75,6 @@ export const useResumeProcessor = ({
       
       console.log("Beginning resume processing workflow");
       
-      // Log analysis attempt immediately when processing starts
-      await logAnalysisAttempt(jobTitle, resumeJson);
-      
       // Get the content from either file upload or text input
       let extractedContent = null;
       if (state.uploadedFile) {
@@ -126,6 +123,10 @@ export const useResumeProcessor = ({
       
       if (success) {
         console.log("API processing successful, checking tailored score status");
+        
+        // Log analysis attempt now that we have processed resume data
+        await logAnalysisAttempt(jobTitle, resumeJson);
+        
         // Complete the workflow but only navigate if we have the tailored score
         return completeProcessing(
           setUploading,
