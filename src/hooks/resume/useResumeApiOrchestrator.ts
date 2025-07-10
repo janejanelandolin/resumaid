@@ -26,7 +26,7 @@ export const useResumeApiOrchestrator = () => {
     setProgress: (progress: number) => void,
     setProgressText: (text: string) => void,
     apiErrors: string[]
-  ): Promise<boolean> => {
+  ): Promise<{ success: boolean; resumeData: any }> => {
     let isSuccessful = true;
     
     try {
@@ -50,7 +50,7 @@ export const useResumeApiOrchestrator = () => {
       if (!resumeData) {
         console.error("Failed to process resume content - no data returned");
         isSuccessful = false;
-        return false;
+        return { success: false, resumeData: null };
       }
       
       // Format job posting as a simple string - 40-44%
@@ -61,7 +61,7 @@ export const useResumeApiOrchestrator = () => {
       if (!jobPostingText) {
         console.error("Failed to prepare job posting text");
         isSuccessful = false;
-        return false;
+        return { success: false, resumeData: null };
       }
       
       // Move to 44% after job posting preparation
@@ -128,10 +128,10 @@ export const useResumeApiOrchestrator = () => {
       
       // Ensure we tell the caller if we were successful
       console.log("Resume processing workflow complete, success:", isSuccessful);
-      return isSuccessful;
+      return { success: isSuccessful, resumeData };
     } catch (error) {
       console.error("Error in resume processing workflow:", error);
-      return false;
+      return { success: false, resumeData: null };
     }
   }, [jobPosting, processContent, scoreResume, tailorResume, prepareJobPosting]);
 

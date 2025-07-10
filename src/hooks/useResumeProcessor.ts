@@ -113,7 +113,7 @@ export const useResumeProcessor = ({
       console.log("Content extracted, processing with API");
       
       // Process the extracted content with the API - now with parallel processing
-      const success = await processWithApi(
+      const result = await processWithApi(
         extractedContent,
         setApiErrors,
         setProgress,
@@ -121,11 +121,11 @@ export const useResumeProcessor = ({
         state.apiErrors
       );
       
-      if (success) {
+      if (result.success) {
         console.log("API processing successful, checking tailored score status");
         
-        // Log analysis attempt now that we have processed resume data
-        await logAnalysisAttempt(jobTitle, resumeJson);
+        // Log analysis attempt with the actual processed resume data
+        await logAnalysisAttempt(jobTitle, result.resumeData);
         
         // Complete the workflow but only navigate if we have the tailored score
         return completeProcessing(
