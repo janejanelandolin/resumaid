@@ -65,7 +65,7 @@ describe('Session Logging Integration', () => {
       expect(sessionId).toBe(mockSessionId);
 
       // Step 2: Update with resume data after schema processing
-      await updateSessionWithResumeData(sessionId!, mockResumeJson);
+      await updateSessionWithResumeData(mockResumeJson);
 
       // Verify resume data was set
       expect(mockSessionData).toMatchObject({
@@ -75,7 +75,7 @@ describe('Session Logging Integration', () => {
       });
 
       // Step 3: Update with original score
-      await updateSessionWithOriginalScore(sessionId!, mockScoreResponse);
+      await updateSessionWithOriginalScore(mockScoreResponse);
 
       // Verify original score was set
       expect(mockSessionData).toMatchObject({
@@ -90,7 +90,7 @@ describe('Session Logging Integration', () => {
         consensus_qualification: 'Highly Qualified'
       };
 
-      await updateSessionWithOptimizedScore(sessionId!, optimizedScore);
+      await updateSessionWithOptimizedScore(optimizedScore);
 
       // Verify optimized score was set
       expect(mockSessionData).toMatchObject({
@@ -115,7 +115,7 @@ describe('Session Logging Integration', () => {
       expect(sessionId).toBe(mockSessionId);
 
       // Only update with resume data
-      await updateSessionWithResumeData(sessionId!, mockResumeJson);
+      await updateSessionWithResumeData(mockResumeJson);
 
       // Verify partial data is correct
       expect(mockSessionData).toMatchObject({

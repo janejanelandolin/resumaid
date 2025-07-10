@@ -107,7 +107,7 @@ describe('LogSessionService', () => {
         update: mockUpdate
       } as any);
 
-      await updateSessionWithResumeData(mockSessionId, mockResumeJson);
+      await updateSessionWithResumeData(mockResumeJson);
 
       expect(mockSupabase.from).toHaveBeenCalledWith('session_logs');
       expect(mockUpdate).toHaveBeenCalledWith({
@@ -131,7 +131,7 @@ describe('LogSessionService', () => {
         update: mockUpdate
       } as any);
 
-      await updateSessionWithOriginalScore(mockSessionId, mockScoreResponse);
+      await updateSessionWithOriginalScore(mockScoreResponse);
 
       expect(mockSupabase.from).toHaveBeenCalledWith('session_logs');
       expect(mockUpdate).toHaveBeenCalledWith({
@@ -154,7 +154,7 @@ describe('LogSessionService', () => {
         update: mockUpdate
       } as any);
 
-      await updateSessionWithOptimizedScore(mockSessionId, mockScoreResponse);
+      await updateSessionWithOptimizedScore(mockScoreResponse);
 
       expect(mockSupabase.from).toHaveBeenCalledWith('session_logs');
       expect(mockUpdate).toHaveBeenCalledWith({
