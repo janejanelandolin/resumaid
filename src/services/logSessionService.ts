@@ -243,7 +243,7 @@ export const updateSessionWithOriginalScore = async (
     }
 
     const updateData = {
-      unoptimized_score: originalScore?.similarity || 0,
+      unoptimized_score: Math.round((originalScore?.similarity || 0) * 100), // Convert to percentage
       unoptimized_qualification: originalScore?.consensus_qualification || 'Scoring failed'
     };
 
@@ -290,7 +290,7 @@ export const updateSessionWithOptimizedScore = async (
     }
 
     const updateData = {
-      optimized_score: tailoredScore?.similarity || 0,
+      optimized_score: Math.round((tailoredScore?.similarity || 0) * 100), // Convert to percentage
       optimized_qualification: tailoredScore?.consensus_qualification || 'Optimization failed'
     };
 
