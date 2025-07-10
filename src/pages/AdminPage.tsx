@@ -10,12 +10,13 @@ import { formatJobPostingAsText } from '@/hooks/resume/useResumeNormalizer';
 import PageContainer from '@/components/PageContainer';
 import SessionLogsSection from '@/components/admin/SessionLogsSection';
 import AdminPasswordDialog from '@/components/admin/AdminPasswordDialog';
+import UserManagement from '@/components/admin/UserManagement';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState('inputs');
+  const [activeTab, setActiveTab] = useState('users');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   
@@ -74,10 +75,15 @@ const AdminPage = () => {
           <SessionLogsSection />
           
           <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2">
+            <TabsList className="grid grid-cols-3">
+              <TabsTrigger value="users">User Management</TabsTrigger>
               <TabsTrigger value="inputs">API Inputs</TabsTrigger>
               <TabsTrigger value="outputs">API Outputs</TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="users" className="pt-6">
+              <UserManagement />
+            </TabsContent>
             
             <TabsContent value="inputs" className="pt-6">
               <div className="grid gap-6">
