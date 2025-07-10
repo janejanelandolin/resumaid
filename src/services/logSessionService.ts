@@ -123,46 +123,6 @@ const saveToDatabase = async (logData: SessionLogData): Promise<string | null> =
 };
 
 /**
- * Save feedback to database by updating the most recent log entry
- */
-export const saveFeedbackToDatabase = async (recommendation: number, feedback: string): Promise<void> => {
-  try {
-    // Get current user if authenticated
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    // Find the most recent session log for this user or session
-    const { data: recentLog, error: fetchError } = await supabase
-      .from('session_logs')
-      .select('id')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
-
-    if (fetchError || !recentLog) {
-      console.error('No recent session log found to update with feedback');
-      return;
-    }
-
-    // Update the most recent log with feedback
-    const { error: updateError } = await supabase
-      .from('session_logs')
-      .update({
-        recommendation,
-        feedback
-      })
-      .eq('id', recentLog.id);
-
-    if (updateError) {
-      console.error('Failed to save feedback to database:', updateError);
-    } else {
-      console.log('Feedback saved to database successfully');
-    }
-  } catch (error) {
-    console.error('Failed to save feedback to database:', error);
-  }
-};
-
-/**
  * Step 1: Create initial session log when processing starts
  */
 export const createSessionLog = async (
@@ -385,33 +345,6 @@ export const saveFeedbackToDatabase = async (recommendation: number, feedback: s
     }
   } catch (error) {
     console.error('Failed to save feedback to database:', error);
-  }
-};
-
-    console.log('Found recent log to update:', recentLog.id);
-
-    const updateData = {
-      unoptimized_score: originalScore?.similarity || 0,
-      unoptimized_qualification: originalScore?.consensus_qualification || 'Analysis failed',
-      optimized_score: tailoredScore?.similarity || 0,
-      optimized_qualification: tailoredScore?.consensus_qualification || 'Analysis failed'
-    };
-
-    console.log('Updating session log with data:', updateData);
-
-    // Update the most recent log entry with completion data
-    const { error: updateError } = await supabase
-      .from('session_logs')
-      .update(updateData)
-      .eq('id', recentLog.id);
-
-    if (updateError) {
-      console.error('Failed to update session completion:', updateError);
-    } else {
-      console.log('Session completion updated in database successfully');
-    }
-  } catch (error) {
-    console.error('Failed to update session completion:', error);
   }
 };
 
