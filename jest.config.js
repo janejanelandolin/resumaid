@@ -1,9 +1,8 @@
-
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/tests/setupTests.ts'],
-  moduleNameMapper: {
+  moduleNameMapping: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {
@@ -17,12 +16,28 @@ module.exports = {
     '!src/tests/**',
     '!src/**/index.{ts,tsx}',
     '!src/**/*.d.ts',
+    '!src/integrations/**', // Exclude Supabase generated files
   ],
-  coverageReporters: ['text', 'lcov', 'clover'],
+  coverageReporters: ['text', 'lcov', 'clover', 'html'],
+  coverageDirectory: 'coverage',
+  coverageThreshold: {
+    global: {
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70
+    }
+  },
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.json',
       isolatedModules: true,
     },
   },
+  // Add verbose output for better debugging
+  verbose: true,
+  // Clear mocks between tests
+  clearMocks: true,
+  // Restore mocks after each test
+  restoreMocks: true,
 };
