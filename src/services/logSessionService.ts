@@ -214,6 +214,14 @@ export const updateSessionCompletion = async (
   tailoredScore: ScoreResponse | null
 ): Promise<void> => {
   try {
+    // Debug: Log the score data we're trying to update with
+    console.log('updateSessionCompletion called with:', {
+      originalScore,
+      tailoredScore,
+      originalQualification: originalScore?.consensus_qualification,
+      tailoredQualification: tailoredScore?.consensus_qualification
+    });
+
     // Find the most recent session log
     const { data: recentLog, error: fetchError } = await supabase
       .from('session_logs')
@@ -227,21 +235,27 @@ export const updateSessionCompletion = async (
       return;
     }
 
+    console.log('Found recent log to update:', recentLog.id);
+
+    const updateData = {
+      unoptimized_score: originalScore?.similarity || 0,
+      unoptimized_qualification: originalScore?.consensus_qualification || 'Analysis failed',
+      optimized_score: tailoredScore?.similarity || 0,
+      optimized_qualification: tailoredScore?.consensus_qualification || 'Analysis failed'
+    };
+
+    console.log('Updating session log with data:', updateData);
+
     // Update the most recent log entry with completion data
     const { error: updateError } = await supabase
       .from('session_logs')
-      .update({
-        unoptimized_score: originalScore?.similarity || 0,
-        unoptimized_qualification: originalScore?.consensus_qualification || 'Analysis failed',
-        optimized_score: tailoredScore?.similarity || 0,
-        optimized_qualification: tailoredScore?.consensus_qualification || 'Analysis failed'
-      })
+      .update(updateData)
       .eq('id', recentLog.id);
 
     if (updateError) {
       console.error('Failed to update session completion:', updateError);
     } else {
-      console.log('Session completion updated in database');
+      console.log('Session completion updated in database successfully');
     }
   } catch (error) {
     console.error('Failed to update session completion:', error);
