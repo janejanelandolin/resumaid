@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      session_logs: {
+        Row: {
+          created_at: string
+          date: string
+          email: string
+          feedback: string | null
+          id: string
+          ip_address: string | null
+          job_title: string
+          location: string | null
+          name: string
+          optimized_qualification: string | null
+          optimized_score: number | null
+          phone: string | null
+          recommendation: number | null
+          time: string
+          unoptimized_qualification: string | null
+          unoptimized_score: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          email: string
+          feedback?: string | null
+          id?: string
+          ip_address?: string | null
+          job_title: string
+          location?: string | null
+          name: string
+          optimized_qualification?: string | null
+          optimized_score?: number | null
+          phone?: string | null
+          recommendation?: number | null
+          time: string
+          unoptimized_qualification?: string | null
+          unoptimized_score?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          email?: string
+          feedback?: string | null
+          id?: string
+          ip_address?: string | null
+          job_title?: string
+          location?: string | null
+          name?: string
+          optimized_qualification?: string | null
+          optimized_score?: number | null
+          phone?: string | null
+          recommendation?: number | null
+          time?: string
+          unoptimized_qualification?: string | null
+          unoptimized_score?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           created_at: string

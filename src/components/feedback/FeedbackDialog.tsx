@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { saveFeedbackToLocalStorage } from '@/services/logSessionService';
+import { saveFeedbackToDatabase } from '@/services/logSessionService';
 import { MessageSquare } from 'lucide-react';
 
 interface FeedbackDialogProps {
@@ -29,7 +29,7 @@ const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ variant = 'primary' }) 
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (score === null) {
       toast({
         title: "Please select a score",
@@ -39,8 +39,8 @@ const FeedbackDialog: React.FC<FeedbackDialogProps> = ({ variant = 'primary' }) 
       return;
     }
 
-    // Save feedback to localStorage
-    saveFeedbackToLocalStorage(score, comment);
+    // Save feedback to database
+    await saveFeedbackToDatabase(score, comment);
 
     // Show success toast
     toast({

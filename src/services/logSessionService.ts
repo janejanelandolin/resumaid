@@ -1,10 +1,13 @@
 
 import { ResumeJson, ScoreResponse } from '@/types/resume';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Interface for session log data
  */
 export interface SessionLogData {
+  id?: string;
+  user_id?: string;
   date: string;
   time: string;
   jobTitle: string;
@@ -17,8 +20,10 @@ export interface SessionLogData {
   unoptimizedQualification: string;
   optimizedScore: number;
   optimizedQualification: string;
-  recommendation?: number; // New field for feedback score
-  feedback?: string; // New field for feedback comments
+  recommendation?: number;
+  feedback?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 /**
@@ -76,67 +81,84 @@ const getLocationString = (resume: ResumeJson | null): string => {
 };
 
 /**
- * Save session log entry to localStorage
+ * Save session log entry to database
  */
-const saveToLocalStorage = (logData: SessionLogData): void => {
+const saveToDatabase = async (logData: SessionLogData): Promise<string | null> => {
   try {
-    // Get existing logs
-    const existingLogsStr = localStorage.getItem('sessionLogs');
-    const existingLogs: SessionLogData[] = existingLogsStr ? JSON.parse(existingLogsStr) : [];
+    // Get current user if authenticated
+    const { data: { user } } = await supabase.auth.getUser();
     
-    // Add new log
-    existingLogs.push(logData);
-    
-    // Save back to localStorage
-    localStorage.setItem('sessionLogs', JSON.stringify(existingLogs));
+    const { data, error } = await supabase
+      .from('session_logs')
+      .insert({
+        user_id: user?.id || null,
+        date: logData.date,
+        time: logData.time,
+        job_title: logData.jobTitle,
+        name: logData.name,
+        email: logData.email,
+        phone: logData.phone,
+        location: logData.location,
+        ip_address: logData.ipAddress,
+        unoptimized_score: logData.unoptimizedScore,
+        unoptimized_qualification: logData.unoptimizedQualification,
+        optimized_score: logData.optimizedScore,
+        optimized_qualification: logData.optimizedQualification,
+        recommendation: logData.recommendation,
+        feedback: logData.feedback
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      console.error('Failed to save session log to database:', error);
+      return null;
+    }
+
+    return data.id;
   } catch (error) {
-    console.error('Failed to save session log to localStorage:', error);
+    console.error('Failed to save session log to database:', error);
+    return null;
   }
 };
 
 /**
- * Save feedback to localStorage by updating the most recent log entry
+ * Save feedback to database by updating the most recent log entry
  */
-export const saveFeedbackToLocalStorage = (recommendation: number, feedback: string): void => {
+export const saveFeedbackToDatabase = async (recommendation: number, feedback: string): Promise<void> => {
   try {
-    // Get existing logs
-    const existingLogsStr = localStorage.getItem('sessionLogs');
-    if (!existingLogsStr) {
-      // If no logs exist, create a new minimal entry
-      const now = new Date();
-      const newLog: SessionLogData = {
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().split(' ')[0],
-        jobTitle: 'unknown',
-        name: 'unknown',
-        email: 'unknown',
-        phone: 'unknown',
-        location: 'unknown',
-        ipAddress: 'unknown',
-        unoptimizedScore: 0,
-        unoptimizedQualification: 'unknown',
-        optimizedScore: 0,
-        optimizedQualification: 'unknown',
-        recommendation,
-        feedback
-      };
-      localStorage.setItem('sessionLogs', JSON.stringify([newLog]));
+    // Get current user if authenticated
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    // Find the most recent session log for this user or session
+    const { data: recentLog, error: fetchError } = await supabase
+      .from('session_logs')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (fetchError || !recentLog) {
+      console.error('No recent session log found to update with feedback');
       return;
     }
-    
-    const existingLogs: SessionLogData[] = JSON.parse(existingLogsStr);
-    
-    if (existingLogs.length > 0) {
-      // Update the most recent log
-      const lastLog = existingLogs[existingLogs.length - 1];
-      lastLog.recommendation = recommendation;
-      lastLog.feedback = feedback;
-      
-      // Save back to localStorage
-      localStorage.setItem('sessionLogs', JSON.stringify(existingLogs));
+
+    // Update the most recent log with feedback
+    const { error: updateError } = await supabase
+      .from('session_logs')
+      .update({
+        recommendation,
+        feedback
+      })
+      .eq('id', recentLog.id);
+
+    if (updateError) {
+      console.error('Failed to save feedback to database:', updateError);
+    } else {
+      console.log('Feedback saved to database successfully');
     }
   } catch (error) {
-    console.error('Failed to save feedback to localStorage:', error);
+    console.error('Failed to save feedback to database:', error);
   }
 };
 
@@ -176,8 +198,8 @@ export const logAnalysisAttempt = async (
     const logEntry = formatLogEntry(logData);
     console.log('Analysis attempt logged:', logEntry);
     
-    // Save to localStorage for admin access
-    saveToLocalStorage(logData);
+    // Save to database
+    await saveToDatabase(logData);
     
   } catch (error) {
     console.error('Failed to log analysis attempt:', error);
@@ -192,30 +214,42 @@ export const updateSessionCompletion = async (
   tailoredScore: ScoreResponse | null
 ): Promise<void> => {
   try {
-    const existingLogsStr = localStorage.getItem('sessionLogs');
-    if (!existingLogsStr) return;
-    
-    const existingLogs: SessionLogData[] = JSON.parse(existingLogsStr);
-    if (existingLogs.length === 0) return;
-    
+    // Find the most recent session log
+    const { data: recentLog, error: fetchError } = await supabase
+      .from('session_logs')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (fetchError || !recentLog) {
+      console.error('No recent session log found to update with completion data');
+      return;
+    }
+
     // Update the most recent log entry with completion data
-    const lastLog = existingLogs[existingLogs.length - 1];
-    lastLog.unoptimizedScore = originalScore?.similarity || 0;
-    lastLog.unoptimizedQualification = originalScore?.consensus_qualification || 'Analysis failed';
-    lastLog.optimizedScore = tailoredScore?.similarity || 0;
-    lastLog.optimizedQualification = tailoredScore?.consensus_qualification || 'Analysis failed';
-    
-    // Save back to localStorage
-    localStorage.setItem('sessionLogs', JSON.stringify(existingLogs));
-    
-    console.log('Session completion updated:', formatLogEntry(lastLog));
+    const { error: updateError } = await supabase
+      .from('session_logs')
+      .update({
+        unoptimized_score: originalScore?.similarity || 0,
+        unoptimized_qualification: originalScore?.consensus_qualification || 'Analysis failed',
+        optimized_score: tailoredScore?.similarity || 0,
+        optimized_qualification: tailoredScore?.consensus_qualification || 'Analysis failed'
+      })
+      .eq('id', recentLog.id);
+
+    if (updateError) {
+      console.error('Failed to update session completion:', updateError);
+    } else {
+      console.log('Session completion updated in database');
+    }
   } catch (error) {
     console.error('Failed to update session completion:', error);
   }
 };
 
 /**
- * Log session data to localStorage only (no download) - DEPRECATED
+ * Log session data to database - DEPRECATED
  * Use logAnalysisAttempt + updateSessionCompletion instead
  */
 export const logSessionData = async (
@@ -253,10 +287,9 @@ export const logSessionData = async (
     const logEntry = formatLogEntry(logData);
     console.log('Session data logged:', logEntry);
     
-    // Save to localStorage for admin access
-    saveToLocalStorage(logData);
+    // Save to database
+    await saveToDatabase(logData);
     
-    // No longer automatically downloading the file
   } catch (error) {
     console.error('Failed to log session data:', error);
   }
