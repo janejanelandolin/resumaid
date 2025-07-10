@@ -8,6 +8,7 @@ import { apiService } from '@/services/api';
 import { normalizeSkills } from './useResumeNormalizer';
 import { ResumeJson } from '@/types/resume';
 import useAppVersion from '@/hooks/useAppVersion';
+import { updateSessionWithResumeData } from '@/services/logSessionService';
 
 export const useResumeContentProcessor = () => {
   const { setResumeJson } = useResumeContext();
@@ -85,11 +86,15 @@ export const useResumeContentProcessor = () => {
         setApiErrors(newErrors);
         if (normalizedData) {
           setResumeJson(normalizedData);
+          // Update session log with resume data after successful processing
+          await updateSessionWithResumeData(normalizedData);
         } else {
           throw new Error("Failed to process resume schema");
         }
       } else if (normalizedData) {
         setResumeJson(normalizedData);
+        // Update session log with resume data after successful processing
+        await updateSessionWithResumeData(normalizedData);
       }
       
       // Finalize content processing

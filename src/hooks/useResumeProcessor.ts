@@ -3,7 +3,7 @@ import { useCallback, useState, useEffect } from 'react';
 import { useResumeContext } from '@/contexts/ResumeContext';
 // Import types correctly with the 'type' keyword
 import type { ResumeProcessorState, UseResumeProcessorProps } from '@/types/resumeProcessorTypes';
-import { logAnalysisAttempt } from '@/services/logSessionService';
+import { createSessionLog } from '@/services/logSessionService';
 
 import { useResumeApiOrchestrator } from './resume/useResumeApiOrchestrator';
 import { useResumeFileProcessor } from './resume/useResumeFileProcessor';
@@ -75,6 +75,9 @@ export const useResumeProcessor = ({
       
       console.log("Beginning resume processing workflow");
       
+      // Create initial session log at the start of processing
+      await createSessionLog(jobTitle);
+      
       // Get the content from either file upload or text input
       let extractedContent = null;
       if (state.uploadedFile) {
@@ -123,9 +126,6 @@ export const useResumeProcessor = ({
       
       if (result.success) {
         console.log("API processing successful, checking tailored score status");
-        
-        // Log analysis attempt with the actual processed resume data
-        await logAnalysisAttempt(jobTitle, result.resumeData);
         
         // Complete the workflow but only navigate if we have the tailored score
         return completeProcessing(

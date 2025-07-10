@@ -163,12 +163,11 @@ export const saveFeedbackToDatabase = async (recommendation: number, feedback: s
 };
 
 /**
- * Log analysis attempt when processing starts (captures all attempts)
+ * Step 1: Create initial session log when processing starts
  */
-export const logAnalysisAttempt = async (
-  jobTitle: string,
-  resumeJson: ResumeJson | null
-): Promise<void> => {
+export const createSessionLog = async (
+  jobTitle: string
+): Promise<string | null> => {
   try {
     // Get current date and time
     const now = new Date();
@@ -178,48 +177,45 @@ export const logAnalysisAttempt = async (
     // Get IP address
     const ipAddress = await getIpAddress();
     
-    // Create log data object for analysis attempt
+    // Create initial log data object with minimal info
     const logData: SessionLogData = {
       date: dateStr,
       time: timeStr,
       jobTitle: jobTitle || 'unknown',
-      name: resumeJson?.basics?.name || 'unknown',
-      email: resumeJson?.basics?.email || 'unknown',
-      phone: resumeJson?.basics?.phone || 'unknown',
-      location: getLocationString(resumeJson),
+      name: 'Processing...',
+      email: 'Processing...',
+      phone: 'Processing...',
+      location: 'Processing...',
       ipAddress,
-      unoptimizedScore: 0, // Will be updated if analysis completes
+      unoptimizedScore: 0,
       unoptimizedQualification: 'Analysis started',
-      optimizedScore: 0, // Will be updated if analysis completes
+      optimizedScore: 0,
       optimizedQualification: 'Analysis in progress'
     };
     
-    // Format the log entry for debugging
-    const logEntry = formatLogEntry(logData);
-    console.log('Analysis attempt logged:', logEntry);
+    console.log('Creating initial session log:', logData);
     
-    // Save to database
-    await saveToDatabase(logData);
+    // Save to database and return the ID
+    return await saveToDatabase(logData);
     
   } catch (error) {
-    console.error('Failed to log analysis attempt:', error);
+    console.error('Failed to create session log:', error);
+    return null;
   }
 };
 
 /**
- * Update the most recent log entry with completion data
+ * Step 2: Update session log with resume data after successful schema extraction
  */
-export const updateSessionCompletion = async (
-  originalScore: ScoreResponse | null,
-  tailoredScore: ScoreResponse | null
+export const updateSessionWithResumeData = async (
+  resumeJson: ResumeJson
 ): Promise<void> => {
   try {
-    // Debug: Log the score data we're trying to update with
-    console.log('updateSessionCompletion called with:', {
-      originalScore,
-      tailoredScore,
-      originalQualification: originalScore?.consensus_qualification,
-      tailoredQualification: tailoredScore?.consensus_qualification
+    console.log('Updating session log with resume data:', {
+      name: resumeJson?.basics?.name,
+      email: resumeJson?.basics?.email,
+      phone: resumeJson?.basics?.phone,
+      location: getLocationString(resumeJson)
     });
 
     // Find the most recent session log
@@ -231,9 +227,166 @@ export const updateSessionCompletion = async (
       .single();
 
     if (fetchError || !recentLog) {
-      console.error('No recent session log found to update with completion data');
+      console.error('No recent session log found to update with resume data');
       return;
     }
+
+    const updateData = {
+      name: resumeJson?.basics?.name || 'unknown',
+      email: resumeJson?.basics?.email || 'unknown',
+      phone: resumeJson?.basics?.phone || 'unknown',
+      location: getLocationString(resumeJson),
+      unoptimized_qualification: 'Resume processed, analyzing...',
+      optimized_qualification: 'Awaiting optimization...'
+    };
+
+    console.log('Updating session log with resume data:', updateData);
+
+    const { error: updateError } = await supabase
+      .from('session_logs')
+      .update(updateData)
+      .eq('id', recentLog.id);
+
+    if (updateError) {
+      console.error('Failed to update session with resume data:', updateError);
+    } else {
+      console.log('Session log updated with resume data successfully');
+    }
+  } catch (error) {
+    console.error('Failed to update session with resume data:', error);
+  }
+};
+
+/**
+ * Step 3: Update session log with original score after successful scoring
+ */
+export const updateSessionWithOriginalScore = async (
+  originalScore: ScoreResponse
+): Promise<void> => {
+  try {
+    console.log('Updating session log with original score:', {
+      similarity: originalScore?.similarity,
+      qualification: originalScore?.consensus_qualification
+    });
+
+    // Find the most recent session log
+    const { data: recentLog, error: fetchError } = await supabase
+      .from('session_logs')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (fetchError || !recentLog) {
+      console.error('No recent session log found to update with original score');
+      return;
+    }
+
+    const updateData = {
+      unoptimized_score: originalScore?.similarity || 0,
+      unoptimized_qualification: originalScore?.consensus_qualification || 'Scoring failed'
+    };
+
+    console.log('Updating session log with original score data:', updateData);
+
+    const { error: updateError } = await supabase
+      .from('session_logs')
+      .update(updateData)
+      .eq('id', recentLog.id);
+
+    if (updateError) {
+      console.error('Failed to update session with original score:', updateError);
+    } else {
+      console.log('Session log updated with original score successfully');
+    }
+  } catch (error) {
+    console.error('Failed to update session with original score:', error);
+  }
+};
+
+/**
+ * Step 4: Update session log with optimized score after successful tailored scoring
+ */
+export const updateSessionWithOptimizedScore = async (
+  tailoredScore: ScoreResponse
+): Promise<void> => {
+  try {
+    console.log('Updating session log with optimized score:', {
+      similarity: tailoredScore?.similarity,
+      qualification: tailoredScore?.consensus_qualification
+    });
+
+    // Find the most recent session log
+    const { data: recentLog, error: fetchError } = await supabase
+      .from('session_logs')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (fetchError || !recentLog) {
+      console.error('No recent session log found to update with optimized score');
+      return;
+    }
+
+    const updateData = {
+      optimized_score: tailoredScore?.similarity || 0,
+      optimized_qualification: tailoredScore?.consensus_qualification || 'Optimization failed'
+    };
+
+    console.log('Updating session log with optimized score data:', updateData);
+
+    const { error: updateError } = await supabase
+      .from('session_logs')
+      .update(updateData)
+      .eq('id', recentLog.id);
+
+    if (updateError) {
+      console.error('Failed to update session with optimized score:', updateError);
+    } else {
+      console.log('Session log updated with optimized score successfully');
+    }
+  } catch (error) {
+    console.error('Failed to update session with optimized score:', error);
+  }
+};
+
+/**
+ * Save feedback to database by updating the most recent log entry
+ */
+export const saveFeedbackToDatabase = async (recommendation: number, feedback: string): Promise<void> => {
+  try {
+    // Find the most recent session log
+    const { data: recentLog, error: fetchError } = await supabase
+      .from('session_logs')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (fetchError || !recentLog) {
+      console.error('No recent session log found to update with feedback');
+      return;
+    }
+
+    // Update the most recent log with feedback
+    const { error: updateError } = await supabase
+      .from('session_logs')
+      .update({
+        recommendation,
+        feedback
+      })
+      .eq('id', recentLog.id);
+
+    if (updateError) {
+      console.error('Failed to save feedback to database:', updateError);
+    } else {
+      console.log('Feedback saved to database successfully');
+    }
+  } catch (error) {
+    console.error('Failed to save feedback to database:', error);
+  }
+};
 
     console.log('Found recent log to update:', recentLog.id);
 

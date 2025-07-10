@@ -7,6 +7,7 @@ import { useResumeContext } from '@/contexts/ResumeContext';
 import { apiService } from '@/services/api';
 import { ResumeJson } from '@/types/resume';
 import useAppVersion from '@/hooks/useAppVersion';
+import { updateSessionWithOriginalScore, updateSessionWithOptimizedScore } from '@/services/logSessionService';
 
 export const useResumeScoring = () => {
   const { setOriginalScore, setTailoredScore } = useResumeContext();
@@ -86,15 +87,23 @@ export const useResumeScoring = () => {
         if (scoreResponse.data) {
           if (isTailored) {
             setTailoredScore(scoreResponse.data);
+            // Update session log with optimized score
+            await updateSessionWithOptimizedScore(scoreResponse.data);
           } else {
             setOriginalScore(scoreResponse.data);
+            // Update session log with original score
+            await updateSessionWithOriginalScore(scoreResponse.data);
           }
         }
       } else if (scoreResponse.data) {
         if (isTailored) {
           setTailoredScore(scoreResponse.data);
+          // Update session log with optimized score
+          await updateSessionWithOptimizedScore(scoreResponse.data);
         } else {
           setOriginalScore(scoreResponse.data);
+          // Update session log with original score
+          await updateSessionWithOriginalScore(scoreResponse.data);
         }
       }
       
