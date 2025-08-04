@@ -21,10 +21,9 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
 }) => {
   const { isFreeVersion } = useAppVersion();
   
-  // Ensure that similarity values are treated as percentages
-  // Convert decimal values (0-1) to percentages (0-100)
-  const normalizedAtsSimilarity = atsSimilarity <= 1 ? atsSimilarity * 100 : atsSimilarity;
-  const normalizedFeedbackSimilarity = feedbackSimilarity <= 1 ? feedbackSimilarity * 100 : feedbackSimilarity;
+  // Apply custom scoring formula: (score + 1.2) / 2 * 100
+  const normalizedAtsSimilarity = ((atsSimilarity + 1.2) / 2) * 100;
+  const normalizedFeedbackSimilarity = ((feedbackSimilarity + 1.2) / 2) * 100;
   
   // Also normalize improvement - if it's already in percentage form (e.g., 0.18) convert it
   const normalizedImprovement = improvement <= 1 ? improvement * 100 : improvement;
