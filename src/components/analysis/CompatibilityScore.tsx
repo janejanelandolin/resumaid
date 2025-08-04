@@ -25,8 +25,8 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
   const normalizedAtsSimilarity = ((atsSimilarity + 1.2) / 2) * 100;
   const normalizedFeedbackSimilarity = ((feedbackSimilarity + 1.2) / 2) * 100;
   
-  // Also normalize improvement - if it's already in percentage form (e.g., 0.18) convert it
-  const normalizedImprovement = improvement <= 1 ? improvement * 100 : improvement;
+  // Calculate improvement based on normalized percentages
+  const normalizedImprovement = normalizedFeedbackSimilarity - normalizedAtsSimilarity;
 
   return (
     <div className="flex flex-col items-center justify-center py-6 relative">
