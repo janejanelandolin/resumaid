@@ -21,11 +21,18 @@ export const uploadResume = async (file: File): Promise<ApiResponse<UploadData>>
       console.log('FormData entry:', pair[0], pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]);
     }
     
+    // Create an AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
     const response = await fetch(`${API_BASE_URL}upload`, {
       method: 'POST',
       body: formData,
+      signal: controller.signal,
       // Don't set Content-Type header, let the browser set it with the boundary
     });
+    
+    clearTimeout(timeoutId);
     
     console.log("Upload response status:", response.status);
     console.log("Upload response headers:", [...response.headers.entries()]);
@@ -60,9 +67,10 @@ export const uploadResume = async (file: File): Promise<ApiResponse<UploadData>>
     return { data: uploadData };
     
   } catch (error) {
-    console.error("Failed to upload resume:", error);
+    const isTimeout = error instanceof Error && error.name === 'AbortError';
+    console.error(`Failed to upload resume${isTimeout ? ' (timeout)' : ''}:`, error);
     
-    // If API call fails, read the file locally as fallback
+    // If API call fails or times out, read the file locally as fallback
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
