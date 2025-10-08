@@ -30,9 +30,9 @@ const UserManagement = () => {
     try {
       setLoading(true);
       
-      // Get unique users from session_logs and their roles
+      // Get unique users from session_user_data (encrypted PII table)
       const { data: sessionUsers, error: sessionError } = await supabase
-        .from('session_logs')
+        .from('session_user_data')
         .select('user_id, email, name')
         .not('user_id', 'is', null);
 
@@ -148,15 +148,15 @@ const UserManagement = () => {
     try {
       setIsProcessing('search');
 
-      // First check if user exists in our system
+      // First check if user exists in session_user_data (encrypted PII table)
       const { data: existingUser, error: searchError } = await supabase
-        .from('session_logs')
+        .from('session_user_data')
         .select('user_id, email, name')
-        .eq('email', searchEmail.trim())
+        .ilike('email', searchEmail.trim())
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (searchError && searchError.code !== 'PGRST116') {
+      if (searchError) {
         throw searchError;
       }
 
@@ -175,9 +175,9 @@ const UserManagement = () => {
         .select('id')
         .eq('user_id', existingUser.user_id)
         .eq('role', 'admin')
-        .single();
+        .maybeSingle();
 
-      if (roleError && roleError.code !== 'PGRST116') {
+      if (roleError) {
         throw roleError;
       }
 

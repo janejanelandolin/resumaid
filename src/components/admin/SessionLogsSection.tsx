@@ -34,7 +34,7 @@ const SessionLogsSection = () => {
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 20;
   
-  // Fetch logs from database
+  // Fetch logs from database (join with encrypted PII table)
   const fetchLogs = async (pageNumber: number = 0, append: boolean = false) => {
     try {
       if (pageNumber === 0) setLoading(true);
@@ -42,7 +42,16 @@ const SessionLogsSection = () => {
 
       const { data, error } = await supabase
         .from('session_logs')
-        .select('*')
+        .select(`
+          *,
+          session_user_data:user_data_id (
+            name,
+            email,
+            phone,
+            location,
+            ip_address
+          )
+        `)
         .order('created_at', { ascending: false })
         .range(pageNumber * PAGE_SIZE, (pageNumber + 1) * PAGE_SIZE - 1);
 
@@ -52,10 +61,20 @@ const SessionLogsSection = () => {
       }
 
       if (data) {
+        // Flatten the joined data for easier consumption
+        const flattenedData = data.map(log => ({
+          ...log,
+          name: log.session_user_data?.name || 'N/A',
+          email: log.session_user_data?.email || 'N/A',
+          phone: log.session_user_data?.phone || 'N/A',
+          location: log.session_user_data?.location || 'N/A',
+          ip_address: log.session_user_data?.ip_address || 'N/A',
+        }));
+        
         if (append) {
-          setSessionLogs(prev => [...prev, ...data]);
+          setSessionLogs(prev => [...prev, ...flattenedData]);
         } else {
-          setSessionLogs(data);
+          setSessionLogs(flattenedData);
         }
         
         // Check if there are more logs
@@ -81,13 +100,22 @@ const SessionLogsSection = () => {
     fetchLogs(nextPage, true);
   };
 
-  // Download all logs
+  // Download all logs (join with encrypted PII table)
   const downloadLogs = async () => {
     try {
-      // Fetch all logs for download
+      // Fetch all logs for download with encrypted PII
       const { data: allLogs, error } = await supabase
         .from('session_logs')
-        .select('*')
+        .select(`
+          *,
+          session_user_data:user_data_id (
+            name,
+            email,
+            phone,
+            location,
+            ip_address
+          )
+        `)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -113,11 +141,11 @@ const SessionLogsSection = () => {
           log.date,
           log.time,
           log.job_title,
-          log.name,
-          log.email,
-          log.phone || '',
-          log.location || '',
-          log.ip_address || '',
+          log.session_user_data?.name || 'N/A',
+          log.session_user_data?.email || 'N/A',
+          log.session_user_data?.phone || '',
+          log.session_user_data?.location || '',
+          log.session_user_data?.ip_address || '',
           log.unoptimized_score,
           log.unoptimized_qualification || '',
           log.optimized_score,

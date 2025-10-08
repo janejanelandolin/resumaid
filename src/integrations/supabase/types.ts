@@ -18,60 +18,92 @@ export type Database = {
         Row: {
           created_at: string
           date: string
-          email: string
           feedback: string | null
           id: string
-          ip_address: string | null
           job_title: string
-          location: string | null
-          name: string
           optimized_qualification: string | null
           optimized_score: number | null
-          phone: string | null
           recommendation: number | null
           time: string
           unoptimized_qualification: string | null
           unoptimized_score: number | null
           updated_at: string
+          user_data_id: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           date: string
-          email: string
           feedback?: string | null
           id?: string
-          ip_address?: string | null
           job_title: string
-          location?: string | null
-          name: string
           optimized_qualification?: string | null
           optimized_score?: number | null
-          phone?: string | null
           recommendation?: number | null
           time: string
           unoptimized_qualification?: string | null
           unoptimized_score?: number | null
           updated_at?: string
+          user_data_id?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           date?: string
-          email?: string
           feedback?: string | null
           id?: string
-          ip_address?: string | null
           job_title?: string
-          location?: string | null
-          name?: string
           optimized_qualification?: string | null
           optimized_score?: number | null
-          phone?: string | null
           recommendation?: number | null
           time?: string
           unoptimized_qualification?: string | null
           unoptimized_score?: number | null
+          updated_at?: string
+          user_data_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_logs_user_data_id_fkey"
+            columns: ["user_data_id"]
+            isOneToOne: false
+            referencedRelation: "session_user_data"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_user_data: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip_address: string | null
+          location: string | null
+          name: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip_address?: string | null
+          location?: string | null
+          name: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip_address?: string | null
+          location?: string | null
+          name?: string
+          phone?: string | null
           updated_at?: string
           user_id?: string
         }

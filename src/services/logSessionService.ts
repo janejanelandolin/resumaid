@@ -82,7 +82,7 @@ const getLocationString = (resume: ResumeJson | null): string => {
 
 /**
  * Save session log entry to database
- * SECURITY: Requires authenticated user to prevent PII exposure
+ * SECURITY: Stores PII in encrypted session_user_data table, session metadata in session_logs
  */
 const saveToDatabase = async (logData: SessionLogData): Promise<string | null> => {
   try {
@@ -94,18 +94,34 @@ const saveToDatabase = async (logData: SessionLogData): Promise<string | null> =
       return null;
     }
     
-    const { data, error } = await supabase
-      .from('session_logs')
+    // First, insert PII into encrypted session_user_data table
+    const { data: userData, error: userDataError } = await supabase
+      .from('session_user_data')
       .insert({
-        user_id: user.id, // Now required (NOT NULL)
-        date: logData.date,
-        time: logData.time,
-        job_title: logData.jobTitle,
+        user_id: user.id,
         name: logData.name,
         email: logData.email,
         phone: logData.phone,
         location: logData.location,
         ip_address: logData.ipAddress,
+      })
+      .select('id')
+      .single();
+
+    if (userDataError || !userData) {
+      console.error('Failed to save user data:', userDataError);
+      return null;
+    }
+
+    // Then insert session metadata with reference to encrypted PII
+    const { data, error } = await supabase
+      .from('session_logs')
+      .insert({
+        user_id: user.id,
+        user_data_id: userData.id,
+        date: logData.date,
+        time: logData.time,
+        job_title: logData.jobTitle,
         unoptimized_score: logData.unoptimizedScore,
         unoptimized_qualification: logData.unoptimizedQualification,
         optimized_score: logData.optimizedScore,
@@ -184,33 +200,42 @@ export const updateSessionWithResumeData = async (
       location: getLocationString(resumeJson)
     });
 
-    // Find the most recent session log
+    // Find the most recent session log with user_data_id
     const { data: recentLog, error: fetchError } = await supabase
       .from('session_logs')
-      .select('id')
+      .select('id, user_data_id')
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
 
-    if (fetchError || !recentLog) {
+    if (fetchError || !recentLog || !recentLog.user_data_id) {
       console.error('No recent session log found to update with resume data');
       return;
     }
 
-    const updateData = {
-      name: resumeJson?.basics?.name || 'unknown',
-      email: resumeJson?.basics?.email || 'unknown',
-      phone: resumeJson?.basics?.phone || 'unknown',
-      location: getLocationString(resumeJson),
-      unoptimized_qualification: 'Resume processed, analyzing...',
-      optimized_qualification: 'Awaiting optimization...'
-    };
+    // Update encrypted PII table
+    const { error: userDataError } = await supabase
+      .from('session_user_data')
+      .update({
+        name: resumeJson?.basics?.name || 'unknown',
+        email: resumeJson?.basics?.email || 'unknown',
+        phone: resumeJson?.basics?.phone || 'unknown',
+        location: getLocationString(resumeJson),
+      })
+      .eq('id', recentLog.user_data_id);
 
-    console.log('Updating session log with resume data:', updateData);
+    if (userDataError) {
+      console.error('Failed to update user data:', userDataError);
+      return;
+    }
 
+    // Update session metadata
     const { error: updateError } = await supabase
       .from('session_logs')
-      .update(updateData)
+      .update({
+        unoptimized_qualification: 'Resume processed, analyzing...',
+        optimized_qualification: 'Awaiting optimization...'
+      })
       .eq('id', recentLog.id);
 
     if (updateError) {
