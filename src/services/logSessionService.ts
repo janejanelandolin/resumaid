@@ -82,16 +82,22 @@ const getLocationString = (resume: ResumeJson | null): string => {
 
 /**
  * Save session log entry to database
+ * SECURITY: Requires authenticated user to prevent PII exposure
  */
 const saveToDatabase = async (logData: SessionLogData): Promise<string | null> => {
   try {
-    // Get current user if authenticated
-    const { data: { user } } = await supabase.auth.getUser();
+    // Get current user - must be authenticated
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      console.error('User must be authenticated to create session logs');
+      return null;
+    }
     
     const { data, error } = await supabase
       .from('session_logs')
       .insert({
-        user_id: user?.id || null,
+        user_id: user.id, // Now required (NOT NULL)
         date: logData.date,
         time: logData.time,
         job_title: logData.jobTitle,
