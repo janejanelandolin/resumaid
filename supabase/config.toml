@@ -15,3 +15,6 @@ verify_jwt = false
 
 [functions.customer-portal]
 verify_jwt = false
+
+[functions.download-docx]
+verify_jwt = false

@@ -1,63 +1,60 @@
-
 import { ResumeJson } from '@/types/resume';
-import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
+import { logApiCall, ApiResponse } from './utils';
+import { supabase } from '@/integrations/supabase/client';
 
 export const downloadResumeAsDocx = async (resumeJson: ResumeJson, jobTitle: string): Promise<ApiResponse<Blob>> => {
-  console.log('Downloading resume as DOCX');
-  
+  console.log('Downloading resume as DOCX (via edge proxy)');
+
   try {
-    const url = `${API_BASE_URL}docx`;
-    
-    // Log the API call request with more details
-    logApiCall('downloadResumeAsDocx (request)', { 
-      resumeBasics: resumeJson.basics ? { 
+    logApiCall('downloadResumeAsDocx (request)', {
+      resumeBasics: resumeJson.basics ? {
         name: resumeJson.basics.name,
         hasEmail: !!resumeJson.basics.email,
         hasPhone: !!resumeJson.basics.phone,
-        hasSummary: !!resumeJson.basics.summary
+        hasSummary: !!resumeJson.basics.summary,
       } : 'Missing basics',
       workExperience: resumeJson.work ? `${resumeJson.work.length} entries` : 'No work entries',
-      endpoint: url
-    }, 'Sending POST request with resume JSON to convert to DOCX');
-    
-    // Send request with resume as JSON in body
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'  // Changed from application/octet-stream to application/json
-      },
-      body: JSON.stringify(resumeJson)  // Send the resume JSON directly
+      endpoint: 'edge:download-docx',
+    }, 'Invoking download-docx edge function');
+
+    // Invoke the edge proxy. We need the raw binary blob, not auto-parsed JSON.
+    const { data, error } = await supabase.functions.invoke('download-docx', {
+      body: resumeJson,
     });
-    
-    // Enhanced error handling with status text
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'No error details available');
-      const errorMessage = `API error: ${response.status} - ${response.statusText}. Details: ${errorText}`;
-      console.error("DOCX download failed:", errorMessage);
-      logApiCall('downloadResumeAsDocx (response)', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorText
-      }, null, errorMessage);
-      return { error: errorMessage };
+
+    if (error) {
+      const message = `API error: ${error.message || 'Failed to invoke download-docx'}`;
+      console.error('DOCX download failed:', error);
+      logApiCall('downloadResumeAsDocx (response)', { error }, null, message);
+      return { error: message };
     }
-    
-    // Get blob from response
-    const blob = await response.blob();
-    logApiCall('downloadResumeAsDocx (response)', { 
+
+    // The supabase-js client returns a Blob when the response content-type is binary.
+    let blob: Blob;
+    if (data instanceof Blob) {
+      blob = data;
+    } else if (data instanceof ArrayBuffer) {
+      blob = new Blob([data]);
+    } else if (data && typeof data === 'object' && 'error' in data) {
+      const message = `API error: ${(data as any).error}${(data as any).details ? ` - ${(data as any).details}` : ''}`;
+      console.error('DOCX upstream error:', data);
+      return { error: message };
+    } else {
+      // Fallback: stringify whatever came back
+      blob = new Blob([typeof data === 'string' ? data : JSON.stringify(data)]);
+    }
+
+    logApiCall('downloadResumeAsDocx (response)', {
       contentType: blob.type,
-      size: `${Math.round(blob.size / 1024)}KB`
+      size: `${Math.round(blob.size / 1024)}KB`,
     }, 'Successfully received DOCX file');
-    
+
     return { data: blob };
   } catch (error) {
-    console.error("Failed to download resume as DOCX:", error);
-    
+    console.error('Failed to download resume as DOCX:', error);
     logApiCall('downloadResumeAsDocx (error)', {}, null, error);
-    
     return {
-      error: `API error: ${error instanceof Error ? error.message : String(error)}`
+      error: `API error: ${error instanceof Error ? error.message : String(error)}`,
     };
   }
 };
