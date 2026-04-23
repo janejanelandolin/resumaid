@@ -2,11 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
-import { useAuth } from '../contexts/AuthContext';
 import PageContainer from '@/components/PageContainer';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { LogIn } from 'lucide-react';
 
 // Import our new component managers
 import UploadDialogManager from '@/components/upload/UploadDialogManager';
@@ -17,7 +13,6 @@ import UploadDebugSection from '@/components/upload/UploadDebugSection';
 
 const UploadPage = () => {
   const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
   const { jobTitle, jobPosting, resumeJson, tailoredResumeJson } = useResumeContext();
   // Add state to track if we're currently processing a resume
   const [isProcessing, setIsProcessing] = useState(false);
