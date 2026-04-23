@@ -13,7 +13,29 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const body = await req.text();
+    const raw = await req.text();
+
+    // Workaround: upstream /docx crashes (500) when any project has a non-empty
+    // `description` string. Move `description` into `highlights` and drop it.
+    let body = raw;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.projects)) {
+        parsed.projects = parsed.projects.map((p: any) => {
+          if (!p || typeof p !== 'object') return p;
+          const { description, ...rest } = p;
+          if (typeof description === 'string' && description.trim().length > 0) {
+            const highlights = Array.isArray(rest.highlights) ? rest.highlights.slice() : [];
+            highlights.unshift(description);
+            return { ...rest, highlights };
+          }
+          return rest;
+        });
+        body = JSON.stringify(parsed);
+      }
+    } catch (_) {
+      // If body isn't JSON, forward as-is.
+    }
 
     const upstream = await fetch(UPSTREAM, {
       method: 'POST',
