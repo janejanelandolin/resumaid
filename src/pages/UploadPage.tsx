@@ -34,44 +34,6 @@ const UploadPage = () => {
     }
   }, [jobTitle, jobPosting, navigate, resumeJson, tailoredResumeJson, isProcessing]);
 
-  // Show loading state while checking authentication
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="h-8 w-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Require authentication for resume upload
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
-        <PageContainer>
-          <div className="w-full max-w-md mx-auto mt-20">
-            <Card className="p-8 text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-                <LogIn className="h-8 w-8 text-purple-600" />
-              </div>
-              <h2 className="text-2xl font-bold">Authentication Required</h2>
-              <p className="text-muted-foreground">
-                To protect your personal information and resume data, you need to sign in before uploading your resume.
-              </p>
-              <Button 
-                onClick={() => navigate('/')}
-                className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700"
-              >
-                Go to Sign In
-              </Button>
-            </Card>
-          </div>
-        </PageContainer>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
