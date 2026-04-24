@@ -1,0 +1,37 @@
+Jane Smith
+jane.smith@email.com | (555) 123-4567 | linkedin.com/in/janesmith | San Francisco, CA
+
+SUMMARY
+Results-driven Software Engineer with 5+ years of experience building scalable web applications.
+Proven track record of delivering high-quality products on time and collaborating with cross-functional teams.
+
+WORK EXPERIENCE
+
+Senior Software Engineer | TechCorp Inc. | Jan 2021 – Present
+- Led development of microservices architecture serving 2M+ daily active users
+- Reduced API latency by 40% through query optimization and caching strategies
+- Mentored 3 junior engineers and conducted 50+ code reviews per quarter
+- Collaborated with product and design teams to ship 12 major features in 2023
+
+Software Engineer | StartupXYZ | Jun 2019 – Dec 2020
+- Built RESTful APIs using Python/FastAPI handling 500K requests/day
+- Implemented CI/CD pipelines reducing deployment time from 2 hours to 15 minutes
+- Developed React dashboard used by 10,000+ customers for data visualization
+
+EDUCATION
+
+B.S. Computer Science | University of California, Berkeley | 2019
+
+SKILLS
+Languages: Python, TypeScript, JavaScript, SQL, Go
+Frameworks: React, FastAPI, Node.js, PostgreSQL, Redis
+Tools: Docker, Kubernetes, AWS, GCP, GitHub Actions, Terraform
+
+PROJECTS
+
+Open Source Contribution – react-query-optimizer
+- Contributed performance improvements adopted by 500+ repositories on GitHub
+
+CERTIFICATIONS
+- AWS Certified Solutions Architect – Associate (2022)
+- Google Cloud Professional Data Engineer (2023)
