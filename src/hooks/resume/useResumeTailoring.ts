@@ -10,12 +10,9 @@ import { ResumeJson } from '@/types/resume';
 
 export const useResumeTailoring = () => {
   const [tailoringChanges, setTailoringChanges] = useState<string[]>([]);
+  const [tailoringRationale, setTailoringRationale] = useState<string[]>([]);
   const { setTailoredResumeJson } = useResumeContext();
 
-  /**
-   * Tailor a resume to match a job posting
-   * Returns both success status and the tailored resume for parallel processing
-   */
   const tailorResume = useCallback(async (
     resumeData: ResumeJson,
     jobPostingText: string,
@@ -34,13 +31,21 @@ export const useResumeTailoring = () => {
         setProgressText('Optimizing your resume to the job posting...');
       }
 
-      console.log("Sending tailor request with job posting length:", jobPostingText.length);
-      console.log("Job posting preview:", jobPostingText.substring(0, 100) + '...');
-
       let normalizedTailoredResume: ResumeJson | null = null;
 
       const tailorResponse = await apiService.tailorResume(resumeData, jobPostingText);
-      console.log("Tailor response:", tailorResponse);
+
+      const applyExtras = (data: any) => {
+        if (!normalizedTailoredResume) return;
+        if (data.changes) {
+          normalizedTailoredResume = { ...normalizedTailoredResume, changes: data.changes };
+          setTailoringChanges(data.changes);
+        }
+        if (data.rationale) {
+          normalizedTailoredResume = { ...normalizedTailoredResume, rationale: data.rationale } as any;
+          setTailoringRationale(data.rationale);
+        }
+      };
 
       if (tailorResponse.error) {
         const newErrors = [...apiErrors, `Tailor Error: ${tailorResponse.error}`];
@@ -48,38 +53,27 @@ export const useResumeTailoring = () => {
 
         if (tailorResponse.data && tailorResponse.data.resume) {
           normalizedTailoredResume = normalizeSkills(tailorResponse.data.resume);
-          if (tailorResponse.data.changes) {
-            normalizedTailoredResume = { ...normalizedTailoredResume, changes: tailorResponse.data.changes };
-            setTailoringChanges(tailorResponse.data.changes);
-          }
+          applyExtras(tailorResponse.data);
           setTailoredResumeJson(normalizedTailoredResume);
         }
       } else if (tailorResponse.data) {
         normalizedTailoredResume = normalizeSkills(tailorResponse.data.resume);
-        if (tailorResponse.data.changes) {
-          normalizedTailoredResume = { ...normalizedTailoredResume, changes: tailorResponse.data.changes };
-          setTailoringChanges(tailorResponse.data.changes);
-        }
+        applyExtras(tailorResponse.data);
         setTailoredResumeJson(normalizedTailoredResume);
       }
 
-      return {
-        success: true,
-        tailoredResume: normalizedTailoredResume
-      };
+      return { success: true, tailoredResume: normalizedTailoredResume };
     } catch (error) {
       console.error("Error tailoring resume:", error);
       const newErrors = [...apiErrors, `Tailor Error: ${error instanceof Error ? error.message : String(error)}`];
       setApiErrors(newErrors);
-      return {
-        success: false,
-        tailoredResume: null
-      };
+      return { success: false, tailoredResume: null };
     }
   }, [setTailoredResumeJson]);
 
   return {
     tailorResume,
-    tailoringChanges
+    tailoringChanges,
+    tailoringRationale
   };
 };

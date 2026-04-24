@@ -116,7 +116,7 @@ const AuthModal = ({ trigger, onSuccess }: AuthModalProps) => {
           </DialogTitle>
           <DialogDescription className="text-center">
             {view === 'forgot'
-              ? 'Enter your email and we'll send you a reset link'
+              ? "Enter your email and we'll send you a reset link"
               : 'Sign in or create an account to save your progress'}
           </DialogDescription>
         </DialogHeader>
