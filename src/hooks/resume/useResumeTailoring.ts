@@ -52,22 +52,22 @@ export const useResumeTailoring = () => {
         if (tailorResponse.data && tailorResponse.data.resume) {
           // Normalize skills in tailored resume
           normalizedTailoredResume = normalizeSkills(tailorResponse.data.resume);
-          // Extract just the resume object from the response
-          setTailoredResumeJson(normalizedTailoredResume);
-          // Store the rationale for UI display if needed
+          // Attach rationale to the resume json so UI can access it
           if (tailorResponse.data.rationale) {
+            normalizedTailoredResume = { ...normalizedTailoredResume, rationale: tailorResponse.data.rationale };
             setTailoringRationale(tailorResponse.data.rationale);
           }
+          setTailoredResumeJson(normalizedTailoredResume);
         }
       } else if (tailorResponse.data) {
         // Normalize skills in tailored resume
         normalizedTailoredResume = normalizeSkills(tailorResponse.data.resume);
-        // Extract just the resume object from the response
-        setTailoredResumeJson(normalizedTailoredResume);
-        // Store the rationale for UI display if needed
+        // Attach rationale to the resume json so UI can access it
         if (tailorResponse.data.rationale) {
+          normalizedTailoredResume = { ...normalizedTailoredResume, rationale: tailorResponse.data.rationale };
           setTailoringRationale(tailorResponse.data.rationale);
         }
+        setTailoredResumeJson(normalizedTailoredResume);
       }
       
       return { 
