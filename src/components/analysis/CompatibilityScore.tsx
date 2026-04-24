@@ -9,6 +9,8 @@ interface CompatibilityScoreProps {
   improvement: number;
   atsQualification?: string;
   feedbackQualification?: string;
+  originalScoreExplanation?: string;
+  tailoredScoreExplanation?: string;
 }
 
 const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
