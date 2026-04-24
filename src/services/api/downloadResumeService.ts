@@ -1,11 +1,17 @@
 import { ResumeJson } from '@/types/resume';
 import { logApiCall, ApiResponse } from './utils';
-import { supabase } from '@/integrations/supabase/client';
 
 export const downloadResumeAsDocx = async (resumeJson: ResumeJson, jobTitle: string): Promise<ApiResponse<Blob>> => {
   console.log('Downloading resume as DOCX (via edge proxy)');
 
   try {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return { error: 'API error: Supabase configuration is missing' };
+    }
+
     logApiCall('downloadResumeAsDocx (request)', {
       resumeBasics: resumeJson.basics ? {
         name: resumeJson.basics.name,
@@ -15,34 +21,39 @@ export const downloadResumeAsDocx = async (resumeJson: ResumeJson, jobTitle: str
       } : 'Missing basics',
       workExperience: resumeJson.work ? `${resumeJson.work.length} entries` : 'No work entries',
       endpoint: 'edge:download-docx',
-    }, 'Invoking download-docx edge function');
+    }, 'Fetching raw DOCX from download-docx edge function');
 
-    // Invoke the edge proxy. We need the raw binary blob, not auto-parsed JSON.
-    const { data, error } = await supabase.functions.invoke('download-docx', {
-      body: resumeJson,
+    const response = await fetch(`${supabaseUrl}/functions/v1/download-docx`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+      },
+      body: JSON.stringify(resumeJson),
     });
 
-    if (error) {
-      const message = `API error: ${error.message || 'Failed to invoke download-docx'}`;
-      console.error('DOCX download failed:', error);
-      logApiCall('downloadResumeAsDocx (response)', { error }, null, message);
+    const contentType = response.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      const errorPayload = await response.json().catch(() => null);
+      const message = `API error: ${errorPayload?.error || `Request failed with status ${response.status}`}${errorPayload?.details ? ` - ${errorPayload.details}` : ''}`;
+      console.error('DOCX download failed:', errorPayload);
+      logApiCall('downloadResumeAsDocx (response)', { error: errorPayload, status: response.status }, null, message);
       return { error: message };
     }
 
-    // The supabase-js client returns a Blob when the response content-type is binary.
-    let blob: Blob;
-    if (data instanceof Blob) {
-      blob = data;
-    } else if (data instanceof ArrayBuffer) {
-      blob = new Blob([data]);
-    } else if (data && typeof data === 'object' && 'error' in data) {
-      const message = `API error: ${(data as any).error}${(data as any).details ? ` - ${(data as any).details}` : ''}`;
-      console.error('DOCX upstream error:', data);
+    if (!response.ok) {
+      const message = `API error: Request failed with status ${response.status}`;
+      console.error('DOCX download failed:', message);
+      logApiCall('downloadResumeAsDocx (response)', { status: response.status }, null, message);
       return { error: message };
-    } else {
-      // Fallback: stringify whatever came back
-      blob = new Blob([typeof data === 'string' ? data : JSON.stringify(data)]);
     }
+
+    const buffer = await response.arrayBuffer();
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    });
 
     logApiCall('downloadResumeAsDocx (response)', {
       contentType: blob.type,
