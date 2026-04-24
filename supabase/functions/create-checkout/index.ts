@@ -65,7 +65,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error creating checkout session:', error);
     return new Response(JSON.stringify({ 
-      error: error.message || 'Failed to create checkout session' 
+      error: error instanceof Error ? error.message : 'Failed to create checkout session' 
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
