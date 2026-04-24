@@ -1,48 +1,65 @@
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from '@/components/ui/accordion';
-import { CheckCircle2 } from 'lucide-react';
+import React from 'react';
+import { Target, LayoutList, MessageSquare } from 'lucide-react';
 import { useResumeContext } from '@/contexts/ResumeContext';
+
+const CATEGORIES = [
+  {
+    key: 'positioning' as const,
+    label: 'Positioning',
+    icon: Target,
+    color: 'text-indigo-500',
+    border: 'border-indigo-300',
+    bg: 'bg-indigo-50',
+  },
+  {
+    key: 'organization' as const,
+    label: 'Organization',
+    icon: LayoutList,
+    color: 'text-purple-500',
+    border: 'border-purple-300',
+    bg: 'bg-purple-50',
+  },
+  {
+    key: 'tone' as const,
+    label: 'Tone',
+    icon: MessageSquare,
+    color: 'text-green-500',
+    border: 'border-green-300',
+    bg: 'bg-green-50',
+  },
+];
 
 const ImprovementSuggestions: React.FC = () => {
   const { tailoredResumeJson } = useResumeContext();
+  const changes = tailoredResumeJson?.changes;
 
-  const changes = tailoredResumeJson?.changes || [];
-
-  if (!changes.length) {
-    return null;
-  }
+  const hasChanges = changes && CATEGORIES.some(c => changes[c.key]?.length > 0);
+  if (!hasChanges) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
         Changes Made to Your Resume
       </h3>
-      <Accordion type="single" collapsible className="w-full">
-        {changes.map((change, index) => (
-          <AccordionItem
-            key={`change-${index}`}
-            value={`change-${index}`}
-            className="border border-indigo-100 mb-2 rounded-lg overflow-hidden bg-white/70 backdrop-blur-sm"
-          >
-            <AccordionTrigger className="text-sm font-medium px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all">
-              <div className="flex items-center text-left">
-                <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 shrink-0" />
-                Change {index + 1}
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="text-sm px-4 py-3 bg-white/80">
-              <div className="border-l-2 border-green-300 pl-3 text-gray-700">
-                {change}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+      {CATEGORIES.map(({ key, label, icon: Icon, color, border, bg }) => {
+        const items = changes?.[key] ?? [];
+        if (!items.length) return null;
+        return (
+          <div key={key} className={`rounded-lg border ${border} ${bg} p-4 space-y-2`}>
+            <div className={`flex items-center gap-2 font-semibold text-sm ${color}`}>
+              <Icon size={15} />
+              {label}
+            </div>
+            <ul className="space-y-2">
+              {items.map((item, i) => (
+                <li key={i} className={`text-sm text-gray-700 border-l-2 ${border} pl-3`}>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
     </div>
   );
 };

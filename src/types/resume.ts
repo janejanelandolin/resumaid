@@ -133,5 +133,9 @@ export interface ResumeJson {
     issuer: string;
     url?: string;
   }[];
-  changes?: string[];
+  changes?: {
+    positioning: string[];
+    organization: string[];
+    tone: string[];
+  };
 }
