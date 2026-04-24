@@ -17,9 +17,10 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
   atsSimilarity,
   feedbackSimilarity,
   improvement,
-  // Keeping the props in the interface but not using them in the component
   atsQualification,
-  feedbackQualification
+  feedbackQualification,
+  originalScoreExplanation,
+  tailoredScoreExplanation,
 }) => {
   const { isFreeVersion } = useAppVersion();
   
