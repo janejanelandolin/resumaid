@@ -137,5 +137,9 @@ export interface ResumeJson {
     positioning: string[];
     organization: string[];
     tone: string[];
+    keywords: string[];
+    metrics: string[];
+    gaps: string[];
+    formatting: string[];
   };
 }

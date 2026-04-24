@@ -8,6 +8,10 @@ interface TailorResumeResponse {
     positioning: string[];
     organization: string[];
     tone: string[];
+    keywords: string[];
+    metrics: string[];
+    gaps: string[];
+    formatting: string[];
   };
   resume: ResumeJson;
 }
@@ -76,6 +80,10 @@ export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: strin
         positioning: ["Reframed summary to better align with the target role's focus areas."],
         organization: ["Restructured work experience to highlight the most relevant accomplishments first."],
         tone: ["Replaced passive phrasing with active, results-oriented language throughout."],
+        keywords: ["Added missing keywords from the job posting to the skills section."],
+        metrics: ["Strengthened vague impact statements with more specific language where possible."],
+        gaps: ["Some requirements in the job posting could not be addressed from your resume alone — consider covering these in a cover letter."],
+        formatting: [],
       },
       resume: resumeJson ? {
         ...resumeJson,
