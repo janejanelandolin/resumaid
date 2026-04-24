@@ -24,9 +24,8 @@ const ResultsPage = () => {
     markWorkflowComplete
   } = useResumeContext();
   
-  // Get rationale from tailored resume if available
   const resume = tailoredResumeJson || resumeJson;
-  const rationale = tailoredResumeJson?.rationale || [];
+  const changes = tailoredResumeJson?.changes || [];
   
   // Get score explanation from the original score
   const originalScoreExplanation = originalScore?.explanation;
@@ -99,7 +98,7 @@ const ResultsPage = () => {
         />
         
         {/* Rationale section */}
-        <RationaleSection rationale={rationale} />
+        <RationaleSection changes={changes} />
       </div>
     </PageContainer>
   );

@@ -133,6 +133,5 @@ export interface ResumeJson {
     issuer: string;
     url?: string;
   }[];
-  // Add rationale property to support the API response
-  rationale?: string[];
+  changes?: string[];
 }

@@ -131,10 +131,11 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
           {!subscribed ? (
             <>
               {!user ? (
-                <AuthModal 
+                <AuthModal
+                  onSuccess={handleDownloadDocx}
                   trigger={
-                    <Button 
-                      disabled={subLoading} 
+                    <Button
+                      disabled={subLoading}
                       className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
                     >
                       {subLoading ? (
@@ -145,7 +146,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
                       ) : (
                         <>
                           <CreditCard className="mr-2 h-4 w-4" />
-                          Sign in to Subscribe
+                          Sign in to Download
                         </>
                       )}
                     </Button>
@@ -171,7 +172,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
                 </Button>
               )}
               <p className="text-xs text-center text-muted-foreground">
-                {user ? 'Subscription required for downloads' : 'Please sign in first to subscribe'}
+                {user ? 'Subscription required to download' : 'Sign in to subscribe and download'}
               </p>
             </>
           ) : (

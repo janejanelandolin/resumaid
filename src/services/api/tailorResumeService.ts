@@ -4,7 +4,7 @@ import { API_BASE_URL, logApiCall, ApiResponse } from './utils';
 
 // Define the response type from the tailor_resume endpoint
 interface TailorResumeResponse {
-  rationale: string[];
+  changes: string[];
   resume: ResumeJson;
 }
 
@@ -50,7 +50,7 @@ export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: strin
       const data = JSON.parse(responseText) as TailorResumeResponse;
       logApiCall('tailorResume (response)', { 
         jobPostingLength: jobPostingText.length,
-        rationale: data.rationale
+        changes: data.changes
       }, data);
       
       return { data };
@@ -68,7 +68,7 @@ export const tailorResume = async (resumeJson: ResumeJson, jobPostingText: strin
     
     // Fallback to mock data if API call fails - improve original resumeJson
     const fallbackData = {
-      rationale: [
+      changes: [
         "Added relevant keywords to align with job requirements",
         "Restructured work experience to highlight relevant accomplishments",
         "Enhanced summary to better match job description"

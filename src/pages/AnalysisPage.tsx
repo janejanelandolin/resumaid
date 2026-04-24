@@ -8,6 +8,7 @@ import Summary from '@/components/analysis/Summary';
 import CompatibilityScore from '@/components/analysis/CompatibilityScore';
 import ApiErrorDisplay from '@/components/analysis/ApiErrorDisplay';
 import ApiDebugHelper from '@/components/debug/ApiDebugHelper';
+import ImprovementSuggestions from '@/components/analysis/ImprovementSuggestions';
 import useAppVersion from '@/hooks/useAppVersion';
 
 const AnalysisPage = () => {
@@ -93,11 +94,14 @@ const AnalysisPage = () => {
             improvement={improvement}
             atsQualification={atsQualification}
             feedbackQualification={feedbackQualification}
-            rationale={tailoredResumeJson?.rationale}
+            originalScoreExplanation={originalScore?.explanation}
+            tailoredScoreExplanation={tailoredScore?.explanation}
           />
 
-          <Button 
-            onClick={handleContinue} 
+          <ImprovementSuggestions />
+
+          <Button
+            onClick={handleContinue}
             className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
           >
             Next
