@@ -42,7 +42,7 @@ export const useResumeTailoring = () => {
           setTailoringChanges(data.changes);
         }
         if (data.rationale) {
-          normalizedTailoredResume = { ...normalizedTailoredResume, rationale: data.rationale };
+          normalizedTailoredResume = { ...normalizedTailoredResume, rationale: data.rationale } as any;
           setTailoringRationale(data.rationale);
         }
       };
