@@ -9,15 +9,18 @@ interface CompatibilityScoreProps {
   improvement: number;
   atsQualification?: string;
   feedbackQualification?: string;
+  originalScoreExplanation?: string;
+  tailoredScoreExplanation?: string;
 }
 
 const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
   atsSimilarity,
   feedbackSimilarity,
   improvement,
-  // Keeping the props in the interface but not using them in the component
   atsQualification,
-  feedbackQualification
+  feedbackQualification,
+  originalScoreExplanation,
+  tailoredScoreExplanation,
 }) => {
   const { isFreeVersion } = useAppVersion();
   
@@ -75,6 +78,23 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
           <span className="text-center text-xs mt-1 text-[0.8rem] w-full text-indigo-600">With optimization</span>
         </div>
       </div>
+
+      {(originalScoreExplanation || tailoredScoreExplanation) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4 mt-4">
+          <div>
+            <h3 className="font-medium text-sm text-orange-500 mb-1">Without optimization</h3>
+            <div className="text-sm bg-orange-50 p-3 rounded border-l-2 border-orange-400 min-h-[4rem]">
+              {originalScoreExplanation || 'No evaluation available.'}
+            </div>
+          </div>
+          <div>
+            <h3 className="font-medium text-sm text-indigo-600 mb-1">With optimization</h3>
+            <div className="text-sm bg-indigo-50 p-3 rounded border-l-2 border-indigo-400 min-h-[4rem]">
+              {tailoredScoreExplanation || 'No evaluation available.'}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

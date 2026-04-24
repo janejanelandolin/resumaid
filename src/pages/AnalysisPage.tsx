@@ -93,6 +93,8 @@ const AnalysisPage = () => {
             improvement={improvement}
             atsQualification={atsQualification}
             feedbackQualification={feedbackQualification}
+            originalScoreExplanation={originalScore?.explanation}
+            tailoredScoreExplanation={tailoredScore?.explanation}
           />
 
           <Button 
