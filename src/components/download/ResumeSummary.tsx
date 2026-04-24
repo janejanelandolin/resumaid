@@ -99,48 +99,6 @@ const ResumeSummary: React.FC<ResumeSummaryProps> = ({
           </AccordionItem>
         </Accordion>
         
-        {(originalScoreExplanation || tailoredScoreExplanation) && (
-          <Accordion type="single" collapsible>
-            <AccordionItem value="evaluation" className="border-b border-indigo-100">
-              <AccordionTrigger className="py-2 text-indigo-600 hover:text-indigo-800 hover:no-underline">
-                Resume Evaluation
-              </AccordionTrigger>
-              <AccordionContent>
-                {originalScoreExplanation && (
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-sm text-indigo-600">Original Resume Evaluation</h3>
-                      {originalQualification && (
-                        <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getQualificationColor(originalQualification)}`}>
-                          {originalQualification}
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-sm bg-indigo-50 p-2 rounded border-l-2 border-indigo-400">
-                      {originalScoreExplanation}
-                    </div>
-                  </div>
-                )}
-                
-                {tailoredScoreExplanation && (
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-sm text-indigo-600">Optimized Resume Evaluation</h3>
-                      {tailoredQualification && (
-                        <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getQualificationColor(tailoredQualification)}`}>
-                          {tailoredQualification}
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-sm bg-green-50 p-2 rounded border-l-2 border-green-400">
-                      {tailoredScoreExplanation}
-                    </div>
-                  </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        )}
         
         {(optimizedSkills?.length > 0 || originalSkills?.length > 0) && (
           <div>
