@@ -6,6 +6,7 @@ const corsHeaders = {
 };
 
 const UPSTREAM = 'https://bridgeworks-api-758224663478.us-central1.run.app/docx';
+const DOCX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -56,15 +57,11 @@ Deno.serve(async (req) => {
     }
 
     const buf = await upstream.arrayBuffer();
-    const contentType =
-      upstream.headers.get('content-type') ||
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-
     return new Response(buf, {
       status: 200,
       headers: {
         ...corsHeaders,
-        'Content-Type': contentType,
+        'Content-Type': DOCX_CONTENT_TYPE,
       },
     });
   } catch (err) {
