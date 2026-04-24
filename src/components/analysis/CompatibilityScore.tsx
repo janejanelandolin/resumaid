@@ -9,8 +9,7 @@ interface CompatibilityScoreProps {
   improvement: number;
   atsQualification?: string;
   feedbackQualification?: string;
-  originalScoreExplanation?: string;
-  tailoredScoreExplanation?: string;
+  rationale?: string[];
 }
 
 const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
@@ -19,8 +18,7 @@ const CompatibilityScore: React.FC<CompatibilityScoreProps> = ({
   improvement,
   atsQualification,
   feedbackQualification,
-  originalScoreExplanation,
-  tailoredScoreExplanation,
+  rationale,
 }) => {
   const { isFreeVersion } = useAppVersion();
   
