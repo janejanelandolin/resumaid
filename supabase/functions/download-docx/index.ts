@@ -41,7 +41,8 @@ Deno.serve(async (req) => {
       // If body isn't JSON, forward as-is.
     }
 
-    const upstream = await fetch(UPSTREAM, {
+    const upstreamUrl = `${UPSTREAM_BASE}?template=${encodeURIComponent(template)}`;
+    const upstream = await fetch(upstreamUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
