@@ -49,7 +49,15 @@ export const useSubscription = () => {
   };
 
   const createSubscription = async () => {
-    if (!user || !session) {
+    // Fetch session fresh from Supabase to avoid stale React state immediately after sign-in.
+    let { data: { session: activeSession } } = await supabase.auth.getSession();
+    if (!activeSession) {
+      // Brief retry to allow auth state to propagate after a just-completed sign-in.
+      await new Promise((r) => setTimeout(r, 400));
+      ({ data: { session: activeSession } } = await supabase.auth.getSession());
+    }
+
+    if (!activeSession) {
       throw new Error('User must be logged in to subscribe');
     }
 
@@ -57,7 +65,7 @@ export const useSubscription = () => {
       setIsLoading(true);
       const { data, error } = await supabase.functions.invoke('create-subscription', {
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${activeSession.access_token}`,
         },
       });
 
