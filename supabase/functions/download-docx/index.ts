@@ -5,7 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const UPSTREAM = 'https://bridgeworks-api-758224663478.us-central1.run.app/docx';
+const UPSTREAM_BASE = 'https://bridgeworks-api-758224663478.us-central1.run.app/docx';
+const DEFAULT_TEMPLATE = 'default';
 const DOCX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 Deno.serve(async (req) => {
