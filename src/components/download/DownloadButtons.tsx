@@ -33,35 +33,42 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
   const handleDownloadDocx = async () => {
     if (subscribed) {
       await handleActualDocxDownload();
-    } else {
-      // Check if user is authenticated first
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({
-          title: "Authentication Required",
-          description: "Please sign in to subscribe to our premium service.",
-          variant: "destructive",
-        });
-        return;
-      }
+      return;
+    }
 
-      // Prompt for subscription
+    // Wait briefly for auth state to settle (in case this was just triggered by AuthModal onSuccess)
+    let { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      // Retry once after a short delay to allow auth state to propagate
+      await new Promise((r) => setTimeout(r, 400));
+      ({ data: { session } } = await supabase.auth.getSession());
+    }
+
+    if (!session) {
       toast({
-        title: "Premium Feature",
-        description: "Subscribe to download unlimited optimized resumes.",
-        variant: "default",
+        title: "Authentication Required",
+        description: "Please sign in to subscribe to our premium service.",
+        variant: "destructive",
       });
-      try {
-        await createSubscription();
-      } catch (error) {
-        console.error("Subscription error:", error);
-        const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-        toast({
-          title: "Subscription Error",
-          description: `Failed to start subscription process: ${errorMessage}`,
-          variant: "destructive",
-        });
-      }
+      return;
+    }
+
+    // Prompt for subscription
+    toast({
+      title: "Premium Feature",
+      description: "Subscribe to download unlimited optimized resumes.",
+      variant: "default",
+    });
+    try {
+      await createSubscription();
+    } catch (error) {
+      console.error("Subscription error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      toast({
+        title: "Subscription Error",
+        description: `Failed to start subscription process: ${errorMessage}`,
+        variant: "destructive",
+      });
     }
   };
 

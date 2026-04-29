@@ -5,7 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const UPSTREAM = 'https://bridgeworks-api-758224663478.us-central1.run.app/docx';
+const UPSTREAM_BASE = 'https://bridgeworks-api-758224663478.us-central1.run.app/docx';
+const DEFAULT_TEMPLATE = 'default';
 const DOCX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 Deno.serve(async (req) => {
@@ -14,6 +15,8 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const url = new URL(req.url);
+    const template = url.searchParams.get('template') || DEFAULT_TEMPLATE;
     const raw = await req.text();
 
     // Workaround: upstream /docx crashes (500) when any project has a non-empty
@@ -38,7 +41,8 @@ Deno.serve(async (req) => {
       // If body isn't JSON, forward as-is.
     }
 
-    const upstream = await fetch(UPSTREAM, {
+    const upstreamUrl = `${UPSTREAM_BASE}?template=${encodeURIComponent(template)}`;
+    const upstream = await fetch(upstreamUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
