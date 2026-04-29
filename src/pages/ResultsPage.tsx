@@ -98,7 +98,7 @@ const ResultsPage = () => {
         />
         
         {/* Rationale section */}
-        <RationaleSection changes={changes} />
+        <RationaleSection changes={Array.isArray(changes) ? undefined : changes} />
       </div>
     </PageContainer>
   );
