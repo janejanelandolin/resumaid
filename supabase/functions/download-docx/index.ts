@@ -15,6 +15,8 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const url = new URL(req.url);
+    const template = url.searchParams.get('template') || DEFAULT_TEMPLATE;
     const raw = await req.text();
 
     // Workaround: upstream /docx crashes (500) when any project has a non-empty
