@@ -38,7 +38,8 @@ const RationaleSection: React.FC<RationaleSectionProps> = ({ changes }) => {
       </CardHeader>
       <CardContent className="space-y-5">
         {CATEGORIES.map(({ key, label, icon: Icon, color, border }) => {
-          const items = changes?.[key] ?? [];
+          const raw = changes?.[key];
+          const items = Array.isArray(raw) ? raw : [];
           if (!items.length) return null;
           return (
             <div key={key}>
