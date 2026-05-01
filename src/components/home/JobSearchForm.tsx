@@ -191,18 +191,6 @@ const JobSearchForm = () => {
             value={customJobPosting}
             onChange={e => setCustomJobPosting(e.target.value)}
           />
-          <div className="space-y-2">
-            <label htmlFor="jobTitlePaste" className="text-xs text-gray-500">
-              Optional: add a job title for your records
-            </label>
-            <Input
-              id="jobTitlePaste"
-              value={jobTitle}
-              onChange={e => setJobTitle(e.target.value)}
-              placeholder="e.g. Senior Product Manager"
-              className="border-purple-100 text-sm"
-            />
-          </div>
         </div>
       )}
 
