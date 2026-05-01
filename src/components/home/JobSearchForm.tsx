@@ -45,7 +45,7 @@ const JobSearchForm = () => {
           return;
         }
         setJobPosting({
-          title: jobTitle || 'Job Posting',
+          title: 'Job Posting',
           description: customJobPosting,
           requirements: [],
           skills: [],
