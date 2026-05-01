@@ -134,9 +134,9 @@ const JobSearchForm = () => {
     >
       {/* Mode tabs */}
       <div className="flex gap-1 bg-gray-50 rounded-xl p-1">
-        <Tab id="title" icon={Search} label="Job title" />
-        <Tab id="paste" icon={FileText} label="Paste posting" />
-        <Tab id="url" icon={Link} label="Paste URL" />
+        <Tab id="title" icon={Search} label="Job Title" />
+        <Tab id="url" icon={Link} label="Job Link" />
+        <Tab id="paste" icon={FileText} label="Job Posting" />
       </div>
 
       {/* ── Option 1: Title ── */}
