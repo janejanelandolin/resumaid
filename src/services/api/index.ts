@@ -6,8 +6,9 @@ import { scoreResume } from './scoreResumeService';
 import { tailorResume } from './tailorResumeService';
 import { downloadResumeAsDocx } from './downloadResumeService';
 import { downloadResumeAsJson } from './downloadResumeJsonService';
+import { fetchJobPostingFromUrl } from './fetchJobPostingService';
+import { generateCoverLetter } from './coverLetterService';
 
-// Centralized API service for the application
 export const apiService = {
   getJobPosting,
   uploadResume,
@@ -15,5 +16,7 @@ export const apiService = {
   scoreResume,
   tailorResume,
   downloadResumeAsDocx,
-  downloadResumeAsJson
+  downloadResumeAsJson,
+  fetchJobPostingFromUrl,
+  generateCoverLetter,
 };

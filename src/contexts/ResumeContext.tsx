@@ -2,10 +2,10 @@
 import React, { createContext, useState, useContext } from 'react';
 import { useResumeParser } from '../hooks/useResumeParser';
 import { ResumeContextType } from '../types/context';
-import { 
-  JobPosting, 
+import {
+  JobPosting,
   UploadData,
-  ResumeJson, 
+  ResumeJson,
   ScoreResponse,
   EditDecision
 } from '../types/resume';
@@ -20,28 +20,28 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [jobTitle, setJobTitle] = useState<string>('');
   const [jobPosting, setJobPosting] = useState<JobPosting | null>(null);
   const [uploadData, setUploadData] = useState<UploadData | null>(null);
-  
+
+  // Raw resume input — stored before processing so ProcessingPage can pick it up
+  const [rawResumeFile, setRawResumeFile] = useState<File | null>(null);
+  const [rawResumeText, setRawResumeText] = useState<string>('');
+
   // Error handling
   const [apiErrors, setApiErrors] = useState<string[]>([]);
-  
-  // New workflow properties
+
+  // Workflow output
   const [resumeJson, setResumeJson] = useState<ResumeJson | null>(null);
   const [tailoredResumeJson, setTailoredResumeJson] = useState<ResumeJson | null>(null);
   const [originalScore, setOriginalScore] = useState<ScoreResponse | null>(null);
   const [tailoredScore, setTailoredScore] = useState<ScoreResponse | null>(null);
-  
+
   // Edit decisions
   const [editDecisions, setEditDecisions] = useState<EditDecision[]>([]);
-  
-  // Template management (simplified without external hook)
+
+  // Template management
   const [selectedTemplates, setSelectedTemplates] = useState<any[]>([]);
-  
+
   const addEditDecision = (decision: EditDecision) => {
     setEditDecisions(prev => [...prev, decision]);
-  };
-
-  const resetEditDecisions = () => {
-    setEditDecisions([]);
   };
 
   const addTemplate = (template: any) => {
@@ -52,85 +52,49 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setSelectedTemplates(prev => prev.filter(t => t.id !== templateId));
   };
 
-  const resetTemplates = () => {
-    setSelectedTemplates([]);
-  };
-
-  // Custom hooks
   const { parseResumeContent } = useResumeParser();
 
-  // Function to get optimized resume for preview and download
-  const getOptimizedResume = () => {
-    return tailoredResumeJson || resumeJson;
-  };
+  const getOptimizedResume = () => tailoredResumeJson || resumeJson;
 
-  // Function to reset all state when returning to home page
   const resetAllState = () => {
-    // Reset basic resume data
     setJobTitle('');
     setJobPosting(null);
     setUploadData(null);
-    
-    // Reset error handling
+    setRawResumeFile(null);
+    setRawResumeText('');
     setApiErrors([]);
-    
-    // Reset resume JSON and scores
     setResumeJson(null);
     setTailoredResumeJson(null);
     setOriginalScore(null);
     setTailoredScore(null);
-    
-    // Reset templates and edit decisions
-    resetTemplates();
-    resetEditDecisions();
+    setSelectedTemplates([]);
+    setEditDecisions([]);
   };
 
-  // Function to mark workflow as complete when reaching the final page
   const markWorkflowComplete = () => {
     sessionStorage.setItem('resumeWorkflowComplete', 'true');
   };
 
   const value: ResumeContextType = {
-    // Basic resume data
-    jobTitle,
-    setJobTitle,
-    jobPosting,
-    setJobPosting,
-    uploadData,
-    setUploadData,
-    
-    // Error handling
-    apiErrors,
-    setApiErrors,
-    
-    // Template management
+    jobTitle, setJobTitle,
+    jobPosting, setJobPosting,
+    uploadData, setUploadData,
+    rawResumeFile, setRawResumeFile,
+    rawResumeText, setRawResumeText,
+    apiErrors, setApiErrors,
     selectedTemplates,
     addTemplate,
     removeTemplate,
-    
-    // Edit management
     editDecisions,
     addEditDecision,
-    
-    // Resume content management
     parseResumeContent,
-    
-    // Get optimized resume
     getOptimizedResume,
-    
-    // Reset function
     resetAllState,
     markWorkflowComplete,
-    
-    // New workflow properties
-    resumeJson,
-    setResumeJson,
-    tailoredResumeJson,
-    setTailoredResumeJson,
-    originalScore,
-    setOriginalScore,
-    tailoredScore,
-    setTailoredScore,
+    resumeJson, setResumeJson,
+    tailoredResumeJson, setTailoredResumeJson,
+    originalScore, setOriginalScore,
+    tailoredScore, setTailoredScore,
   };
 
   return <ResumeContext.Provider value={value}>{children}</ResumeContext.Provider>;

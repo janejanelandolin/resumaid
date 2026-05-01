@@ -1,74 +1,32 @@
-
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '../contexts/ResumeContext';
 import PageContainer from '@/components/PageContainer';
-
-// Import our new component managers
-import UploadDialogManager from '@/components/upload/UploadDialogManager';
-import UploadStateManager from '@/components/upload/UploadStateManager';
 import UploadForm from '@/components/upload/UploadForm';
-import UploadSummary from '@/components/upload/UploadSummary';
-import UploadDebugSection from '@/components/upload/UploadDebugSection';
 
 const UploadPage = () => {
   const navigate = useNavigate();
-  const { jobTitle, jobPosting, resumeJson, tailoredResumeJson } = useResumeContext();
-  // Add state to track if we're currently processing a resume
-  const [isProcessing, setIsProcessing] = useState(false);
-  
+  const { jobTitle, jobPosting } = useResumeContext();
+
   useEffect(() => {
-    // If no job posting, redirect to home
     if (!jobTitle || !jobPosting) {
-      console.log("No job posting found, redirecting to home");
       navigate('/');
-      return;
     }
-
-    // Check if resume is already processed, redirect to analysis
-    // But only if we're not currently processing a new resume
-    const resumeUploaded = sessionStorage.getItem('resumeUploaded');
-    if (!isProcessing && resumeUploaded === 'true' && resumeJson && tailoredResumeJson) {
-      console.log("Resume already processed, redirecting to analysis");
-      navigate('/analysis');
-    }
-  }, [jobTitle, jobPosting, navigate, resumeJson, tailoredResumeJson, isProcessing]);
-
+  }, [jobTitle, jobPosting, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
       <PageContainer>
         <div className="w-full space-y-6">
-          <div className="space-y-2 text-center relative">
-            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-indigo-300 rounded-full filter blur-3xl opacity-20"></div>
+          <div className="space-y-1 text-center">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Your Resume
+              Upload your resume
             </h1>
+            <p className="text-sm text-gray-500">
+              Drop a PDF, DOCX, or TXT file — or paste the text below
+            </p>
           </div>
-
-          <UploadDialogManager>
-            {({ showErrorDialog, showContentWarning, apiErrors, setApiErrors }) => (
-              <UploadStateManager>
-                {({ progress, progressText, setProgress, setProgressText }) => (
-                  <UploadForm
-                    showErrorDialog={showErrorDialog}
-                    showContentWarning={showContentWarning}
-                    setApiErrors={setApiErrors}
-                    setProgress={setProgress}
-                    setProgressText={setProgressText}
-                    progress={progress}
-                    progressText={progressText}
-                    setIsProcessing={setIsProcessing}
-                  />
-                )}
-              </UploadStateManager>
-            )}
-          </UploadDialogManager>
-
-          <UploadSummary jobTitle={jobTitle} />
-          
-          {/* Debug section */}
-          <UploadDebugSection />
+          <UploadForm />
         </div>
       </PageContainer>
     </div>

@@ -1,104 +1,99 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home, MessageSquare } from 'lucide-react';
+import { Home } from 'lucide-react';
 import PageContainer from '@/components/PageContainer';
 import DownloadButtons from '@/components/download/DownloadButtons';
-import ResumeSummary from '@/components/download/ResumeSummary';
 import RationaleSection from '@/components/download/RationaleSection';
+import CoverLetterModal from '@/components/download/CoverLetterModal';
 import FeedbackDialog from '@/components/feedback/FeedbackDialog';
 import StripePaymentListener from '@/components/payments/StripePaymentListener';
+import CompatibilityScore from '@/components/analysis/CompatibilityScore';
 
 const ResultsPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  const { 
-    jobTitle, 
-    tailoredResumeJson, 
+
+  const {
+    jobTitle,
+    tailoredResumeJson,
     resumeJson,
     originalScore,
     tailoredScore,
     resetAllState,
-    markWorkflowComplete
+    markWorkflowComplete,
   } = useResumeContext();
-  
-  const resume = tailoredResumeJson || resumeJson;
-  const changes = tailoredResumeJson?.changes || [];
-  
-  // Get score explanation from the original score
-  const originalScoreExplanation = originalScore?.explanation;
-  const tailoredScoreExplanation = tailoredScore?.explanation;
-  
-  // Get qualifications
-  const originalQualification = originalScore?.consensus_qualification;
-  const tailoredQualification = tailoredScore?.consensus_qualification;
-  
+
+  const resume = tailoredResumeJson ?? resumeJson;
+  const changes = tailoredResumeJson?.changes ?? [];
+
+  const originalSimilarity = originalScore?.similarity ?? 0;
+  const tailoredSimilarity = tailoredScore?.similarity ?? 0;
+  const improvement = tailoredSimilarity - originalSimilarity;
+  const atsQualification = originalScore?.consensus_qualification ?? '';
+  const tailoredQualification = tailoredScore?.consensus_qualification ?? '';
+
+  // Positioning narrative — first item in the positioning changes array
+  const positioningNarrative =
+    tailoredResumeJson?.changes?.positioning?.[0] ?? null;
+
   useEffect(() => {
-    if (!resume) {
-      navigate('/upload');
-    }
+    if (!resume) navigate('/upload');
   }, [resume, navigate]);
 
-  // Handle reset and navigation to home page
-  const handleHomeClick = () => {
-    markWorkflowComplete(); // Mark workflow as complete before resetting
+  const handleHome = () => {
+    markWorkflowComplete();
     resetAllState();
     navigate('/');
   };
 
-  if (!resume) {
-    return null;
-  }
+  if (!resume) return null;
 
   return (
     <PageContainer>
       <StripePaymentListener />
-      <div className="w-full max-w-4xl mx-auto space-y-8">
-        <div className="flex justify-between items-center mb-8">
-          <Button variant="ghost" onClick={() => navigate('/analysis')} className="mr-2">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Analysis
+      <div className="w-full max-w-3xl mx-auto space-y-8">
+
+        {/* Top nav */}
+        <div className="flex justify-between items-center">
+          <FeedbackDialog />
+          <Button onClick={handleHome} variant="outline" className="gap-2">
+            <Home className="h-4 w-4" />
+            Try another job
           </Button>
-          
-          <div className="flex items-center gap-2">
-            <FeedbackDialog />
-            <Button 
-              onClick={handleHomeClick} 
-              variant="outline" 
-              className="gap-2"
-            >
-              <Home className="h-4 w-4" />
-              Try another Job
-            </Button>
+        </div>
+
+        {/* Positioning narrative */}
+        {positioningNarrative && (
+          <div className="rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4 text-white text-center shadow-md">
+            <p className="text-xs uppercase tracking-widest opacity-70 mb-1">
+              Your career narrative
+            </p>
+            <p className="text-lg font-semibold">{positioningNarrative}</p>
           </div>
+        )}
+
+        {/* Score comparison */}
+        {(originalScore || tailoredScore) && (
+          <div className="rounded-2xl bg-white shadow-sm border border-purple-100 p-4">
+            <CompatibilityScore
+              atsSimilarity={originalSimilarity}
+              feedbackSimilarity={tailoredSimilarity}
+              improvement={improvement}
+              atsQualification={atsQualification}
+              feedbackQualification={tailoredQualification}
+            />
+          </div>
+        )}
+
+        {/* Action row */}
+        <div className="flex flex-wrap gap-3 justify-center">
+          <CoverLetterModal />
+          <DownloadButtons resume={resume} jobTitle={jobTitle} />
         </div>
-        
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-purple-600">Resume and Report</h1>
-          <p className="text-muted-foreground">Your optimized resume is ready for download</p>
-        </div>
-        
-        {/* Download buttons */}
-        <DownloadButtons 
-          resume={resume} 
-          jobTitle={jobTitle} 
-        />
-        
-        {/* Resume Summary (now includes both evaluations and summary comparison) */}
-        <ResumeSummary 
-          resume={resume}
-          originalResume={resumeJson}
-          tailoredResume={tailoredResumeJson}
-          originalScoreExplanation={originalScoreExplanation}
-          tailoredScoreExplanation={tailoredScoreExplanation}
-          originalQualification={originalQualification}
-          tailoredQualification={tailoredQualification}
-        />
-        
-        {/* Rationale section */}
-        <RationaleSection changes={Array.isArray(changes) ? undefined : changes} />
+
+        {/* What changed */}
+        <RationaleSection changes={changes} />
       </div>
     </PageContainer>
   );

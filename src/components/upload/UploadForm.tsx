@@ -1,185 +1,53 @@
+import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import FileUploader from '@/components/FileUploader';
-import { Sparkle } from 'lucide-react';
-import TypewriterText from '@/components/TypewriterText';
-import { extractKeywords } from '@/utils/keywordExtractor';
+import { Button } from '@/components/ui/button';
+import { Rocket } from 'lucide-react';
 
-// Import our components
-import UploadProgress from '@/components/upload/UploadProgress';
-import ErrorAlert from '@/components/upload/ErrorAlert';
-import SubmitButton from '@/components/upload/SubmitButton';
-import { useResumeProcessor } from '@/hooks/useResumeProcessor';
-import { useEffect, useState } from 'react';
+const UploadForm = () => {
+  const navigate = useNavigate();
+  const { rawResumeFile, rawResumeText, setRawResumeFile, setRawResumeText } =
+    useResumeContext();
 
-interface UploadFormProps {
-  showErrorDialog: () => void;
-  showContentWarning: () => void;
-  setApiErrors: (errors: string[]) => void;
-  setProgress: (progress: number) => void;
-  setProgressText: (text: string) => void;
-  progress: number;
-  progressText: string;
-  setIsProcessing: (isProcessing: boolean) => void;
-}
-
-const UploadForm = ({
-  showErrorDialog,
-  showContentWarning,
-  setApiErrors,
-  setProgress,
-  setProgressText,
-  progress,
-  progressText,
-  setIsProcessing,
-}: UploadFormProps) => {
-  const { jobPosting } = useResumeContext();
-  const [showTypewriter, setShowTypewriter] = useState(false);
-  const [jobKeywords, setJobKeywords] = useState<string[]>([]);
-  
-  const { 
-    state,
-    handleFileUpload,
-    handleTextInput,
-    processResume,
-    reset
-  } = useResumeProcessor({
-    setProgress,
-    setProgressText,
-    showErrorDialog,
-    showContentWarning,
-  });
-
-  // Extract keywords from job posting when available
-  useEffect(() => {
-    if (jobPosting?.description) {
-      const keywords = extractKeywords(jobPosting.description);
-      setJobKeywords(keywords);
-    }
-  }, [jobPosting]);
-
-  // Log state changes for debugging
-  useEffect(() => {
-    console.log("UploadForm state updated:", {
-      hasFile: !!state.uploadedFile,
-      hasText: !!state.resumeText,
-      isUploading: state.isUploading,
-      hasAttemptedUpload: state.hasAttemptedUpload,
-      fileName: state.uploadedFile?.name || 'No file'
-    });
-    
-    // Update the parent's isProcessing state
-    setIsProcessing(state.isUploading);
-  }, [state, setIsProcessing]);
-
-  // Update API errors when state changes
-  useEffect(() => {
-    setApiErrors(state.apiErrors);
-  }, [state.apiErrors, setApiErrors]);
-
-  // Reset state when component mounts
-  useEffect(() => {
-    // Reset state when the component mounts to ensure a fresh start
-    reset();
-    setShowTypewriter(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  
-  // Handle analyze button click - start both API calls and typewriter animation
-  const handleAnalyzeClick = () => {
-    // Start typewriter animation
-    setShowTypewriter(true);
-    
-    // Start API calls immediately (don't wait for animation)
-    processResume();
+  const handleFileUpload = (file: File) => {
+    setRawResumeFile(file);
+    setRawResumeText('');
   };
 
-  // Determine if the submit button should be disabled
-  const isSubmitDisabled = (!state.uploadedFile && !state.resumeText) || state.isUploading;
+  const handleTextInput = (text: string) => {
+    setRawResumeText(text);
+    setRawResumeFile(null);
+  };
 
-  // Reduced list of resume tips (only 8 instead of 15)
-  const resumeTips = [
-    "Use industry keywords to pass ATS filters",
-    "Quantify your achievements with numbers",
-    "Tailor your resume to each job application",
-    "Keep your formatting consistent and clean",
-    "Use action verbs to describe your experience",
-    "Include measurable results from previous roles",
-    "Focus on accomplishments rather than duties",
-    "Proofread carefully for spelling and grammar"
-  ];
+  const hasInput = !!rawResumeFile || rawResumeText.trim().length > 0;
 
-  // Create enhanced ATS improvement text with extracted keywords
-  const getAtsImprovementText = () => {
-    let text = `Your resume needs optimization to pass Applicant Tracking System (ATS) filters. We've identified opportunities to highlight your relevant experience and add keywords that will help you get past automated screening.`;
-    
-    // Add keyword section if we have keywords
-    if (jobKeywords && jobKeywords.length > 0) {
-      text += `\n\nKeywords detected in this job posting:\n• ${jobKeywords.join('\n• ')}`;
-    }
-    
-    text += `\n\nHelpful tips while we process your resume:\n• ${resumeTips.join('\n• ')}`;
-    return text;
+  const handleContinue = () => {
+    if (hasInput) navigate('/processing');
   };
 
   return (
     <div className="space-y-6 py-4">
-      <div className="relative">
-        <div className="absolute -top-6 -right-6 text-indigo-300 animate-spin-slow">
-          <Sparkle size={20} />
-        </div>
-        <div className="absolute -bottom-6 -left-6 text-purple-300 animate-pulse">
-          <Sparkle size={16} />
-        </div>
-        
-        <ErrorAlert 
-          errors={state.apiErrors} 
-          onShowDetails={showErrorDialog}
-        />
-        
-        <FileUploader 
-          onFileUpload={handleFileUpload} 
-          onTextInput={handleTextInput}
-          isProcessing={state.isUploading}
-        />
-      </div>
-      
-      {/* ATS Improvement Text with Typewriter effect - shows when analyze button is clicked */}
-      {showTypewriter && (
-        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-indigo-100 shadow-lg relative overflow-hidden animate-fade-in">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-bl-full"></div>
-          <div className="absolute -top-4 -right-4 text-purple-300 animate-pulse">
-            <Sparkle size={24} />
-          </div>
-          <div className="absolute top-32 -left-8 text-blue-400 animate-spin-slow">
-            <Sparkle size={16} />
-          </div>
-          <TypewriterText
-            text={getAtsImprovementText()}
-            className="text-sm relative z-10 whitespace-pre-line"
-            speed={35}
-          />
-        </div>
-      )}
-      
-      <UploadProgress
-        isUploading={state.isUploading}
-        progress={progress}
-        progressText=""
+      <FileUploader
+        onFileUpload={handleFileUpload}
+        onTextInput={handleTextInput}
       />
-      
-      <SubmitButton
-        onClick={handleAnalyzeClick}
-        disabled={isSubmitDisabled}
-        isUploading={state.isUploading}
-      />
-      
-      {/* Additional animated elements during processing */}
-      {state.isUploading && (
-        <div className="fixed bottom-4 right-4 flex space-x-2 animate-fade-in">
-          <div className="w-3 h-3 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-          <div className="w-3 h-3 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: '150ms' }}></div>
-          <div className="w-3 h-3 rounded-full bg-pink-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
-        </div>
+
+      <Button
+        onClick={handleContinue}
+        disabled={!hasInput}
+        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-40"
+        size="lg"
+      >
+        <span className="flex items-center gap-2">
+          Analyse my resume
+          <Rocket size={16} />
+        </span>
+      </Button>
+
+      {!hasInput && (
+        <p className="text-center text-xs text-gray-400">
+          Upload a file or paste your resume text to continue
+        </p>
       )}
     </div>
   );
