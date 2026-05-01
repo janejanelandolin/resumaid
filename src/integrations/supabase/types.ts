@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      job_applications: {
+        Row: {
+          applied_date: string
+          company: string
+          created_at: string
+          id: string
+          job_url: string | null
+          notes: string | null
+          role: string
+          salary_range: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          applied_date?: string
+          company: string
+          created_at?: string
+          id?: string
+          job_url?: string | null
+          notes?: string | null
+          role: string
+          salary_range?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          applied_date?: string
+          company?: string
+          created_at?: string
+          id?: string
+          job_url?: string | null
+          notes?: string | null
+          role?: string
+          salary_range?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      journey_settings: {
+        Row: {
+          created_at: string
+          daily_apply_target: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_apply_target?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_apply_target?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       session_logs: {
         Row: {
           created_at: string
