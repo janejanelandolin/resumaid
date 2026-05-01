@@ -12,7 +12,7 @@ const UploadPage = () => {
     if (!jobPosting) {
       navigate('/');
     }
-  }, [jobTitle, jobPosting, navigate]);
+  }, [jobPosting, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
