@@ -206,18 +206,6 @@ const JobSearchForm = () => {
             placeholder="https://www.linkedin.com/jobs/view/…"
             className="border-purple-200 focus:border-purple-400"
           />
-          <div className="space-y-2">
-            <label htmlFor="jobTitleUrl" className="text-xs text-gray-500">
-              Optional: add a job title for your records
-            </label>
-            <Input
-              id="jobTitleUrl"
-              value={jobTitle}
-              onChange={e => setJobTitle(e.target.value)}
-              placeholder="e.g. Senior Product Manager"
-              className="border-purple-100 text-sm"
-            />
-          </div>
           <p className="text-xs text-gray-400">
             Works best with LinkedIn, Indeed, Greenhouse, and most company career pages.
           </p>
