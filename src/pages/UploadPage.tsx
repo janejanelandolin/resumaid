@@ -6,7 +6,7 @@ import UploadForm from '@/components/upload/UploadForm';
 
 const UploadPage = () => {
   const navigate = useNavigate();
-  const { jobTitle, jobPosting } = useResumeContext();
+  const { jobPosting } = useResumeContext();
 
   useEffect(() => {
     if (!jobPosting) {
