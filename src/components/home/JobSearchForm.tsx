@@ -45,7 +45,7 @@ const JobSearchForm = () => {
           return;
         }
         setJobPosting({
-          title: jobTitle || 'Job Posting',
+          title: 'Job Posting',
           description: customJobPosting,
           requirements: [],
           skills: [],
@@ -74,7 +74,7 @@ const JobSearchForm = () => {
           return;
         }
         setJobPosting({
-          title: jobTitle || 'Job Posting',
+          title: 'Job Posting',
           description: result.data.text,
           requirements: [],
           skills: [],
@@ -134,9 +134,9 @@ const JobSearchForm = () => {
     >
       {/* Mode tabs */}
       <div className="flex gap-1 bg-gray-50 rounded-xl p-1">
-        <Tab id="title" icon={Search} label="Job title" />
-        <Tab id="paste" icon={FileText} label="Paste posting" />
-        <Tab id="url" icon={Link} label="Paste URL" />
+        <Tab id="title" icon={Search} label="Job Title" />
+        <Tab id="url" icon={Link} label="Job Link" />
+        <Tab id="paste" icon={FileText} label="Job Posting" />
       </div>
 
       {/* ── Option 1: Title ── */}
@@ -191,18 +191,6 @@ const JobSearchForm = () => {
             value={customJobPosting}
             onChange={e => setCustomJobPosting(e.target.value)}
           />
-          <div className="space-y-2">
-            <label htmlFor="jobTitlePaste" className="text-xs text-gray-500">
-              Optional: add a job title for your records
-            </label>
-            <Input
-              id="jobTitlePaste"
-              value={jobTitle}
-              onChange={e => setJobTitle(e.target.value)}
-              placeholder="e.g. Senior Product Manager"
-              className="border-purple-100 text-sm"
-            />
-          </div>
         </div>
       )}
 
@@ -218,18 +206,6 @@ const JobSearchForm = () => {
             placeholder="https://www.linkedin.com/jobs/view/…"
             className="border-purple-200 focus:border-purple-400"
           />
-          <div className="space-y-2">
-            <label htmlFor="jobTitleUrl" className="text-xs text-gray-500">
-              Optional: add a job title for your records
-            </label>
-            <Input
-              id="jobTitleUrl"
-              value={jobTitle}
-              onChange={e => setJobTitle(e.target.value)}
-              placeholder="e.g. Senior Product Manager"
-              className="border-purple-100 text-sm"
-            />
-          </div>
           <p className="text-xs text-gray-400">
             Works best with LinkedIn, Indeed, Greenhouse, and most company career pages.
           </p>
