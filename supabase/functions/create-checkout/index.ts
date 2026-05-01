@@ -2,73 +2,63 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://4a22af3d-ed02-4fc1-9b1a-d70b6e43c90c.lovableproject.com',
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Max-Age': '86400',
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { amount = 499, currency = 'usd', successUrl, cancelUrl } = await req.json();
-    
-    console.log('Creating checkout session with amount:', amount);
+    const origin = req.headers.get('origin') || 'https://resumaid.app';
+    const {
+      amount = 100,        // default $1.00
+      currency = 'usd',
+      successUrl,
+      cancelUrl,
+    } = await req.json();
 
-    // Initialize Stripe with secret key
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     });
 
-    // Create checkout session for anonymous payment
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
           price_data: {
-            currency: currency,
+            currency,
             product_data: {
-              name: 'Optimized Resume Download',
-              description: 'Download your tailored resume as a Word document',
+              name: 'Optimised Resume Download',
+              description: 'Download your AI-tailored resume as a Word document',
             },
-            unit_amount: amount, // Amount in cents
+            unit_amount: amount,
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: successUrl || `${req.headers.get('origin')}/download?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${req.headers.get('origin')}/download?payment=cancelled`,
+      success_url: successUrl || `${origin}/results?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: cancelUrl || `${origin}/results?payment=cancelled`,
       payment_intent_data: {
-        metadata: {
-          service: 'resume_optimization',
-        },
+        metadata: { service: 'resume_download' },
       },
     });
 
-    console.log('Checkout session created:', session.id);
-
-    return new Response(JSON.stringify({ 
-      sessionId: session.id,
-      url: session.url 
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    });
-
+    return new Response(
+      JSON.stringify({ sessionId: session.id, url: session.url }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+    );
   } catch (error) {
-    console.error('Error creating checkout session:', error);
-    return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'Failed to create checkout session' 
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 500,
-    });
+    console.error('create-checkout error:', error);
+    return new Response(
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Failed to create checkout session' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+    );
   }
 });

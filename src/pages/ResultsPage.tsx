@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Home } from 'lucide-react';
+import { Home, Map } from 'lucide-react';
 import PageContainer from '@/components/PageContainer';
 import DownloadButtons from '@/components/download/DownloadButtons';
 import RationaleSection from '@/components/download/RationaleSection';
@@ -13,6 +14,7 @@ import CompatibilityScore from '@/components/analysis/CompatibilityScore';
 
 const ResultsPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const {
     jobTitle,
@@ -55,12 +57,20 @@ const ResultsPage = () => {
       <div className="w-full max-w-3xl mx-auto space-y-8">
 
         {/* Top nav */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center flex-wrap gap-2">
           <FeedbackDialog />
-          <Button onClick={handleHome} variant="outline" className="gap-2">
-            <Home className="h-4 w-4" />
-            Try another job
-          </Button>
+          <div className="flex gap-2">
+            {user && (
+              <Button variant="outline" className="gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" onClick={() => navigate('/journey')}>
+                <Map className="h-4 w-4" />
+                Career Journey
+              </Button>
+            )}
+            <Button onClick={handleHome} variant="outline" className="gap-2">
+              <Home className="h-4 w-4" />
+              Try another job
+            </Button>
+          </div>
         </div>
 
         {/* Positioning narrative */}

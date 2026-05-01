@@ -1,20 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { FileDown, Loader2, CreditCard } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { FileDown, Loader2, CreditCard, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiService } from '@/services/api';
 import { ResumeJson } from '@/types/resume';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useOneTimePayment } from '@/hooks/useOneTimePayment';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import AuthModal from '@/components/auth/AuthModal';
 
 interface DownloadButtonsProps {
@@ -25,194 +19,146 @@ interface DownloadButtonsProps {
 const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) => {
   const { toast } = useToast();
   const { user } = useAuth();
-  const [isDownloadingDocx, setIsDownloadingDocx] = useState(false);
-  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { subscribed, createSubscription, isLoading: subLoading } = useSubscription();
+  const { isPaid, isCreatingCheckout, isVerifying, createCheckout } = useOneTimePayment();
+  const [isDownloadingDocx, setIsDownloadingDocx] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleDownloadDocx = async () => {
-    if (subscribed) {
-      await handleActualDocxDownload();
-      return;
-    }
+  const canDownload = subscribed || isPaid;
 
-    // Wait briefly for auth state to settle (in case this was just triggered by AuthModal onSuccess)
-    let { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      // Retry once after a short delay to allow auth state to propagate
-      await new Promise((r) => setTimeout(r, 400));
-      ({ data: { session } } = await supabase.auth.getSession());
-    }
-
-    if (!session) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to subscribe to our premium service.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Prompt for subscription
-    toast({
-      title: "Premium Feature",
-      description: "Subscribe to download unlimited optimized resumes.",
-      variant: "default",
-    });
-    try {
-      await createSubscription();
-    } catch (error) {
-      console.error("Subscription error:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-      toast({
-        title: "Subscription Error",
-        description: `Failed to start subscription process: ${errorMessage}`,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleActualDocxDownload = async () => {
-    if (!resume) {
-      toast({
-        title: "Error",
-        description: "Resume data is missing. Please go back and try again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleActualDownload = async () => {
+    if (!resume) return;
     try {
       setIsDownloadingDocx(true);
       setError(null);
-      const formattedJobTitle = jobTitle ? jobTitle.replace(/\s+/g, '-').toLowerCase() : 'my-resume';
-      const fileName = `optimized-resume-${formattedJobTitle}.docx`;
-      
+      const formattedTitle = jobTitle ? jobTitle.replace(/\s+/g, '-').toLowerCase() : 'my-resume';
       const response = await apiService.downloadResumeAsDocx(resume, jobTitle || '');
-      
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      
+      if (response.error) throw new Error(response.error);
       if (response.data) {
-        // Create download link
         const url = window.URL.createObjectURL(response.data);
         const a = document.createElement('a');
         a.href = url;
-        a.download = fileName;
+        a.download = `optimised-resume-${formattedTitle}.docx`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         a.remove();
-        
-        toast({
-          title: "Download successful",
-          description: "Your optimized resume has been downloaded as a Word document.",
-        });
+        toast({ title: 'Downloaded!', description: 'Your optimised resume is ready.' });
       }
-    } catch (error) {
-      console.error("DOCX download failed:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
-      setError(errorMessage);
-      toast({
-        title: "DOCX download failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'An unexpected error occurred';
+      setError(msg);
+      toast({ title: 'Download failed', description: msg, variant: 'destructive' });
     } finally {
       setIsDownloadingDocx(false);
     }
   };
 
+  const handleSubscribe = async () => {
+    try {
+      await createSubscription();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      toast({ title: 'Subscription error', description: msg, variant: 'destructive' });
+    }
+  };
+
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <CardTitle className="text-purple-600">Download your optimized resume</CardTitle>
-        <CardDescription>
-          Get your resume in your preferred format, ready for final adjustments
-        </CardDescription>
+    <Card className="border-purple-100 shadow-sm">
+      <CardHeader className="text-center pb-2">
+        <CardTitle className="text-purple-700 text-lg">Download your optimised resume</CardTitle>
+        <CardDescription>Get your tailored resume in Word format</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Word Document Download Section */}
-        <div className="space-y-2">
-          {!subscribed ? (
-            <>
-              {!user ? (
-                <AuthModal
-                  onSuccess={handleDownloadDocx}
-                  trigger={
-                    <Button
-                      disabled={subLoading}
-                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
-                    >
-                      {subLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Starting subscription...
-                        </>
-                      ) : (
-                        <>
-                          <CreditCard className="mr-2 h-4 w-4" />
-                          Sign in to Download
-                        </>
-                      )}
-                    </Button>
-                  }
-                />
+      <CardContent className="space-y-3">
+
+        {/* ── Subscribed OR paid for this session ── */}
+        {canDownload && (
+          <>
+            {subscribed && (
+              <p className="text-xs text-center text-emerald-600 font-medium">
+                ✓ Premium member — unlimited downloads
+              </p>
+            )}
+            {!subscribed && isPaid && (
+              <p className="text-xs text-center text-indigo-600 font-medium">
+                ✓ Payment confirmed — your download is unlocked
+              </p>
+            )}
+            <Button
+              onClick={handleActualDownload}
+              disabled={isDownloadingDocx || isVerifying}
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              size="lg"
+            >
+              {isDownloadingDocx ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparing document…</>
               ) : (
-                <Button 
-                  onClick={handleDownloadDocx}
-                  disabled={subLoading} 
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
-                >
-                  {subLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Starting subscription...
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="mr-2 h-4 w-4" />
-                      Subscribe for $14.99/month
-                    </>
-                  )}
-                </Button>
+                <><FileDown className="mr-2 h-4 w-4" /> Download in Word (.docx)</>
               )}
-              <p className="text-xs text-center text-muted-foreground">
-                {user ? 'Subscription required to download' : 'Sign in to subscribe and download'}
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-sm text-green-600 text-center font-medium">
-                Premium Member - Unlimited Downloads
-              </p>
-              <Button 
-                onClick={handleDownloadDocx}
-                disabled={isDownloadingDocx} 
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-colors duration-300"
+            </Button>
+          </>
+        )}
+
+        {/* ── Not paid ── */}
+        {!canDownload && (
+          <>
+            {/* $1 one-time option */}
+            <Button
+              onClick={createCheckout}
+              disabled={isCreatingCheckout || isVerifying}
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              size="lg"
+            >
+              {isCreatingCheckout || isVerifying ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {isVerifying ? 'Confirming payment…' : 'Redirecting to checkout…'}</>
+              ) : (
+                <><Sparkles className="mr-2 h-4 w-4" /> Download this resume — $1</>
+              )}
+            </Button>
+            <p className="text-xs text-center text-gray-400">No account required · one resume</p>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 py-1">
+              <div className="h-px flex-1 bg-gray-200" />
+              <span className="text-xs text-gray-400">or</span>
+              <div className="h-px flex-1 bg-gray-200" />
+            </div>
+
+            {/* Subscription option */}
+            {!user ? (
+              <AuthModal
+                onSuccess={handleSubscribe}
+                trigger={
+                  <Button variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={subLoading}>
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Subscribe for $14.99/month
+                  </Button>
+                }
+              />
+            ) : (
+              <Button
+                variant="outline"
+                className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                onClick={handleSubscribe}
+                disabled={subLoading}
               >
-                {isDownloadingDocx ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Preparing Word document...
-                  </>
-                ) : (
-                  <>
-                    <FileDown className="mr-2 h-4 w-4" />
-                    Download in Word (.docx)
-                  </>
-                )}
+                {subLoading
+                  ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Starting subscription…</>
+                  : <><CreditCard className="mr-2 h-4 w-4" /> Subscribe for $14.99/month</>
+                }
               </Button>
-            </>
-          )}
-        </div>
-        
+            )}
+            <p className="text-xs text-center text-gray-400">
+              Unlimited resumes · Cover letters · Career Journey tracker
+            </p>
+          </>
+        )}
+
         {error && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-800 text-sm">
-            <p className="font-medium">Error: Unable to download resume</p>
-            <p className="mt-1">{error}</p>
-            <p className="mt-2">Please try again or contact support if the issue persists.</p>
+          <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+            <p className="font-medium">Download failed</p>
+            <p className="mt-0.5 text-xs">{error}</p>
           </div>
         )}
       </CardContent>

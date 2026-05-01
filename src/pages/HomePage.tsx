@@ -1,16 +1,19 @@
 
-import { Sparkle, Rocket, Star } from 'lucide-react';
+import { Sparkle, Rocket, Star, Map } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import PageContainer from '@/components/PageContainer';
 import RotatingText from '@/components/RotatingText';
 import JobSearchForm from '@/components/home/JobSearchForm';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 import AuthButtons from '@/components/auth/AuthButtons';
 import { SubscriptionButton } from '@/components/subscription/SubscriptionButton';
+import { Button } from '@/components/ui/button';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const { resetAllState } = useResumeContext();
   const { user } = useAuth();
   
@@ -64,9 +67,17 @@ const HomePage = () => {
 
           <JobSearchForm />
           
-          {/* Show subscription card if user is logged in */}
+          {/* Logged-in user actions */}
           {user && (
-            <div className="max-w-md mx-auto">
+            <div className="max-w-md mx-auto space-y-3">
+              <Button
+                variant="outline"
+                className="w-full gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                onClick={() => navigate('/journey')}
+              >
+                <Map size={15} />
+                My Career Journey
+              </Button>
               <SubscriptionButton />
             </div>
           )}
