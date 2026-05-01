@@ -6,13 +6,13 @@ import UploadForm from '@/components/upload/UploadForm';
 
 const UploadPage = () => {
   const navigate = useNavigate();
-  const { jobTitle, jobPosting } = useResumeContext();
+  const { jobPosting } = useResumeContext();
 
   useEffect(() => {
-    if (!jobTitle || !jobPosting) {
+    if (!jobPosting) {
       navigate('/');
     }
-  }, [jobTitle, jobPosting, navigate]);
+  }, [jobPosting, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
