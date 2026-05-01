@@ -27,7 +27,8 @@ const ResultsPage = () => {
   } = useResumeContext();
 
   const resume = tailoredResumeJson ?? resumeJson;
-  const changes = tailoredResumeJson?.changes ?? [];
+  const rawChanges = tailoredResumeJson?.changes;
+  const changes = rawChanges && !Array.isArray(rawChanges) ? rawChanges : undefined;
 
   const originalSimilarity = originalScore?.similarity ?? 0;
   const tailoredSimilarity = tailoredScore?.similarity ?? 0;
