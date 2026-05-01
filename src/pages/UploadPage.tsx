@@ -9,7 +9,7 @@ const UploadPage = () => {
   const { jobTitle, jobPosting } = useResumeContext();
 
   useEffect(() => {
-    if (!jobTitle || !jobPosting) {
+    if (!jobPosting) {
       navigate('/');
     }
   }, [jobTitle, jobPosting, navigate]);
