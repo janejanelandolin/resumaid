@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Home, Map } from 'lucide-react';
+import { Home } from 'lucide-react';
 import PageContainer from '@/components/PageContainer';
+import NavBar from '@/components/layout/NavBar';
 import DownloadButtons from '@/components/download/DownloadButtons';
 import RationaleSection from '@/components/download/RationaleSection';
 import CoverLetterModal from '@/components/download/CoverLetterModal';
@@ -53,25 +54,19 @@ const ResultsPage = () => {
   if (!resume) return null;
 
   return (
-    <PageContainer>
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
+      <NavBar />
+      <PageContainer>
       <StripePaymentListener />
       <div className="w-full max-w-3xl mx-auto space-y-8">
 
-        {/* Top nav */}
+        {/* Top action row */}
         <div className="flex justify-between items-center flex-wrap gap-2">
           <FeedbackDialog />
-          <div className="flex gap-2">
-            {user && (
-              <Button variant="outline" className="gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" onClick={() => navigate('/journey')}>
-                <Map className="h-4 w-4" />
-                Career Journey
-              </Button>
-            )}
-            <Button onClick={handleHome} variant="outline" className="gap-2">
-              <Home className="h-4 w-4" />
-              Try another job
-            </Button>
-          </div>
+          <Button onClick={handleHome} variant="outline" className="gap-2">
+            <Home className="h-4 w-4" />
+            Try another job
+          </Button>
         </div>
 
         {/* Positioning narrative */}
@@ -106,7 +101,8 @@ const ResultsPage = () => {
         {/* What changed */}
         <RationaleSection changes={changes} />
       </div>
-    </PageContainer>
+      </PageContainer>
+    </div>
   );
 };
 

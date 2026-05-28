@@ -1,90 +1,71 @@
-
-import { Sparkle, Rocket, Star, Map } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import PageContainer from '@/components/PageContainer';
-import RotatingText from '@/components/RotatingText';
-import JobSearchForm from '@/components/home/JobSearchForm';
-import TestimonialsSection from '@/components/home/TestimonialsSection';
-import AuthButtons from '@/components/auth/AuthButtons';
-import { SubscriptionButton } from '@/components/subscription/SubscriptionButton';
-import { Button } from '@/components/ui/button';
-import { useResumeContext } from '@/contexts/ResumeContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
+import { useResumeContext } from '@/contexts/ResumeContext';
+import NavBar from '@/components/layout/NavBar';
+import JobSearchForm from '@/components/home/JobSearchForm';
+import HowItWorks from '@/components/home/HowItWorks';
+import PricingSection from '@/components/home/PricingSection';
+import TestimonialsSection from '@/components/home/TestimonialsSection';
 
 const HomePage = () => {
-  const navigate = useNavigate();
   const { resetAllState } = useResumeContext();
-  const { user } = useAuth();
-  
-  // Reset all state only when the component is first mounted
+
   useEffect(() => {
-    // We'll use a ref-like approach with sessionStorage, but more targeted
-    const shouldResetState = sessionStorage.getItem('resumeWorkflowComplete') === 'true';
-    
-    if (shouldResetState) {
+    if (sessionStorage.getItem('resumeWorkflowComplete') === 'true') {
       resetAllState();
-      // Clear the flag after resetting
       sessionStorage.removeItem('resumeWorkflowComplete');
     }
   }, [resetAllState]);
 
   return (
-    <div className="bg-gradient-to-b from-white to-purple-50 min-h-screen">
-      <PageContainer className="justify-start pt-8">
-        <div className="w-full space-y-8 relative">
-          {/* Header with Sign In button */}
-          <div className="absolute top-0 right-0 z-10">
-            <AuthButtons />
-          </div>
-          {/* Decorative elements */}
-          <div className="absolute -top-4 -right-4 text-purple-300 animate-pulse">
-            <Sparkle size={24} />
-          </div>
-          <div className="absolute top-32 -left-8 text-blue-400 animate-spin-slow">
-            <Star size={16} />
-          </div>
-          <div className="absolute top-56 -right-6 text-yellow-400 animate-bounce">
-            <Star size={20} />
-          </div>
-          
-          <div className="space-y-2 text-center relative">
-            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-300 rounded-full filter blur-3xl opacity-20"></div>
-            <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600 relative">
-              ResumAID
-              <span className="absolute -top-4 -right-4 text-purple-600">
-                <Rocket size={20} className="animate-fade-in" />
-              </span>
-            </h1>
-            <div className="text-muted-foreground">
-              <RotatingText 
-                texts={["OPTIMIZE", "Optimize your RESUME", "Optimize your resume for your DREAM JOB"]}
-                className="text-base font-medium"
-                highlightedText="true"
-              />
-            </div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-b from-white via-purple-50/40 to-white">
+      <NavBar />
 
-          <JobSearchForm />
-          
-          {/* Logged-in user actions */}
-          {user && (
-            <div className="max-w-md mx-auto space-y-3">
-              <Button
-                variant="outline"
-                className="w-full gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50"
-                onClick={() => navigate('/journey')}
-              >
-                <Map size={15} />
-                My Career Journey
-              </Button>
-              <SubscriptionButton />
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 pb-24">
+
+        {/* ── Hero ─────────────────────────────────────────────────── */}
+        <section className="pt-14 pb-10 text-center space-y-4">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 text-xs font-semibold px-3 py-1.5 rounded-full border border-indigo-100">
+            ✨ AI-powered resume optimisation
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 leading-tight">
+            Land more{' '}
+            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              interviews.
+            </span>
+          </h1>
+          <p className="text-gray-500 text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
+            ResumAID rewrites your resume to match any job posting — with a compatibility score, cover letter, and full change log — in under 2 minutes.
+          </p>
+        </section>
+
+        {/* ── Job search form ───────────────────────────────────────── */}
+        <JobSearchForm />
+
+        {/* ── Social proof strip ────────────────────────────────────── */}
+        <div className="mt-8 flex flex-wrap justify-center gap-6 text-center">
+          {[
+            { stat: '14K+', label: 'Resumes optimised' },
+            { stat: '97%', label: 'Improved scores' },
+            { stat: '2 min', label: 'Average turnaround' },
+          ].map(({ stat, label }) => (
+            <div key={label}>
+              <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                {stat}
+              </p>
+              <p className="text-xs text-gray-400 mt-0.5">{label}</p>
             </div>
-          )}
-          
-          <TestimonialsSection />
+          ))}
         </div>
-      </PageContainer>
+
+        {/* ── How it works ──────────────────────────────────────────── */}
+        <HowItWorks />
+
+        {/* ── Pricing ───────────────────────────────────────────────── */}
+        <PricingSection />
+
+        {/* ── Testimonials ──────────────────────────────────────────── */}
+        <TestimonialsSection />
+      </main>
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flame, Target, ArrowLeft, TrendingUp, Briefcase, Phone, Users, Trophy } from 'lucide-react';
+import { Flame, Target, Briefcase, Phone, Users, Trophy } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useJourney, AppStatus } from '@/hooks/useJourney';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import PageContainer from '@/components/PageContainer';
+import NavBar from '@/components/layout/NavBar';
 import AddApplicationModal from '@/components/journey/AddApplicationModal';
 import ApplicationCard from '@/components/journey/ApplicationCard';
 import AuthModal from '@/components/auth/AuthModal';
@@ -51,21 +52,21 @@ const JourneyPage = () => {
   // If not logged in, prompt to sign in
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 flex items-center justify-center p-6">
-        <div className="text-center space-y-4 max-w-sm">
-          <div className="text-5xl">🗺️</div>
-          <h1 className="text-2xl font-bold text-gray-800">My Career Journey</h1>
-          <p className="text-gray-500 text-sm">
-            Track your job applications, set daily goals, and stay on top of your search — all in one place.
-          </p>
-          <AuthModal trigger={
-            <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
-              Sign in to get started
-            </Button>
-          } />
-          <button onClick={() => navigate('/')} className="text-xs text-gray-400 underline">
-            Back to home
-          </button>
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
+        <NavBar />
+        <div className="flex items-center justify-center p-6 min-h-[calc(100vh-56px)]">
+          <div className="text-center space-y-4 max-w-sm">
+            <div className="text-5xl">🗺️</div>
+            <h1 className="text-2xl font-bold text-gray-800">My Career Journey</h1>
+            <p className="text-gray-500 text-sm">
+              Track your job applications, set daily goals, and stay on top of your search — all in one place.
+            </p>
+            <AuthModal trigger={
+              <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
+                Sign in to get started
+              </Button>
+            } />
+          </div>
         </div>
       </div>
     );
@@ -73,14 +74,12 @@ const JourneyPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
+      <NavBar />
       <PageContainer className="py-8 justify-start">
         <div className="w-full max-w-2xl mx-auto space-y-6">
 
           {/* Header */}
           <div className="flex items-center justify-between">
-            <button onClick={() => navigate('/')} className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition-colors">
-              <ArrowLeft size={14} /> Home
-            </button>
             <AddApplicationModal onAdd={addApplication} />
           </div>
 
@@ -145,7 +144,7 @@ const JourneyPage = () => {
 
           {/* Stats row */}
           {total > 0 && (
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <StatusStat label="Total" count={total} icon={Briefcase} color="border-gray-200" />
               <StatusStat label="Interviews" count={counts.interview} icon={Users} color="border-indigo-200" />
               <StatusStat label="Phone screens" count={counts.phone_screen} icon={Phone} color="border-yellow-200" />

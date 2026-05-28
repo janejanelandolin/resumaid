@@ -4,6 +4,7 @@ import { CheckCircle2, Clock, Loader2, AlertCircle, Sparkles, ArrowRight } from 
 import { useResumeContext } from '@/contexts/ResumeContext';
 import { useProcessingOrchestrator, ProcessingStep, StepStatus } from '@/hooks/useProcessingOrchestrator';
 import { Button } from '@/components/ui/button';
+import NavBar from '@/components/layout/NavBar';
 
 // ── Step icon ────────────────────────────────────────────────────────────────
 
@@ -91,7 +92,9 @@ const ProcessingPage = () => {
   const progressPct = Math.round((doneCount / steps.length) * 100);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-purple-50">
+      <NavBar showJourney={false} />
+    <div className="flex items-center justify-center p-4 min-h-[calc(100vh-56px)]">
       <div className="w-full max-w-lg space-y-6">
         {/* Header */}
         <div className="text-center space-y-1">
@@ -166,6 +169,7 @@ const ProcessingPage = () => {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 };
