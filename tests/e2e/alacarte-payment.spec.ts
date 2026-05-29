@@ -27,7 +27,7 @@ test.describe('$1 a-la-carte resume download', () => {
     await expect(page).toHaveURL(/\/results/);
 
     // The a-la-carte CTA should be visible without auth
-    const alacartBtn = page.getByRole('button', { name: /download this resume.*\$1|\$1.*download/i });
+    const alacartBtn = page.getByRole('button', { name: /download this resume.*\$1\.99|\$1\.99.*download/i });
     await expect(alacartBtn).toBeVisible({ timeout: 15_000 });
 
     // ── Step 5: Kick off Stripe checkout ────────────────────────────────

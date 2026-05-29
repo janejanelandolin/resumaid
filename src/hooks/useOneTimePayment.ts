@@ -62,7 +62,7 @@ export const useOneTimePayment = () => {
       const origin = window.location.origin;
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
-          amount: 100,
+          amount: 199,
           currency: 'usd',
           successUrl: `${origin}/results?payment=success&session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: `${origin}/results?payment=cancelled`,

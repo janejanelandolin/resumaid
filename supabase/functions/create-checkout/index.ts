@@ -18,8 +18,6 @@ serve(async (req) => {
   try {
     const origin = req.headers.get('origin') || 'https://resumaid.app';
     const {
-      amount = 100,        // default $1.00
-      currency = 'usd',
       successUrl,
       cancelUrl,
     } = await req.json();
@@ -28,25 +26,32 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
+    // Use the pre-configured Stripe product for one-off resume downloads
+    const PRODUCT_ID = 'prod_UbWq3cDYo8QKOk';
+
+    // Find the active price for this product (or create one if none exists)
+    const prices = await stripe.prices.list({ product: PRODUCT_ID, active: true, limit: 1 });
+    let priceId: string;
+
+    if (prices.data.length > 0) {
+      priceId = prices.data[0].id;
+    } else {
+      // Fallback: create a $1.99 price on the product
+      const price = await stripe.prices.create({
+        product: PRODUCT_ID,
+        unit_amount: 199,
+        currency: 'usd',
+      });
+      priceId = price.id;
+    }
+
     const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price_data: {
-            currency,
-            product_data: {
-              name: 'Optimised Resume Download',
-              description: 'Download your AI-tailored resume as a Word document',
-            },
-            unit_amount: amount,
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: 'payment',
       success_url: successUrl || `${origin}/results?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl || `${origin}/results?payment=cancelled`,
       payment_intent_data: {
-        metadata: { service: 'resume_download' },
+        metadata: { service: 'resume_download', product_id: PRODUCT_ID },
       },
     });
 

@@ -102,7 +102,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
         {/* ── Not paid ── */}
         {!canDownload && (
           <>
-            {/* $1 one-time option */}
+            {/* $1.99 one-time option */}
             <Button
               onClick={createCheckout}
               disabled={isCreatingCheckout || isVerifying}
@@ -113,7 +113,7 @@ const DownloadButtons: React.FC<DownloadButtonsProps> = ({ resume, jobTitle }) =
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {isVerifying ? 'Confirming payment…' : 'Redirecting to checkout…'}</>
               ) : (
-                <><Sparkles className="mr-2 h-4 w-4" /> Download this resume — $1</>
+                <><Sparkles className="mr-2 h-4 w-4" /> Download this resume — $1.99</>
               )}
             </Button>
             <p className="text-xs text-center text-gray-400">No account required · one resume</p>

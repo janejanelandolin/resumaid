@@ -10,7 +10,7 @@ const oneTime = [
 ];
 
 const subscription = [
-  'Everything in the $1 plan',
+  'Everything in the $1.99 plan',
   'Unlimited resumes',
   'Cover letter generation',
   'Career Journey tracker',
@@ -28,7 +28,7 @@ const PricingSection: React.FC = () => (
       <div className="rounded-2xl border border-indigo-100 bg-white/70 backdrop-blur-sm p-6 space-y-4 shadow-sm">
         <div className="space-y-1">
           <div className="flex items-end gap-1">
-            <span className="text-3xl font-bold text-gray-900">$1</span>
+            <span className="text-3xl font-bold text-gray-900">$1.99</span>
             <span className="text-sm text-gray-400 mb-1">per resume</span>
           </div>
           <p className="text-xs text-gray-500">One resume, one download. No strings attached.</p>
