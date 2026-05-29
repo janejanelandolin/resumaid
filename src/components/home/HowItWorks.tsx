@@ -14,7 +14,7 @@ const steps = [
     icon: Upload,
     number: '02',
     title: 'Upload your resume',
-    description: 'Drop in a PDF, DOCX, or TXT file — or paste the text directly.',
+    description: 'Drop in a PDF or DOCX file — or paste the text directly.',
     color: 'bg-purple-100 text-purple-600',
     border: 'border-purple-100',
   },

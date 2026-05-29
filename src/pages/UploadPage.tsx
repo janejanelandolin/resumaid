@@ -32,7 +32,7 @@ const UploadPage = () => {
               Upload your resume
             </h1>
             <p className="text-sm text-gray-500">
-              Drop a PDF, DOCX, or TXT — or paste the text
+              Drop a PDF or DOCX — or paste the text below
             </p>
           </div>
           <UploadForm />

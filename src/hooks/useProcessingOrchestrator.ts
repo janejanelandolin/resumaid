@@ -91,11 +91,6 @@ export const useProcessingOrchestrator = () => {
     []
   );
 
-  const makeTextFile = (text: string): File => {
-    const blob = new Blob([text], { type: 'text/plain' });
-    return new File([blob], 'resume.txt', { type: 'text/plain' });
-  };
-
   const run = useCallback(async () => {
     setSteps(INITIAL_STEPS.map(s => ({ ...s })));
     setIsComplete(false);
@@ -105,26 +100,45 @@ export const useProcessingOrchestrator = () => {
     try {
       await createSessionLog(jobTitle);
 
-      // ── Step 1: Upload ──────────────────────────────────────────────
-      const file =
-        rawResumeFile ?? (rawResumeText ? makeTextFile(rawResumeText) : null);
-      if (!file) {
-        setFatalError('No resume found. Please go back and upload a file.');
+      // ── Step 1: Upload / Read text ──────────────────────────────────
+      let resumeContent: string | null = null;
+
+      if (rawResumeText?.trim()) {
+        // Paste mode — use the text directly, no upload needed
+        updateStep('upload', 'active', 'Reading pasted resume…');
+        resumeContent = rawResumeText.trim();
+        setUploadData({ id: 'pasted', filename: 'pasted-resume.txt', content: resumeContent, text: resumeContent });
+        updateStep('upload', 'done', 'Resume text received ✓');
+      } else if (rawResumeFile) {
+        // File mode — upload to backend for text extraction (PDF/DOCX)
+        updateStep('upload', 'active', 'Uploading your resume…');
+        const uploadResponse = await apiService.uploadResume(rawResumeFile);
+
+        if (uploadResponse.error || !uploadResponse.data?.content) {
+          updateStep('upload', 'error', uploadResponse.error ?? 'Upload failed');
+          setFatalError(
+            'Failed to read your resume. Please try a different file format (PDF or DOCX), or paste the text directly.'
+          );
+          return;
+        }
+
+        // Detect backend rejecting unsupported formats (returns JSON error with 200)
+        const content = uploadResponse.data.content.trim();
+        if (content.startsWith('{"error"') || content.startsWith("{'error'")) {
+          updateStep('upload', 'error', 'Unsupported file format');
+          setFatalError(
+            'This file format is not supported. Please upload a PDF or DOCX file, or paste your resume text directly.'
+          );
+          return;
+        }
+
+        setUploadData(uploadResponse.data);
+        resumeContent = content;
+        updateStep('upload', 'done', 'Resume received ✓');
+      } else {
+        setFatalError('No resume found. Please go back and upload a file or paste your resume text.');
         return;
       }
-
-      updateStep('upload', 'active', 'Uploading your resume…');
-      const uploadResponse = await apiService.uploadResume(file);
-
-      if (uploadResponse.error || !uploadResponse.data?.content) {
-        updateStep('upload', 'error', uploadResponse.error ?? 'Upload failed');
-        setFatalError(
-          'Failed to read your resume. Please try a different file format (PDF, DOCX, or TXT).'
-        );
-        return;
-      }
-      setUploadData(uploadResponse.data);
-      updateStep('upload', 'done', 'Resume received ✓');
 
       // ── Step 2: Parse ───────────────────────────────────────────────
       updateStep(
@@ -132,9 +146,7 @@ export const useProcessingOrchestrator = () => {
         'active',
         'Extracting your work history, skills, and education…'
       );
-      const schemaResponse = await apiService.getResumeSchema(
-        uploadResponse.data.content
-      );
+      const schemaResponse = await apiService.getResumeSchema(resumeContent);
 
       if (!schemaResponse.data) {
         updateStep('parse', 'error', 'Could not parse resume structure');

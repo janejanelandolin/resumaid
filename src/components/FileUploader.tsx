@@ -54,7 +54,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     accept: {
       'application/pdf': ['.pdf'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'text/plain': ['.txt'],
     },
     multiple: false,
     disabled: isProcessing,
@@ -119,7 +118,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                   Drag & drop your resume here
                 </p>
                 <p className="text-sm text-gray-500">
-                  Supported formats: PDF, DOCX, TXT
+                  Supported formats: PDF, DOCX
                 </p>
                 <p className="mt-2 text-xs text-gray-400">
                   Or click to browse your files
