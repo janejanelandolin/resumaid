@@ -1,5 +1,9 @@
 import { Page, expect } from '@playwright/test';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const TEST_RESUME_PATH = path.join(__dirname, 'fixtures/test-resume.txt');
 
@@ -21,51 +25,53 @@ export async function fillJobSearch(page: Page) {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
 
+  // Step 1: Fill job title (stays in context even after switching tabs)
   const jobTitleInput = page.locator('#jobTitle');
   await jobTitleInput.waitFor({ state: 'visible' });
   await jobTitleInput.fill(TEST_JOB_TITLE);
 
-  // Check if there's a job posting textarea and fill it
-  const jobPostingArea = page.locator('textarea').first();
-  if (await jobPostingArea.isVisible()) {
-    await jobPostingArea.fill(TEST_JOB_POSTING);
-  }
+  // Step 2: Switch to "Job Posting" paste tab — avoids slow AI job-generation call
+  await page.getByRole('button', { name: /job posting/i }).click();
 
-  await page.getByRole('button', { name: "Let's go" }).click();
+  const textarea = page.locator('textarea').first();
+  await textarea.waitFor({ state: 'visible' });
+  await textarea.fill(TEST_JOB_POSTING);
+
+  // Step 3: Submit — navigates immediately (no AI call needed)
+  await page.getByRole('button', { name: /let's go/i }).click();
   await page.waitForURL('**/upload', { timeout: 30_000 });
 }
 
 export async function uploadResume(page: Page) {
   await page.waitForLoadState('networkidle');
 
-  // The dropzone has a hidden file input — set files directly
+  // react-dropzone renders a hidden <input> — set files directly on it
   const fileInput = page.locator('input[type="file"]').first();
   await fileInput.setInputFiles(TEST_RESUME_PATH);
 
-  // Wait for processing to complete (file selected message appears)
-  await expect(page.getByText('File selected')).toBeVisible({ timeout: 15_000 });
+  // FileUploader shows "File selected:" after a file is dropped
+  await expect(page.getByText(/file selected/i)).toBeVisible({ timeout: 15_000 });
+
+  // Click the "Analyse my resume" button to proceed to /processing
+  await page.getByRole('button', { name: /analyse my resume/i }).click();
 }
 
-export async function waitForAnalysis(page: Page) {
-  // Click continue/next to move to analysis
-  const nextBtn = page.getByRole('button', { name: /continue|next|analyze/i });
-  if (await nextBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
-    await nextBtn.click();
-  }
+export async function waitForProcessingAndResults(page: Page) {
+  // Processing page auto-navigates: /upload → /processing → /results
+  await page.waitForURL('**/processing', { timeout: 30_000 });
 
-  await page.waitForURL('**/analysis', { timeout: 60_000 });
+  // Wait for all steps to complete and auto-redirect to results (up to 3 min for AI)
+  await page.waitForURL('**/results', { timeout: 180_000 });
   await page.waitForLoadState('networkidle');
+}
 
-  // Wait for the score or changes to render (AI call may take up to 2 min)
-  await expect(
-    page.getByText(/compatibility|match score|changes made/i).first()
-  ).toBeVisible({ timeout: 120_000 });
+// Alias kept for backwards compat with old call sites
+export async function waitForAnalysis(page: Page) {
+  await waitForProcessingAndResults(page);
 }
 
 export async function proceedToResults(page: Page) {
-  const nextBtn = page.getByRole('button', { name: /next|results|continue/i }).last();
-  await nextBtn.waitFor({ state: 'visible', timeout: 10_000 });
-  await nextBtn.click();
+  // In the current app, /processing auto-redirects to /results — no button needed
   await page.waitForURL('**/results', { timeout: 30_000 });
   await page.waitForLoadState('networkidle');
 }
